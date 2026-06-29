@@ -6,7 +6,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="JV Training">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#CC2200">
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JV Training">
 <title>JV Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
@@ -29,9 +34,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes load{from{width:0}to{width:100%}}
 
 /* LANG PICKER */
-#lang-picker{position:fixed;inset:0;background:rgba(0,0,0,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:998;display:none}
+#lang-picker{position:fixed;inset:0;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;z-index:1000;display:none}
 #lang-picker.show{display:flex}
-#onboarding{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:997;padding:24px}
+#onboarding{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1001;padding:24px}
 #onboarding.show{display:flex}
 .ob-card{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:360px}
 .ob-step{display:none}.ob-step.active{display:block}
@@ -191,6 +196,93 @@ textarea{resize:vertical;min-height:72px}
 .day-meta{font-size:11px;color:var(--text3);margin-top:1px}
 .rest-day{padding:10px;background:rgba(184,134,11,.08);border:0.5px solid rgba(184,134,11,.3);border-radius:8px;text-align:center;margin-top:8px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+
+/* ── WORKOUT MODE ────────────────────────────────── */
+.workout-modal{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:500;display:none;flex-direction:column;overflow-y:auto}
+.workout-modal.open{display:flex}
+.wm-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:0.5px solid var(--border)}
+.wm-title{font-size:16px;font-weight:700}
+.wm-close{padding:6px 12px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit}
+.wm-body{padding:16px;flex:1}
+.wm-ex-name{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}
+.wm-ex-muscles{font-size:13px;color:var(--text2);text-align:center;margin-bottom:20px}
+.wm-sets{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.wm-set-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--border2);background:transparent;color:var(--text2);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit}
+.wm-set-btn.done{background:var(--red);border-color:var(--red);color:#fff}
+.wm-set-btn.current{border-color:var(--gold);color:var(--gold-light)}
+.wm-counter{text-align:center;margin-bottom:20px}
+.wm-reps-display{font-size:72px;font-weight:900;color:var(--red);line-height:1;margin-bottom:8px}
+.wm-reps-label{font-size:13px;color:var(--text2)}
+.wm-counter-btns{display:flex;gap:12px;justify-content:center;margin-top:12px}
+.wm-count-btn{width:60px;height:60px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:28px;font-weight:300;cursor:pointer;font-family:inherit;transition:all .15s}
+.wm-count-btn:active{transform:scale(.9);background:var(--bg3)}
+.wm-timer{text-align:center;padding:20px;background:var(--bg2);border-radius:var(--radius);margin-bottom:16px;border:0.5px solid var(--border)}
+.wm-timer-display{font-size:56px;font-weight:900;font-variant-numeric:tabular-nums;margin-bottom:4px}
+.wm-timer-display.rest{color:var(--gold)}
+.wm-timer-display.go{color:var(--red)}
+.wm-timer-label{font-size:12px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+.wm-timer-btns{display:flex;gap:8px;margin-top:12px;justify-content:center}
+.wm-weight{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:16px}
+.wm-weight label{font-size:13px;color:var(--text2);white-space:nowrap}
+.wm-weight input{flex:1;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:16px;padding:6px 10px;font-family:inherit}
+.wm-nav{display:flex;gap:8px;padding:16px;border-top:0.5px solid var(--border)}
+.wm-progress{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.wm-progress-fill{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
+
+/* ── POINTS & LEADERBOARD ────────────────────────── */
+.points-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(184,134,11,.15);border:0.5px solid var(--gold);border-radius:20px;font-size:13px;font-weight:700;color:var(--gold-light)}
+.lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:28px;font-size:14px;font-weight:700;color:var(--text2);flex-shrink:0;text-align:center}
+.lb-rank.gold{color:#FFD700;font-size:18px}
+.lb-rank.silver{color:#C0C0C0;font-size:16px}
+.lb-rank.bronze{color:#CD7F32;font-size:15px}
+.lb-name{flex:1;font-size:14px;font-weight:500}
+.lb-pts{font-size:14px;font-weight:700;color:var(--gold-light)}
+
+/* ── MOTIVATION ──────────────────────────────────── */
+.motivation-card{background:linear-gradient(135deg,rgba(204,34,0,.12),rgba(184,134,11,.08));border:0.5px solid rgba(184,134,11,.3);border-radius:var(--radius);padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.motivation-quote{font-size:15px;font-weight:500;line-height:1.6;color:var(--text);margin-bottom:6px;font-style:italic}
+.motivation-author{font-size:12px;color:var(--gold);font-weight:600}
+
+/* ── PERIODIZATION BANNER ────────────────────────── */
+.period-banner{background:rgba(184,134,11,.1);border:1px solid var(--gold);border-radius:var(--radius);padding:14px;margin-bottom:12px;display:none}
+.period-banner.show{display:block}
+.period-title{font-size:14px;font-weight:700;color:var(--gold-light);margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.period-text{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* ── TERMS OF SERVICE STEP ─────────────────────────── */
+.tos-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;max-height:55vh;overflow-y:auto;margin-bottom:16px;font-size:13px;line-height:1.7;color:var(--text2)}
+.tos-box h4{color:var(--text);font-size:13px;margin:14px 0 4px;font-weight:700}
+.tos-box p{margin:0 0 8px}
+.tos-box strong{color:var(--text)}
+.tos-medical-badge{background:rgba(204,34,0,.12);border:0.5px solid var(--red);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--red);font-weight:600;display:flex;align-items:center;gap:6px}
+.tos-scroll-hint{text-align:center;font-size:11px;color:var(--text3);margin-bottom:10px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.tos-accept-btn{width:100%;padding:14px;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+.tos-accept-btn:disabled{opacity:.4;cursor:not-allowed}
+.tos-checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 0;margin-bottom:4px}
+.tos-checkbox-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--red);flex-shrink:0;cursor:pointer}
+.tos-checkbox-row label{font-size:13px;color:var(--text2);cursor:pointer;line-height:1.4}
+
+/* ── PEXELS VIDEO PLAYER ─────────────────────────────── */
+.pexels-player{background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:10px;position:relative}
+.pexels-player video{width:100%;display:block;max-height:240px;object-fit:cover}
+.pexels-controls{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg2);border-radius:0 0 var(--radius) var(--radius)}
+.pexels-play-btn{width:36px;height:36px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.pexels-progress{flex:1;height:4px;background:var(--bg3);border-radius:2px;cursor:pointer;position:relative}
+.pexels-progress-fill{height:100%;background:var(--red);border-radius:2px;width:0%;transition:width .1s}
+.pexels-time{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pexels-attribution{font-size:10px;color:var(--text3);padding:4px 12px 8px;text-align:right}
+.pexels-attribution a{color:var(--text3);text-decoration:none}
+.pexels-thumbs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.pexels-thumbs::-webkit-scrollbar{display:none}
+.pexels-thumb{width:64px;height:40px;border-radius:4px;object-fit:cover;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:border-color .15s}
+.pexels-thumb.active{border-color:var(--red)}
+.pexels-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;gap:10px;color:var(--text2);font-size:13px}
+.pexels-logo{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--text3)}
+.pexels-logo span{background:#05A081;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px}
+.pexels-badge{display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px}
 </style>
 </head>
 <body>
@@ -231,6 +323,7 @@ textarea{resize:vertical;min-height:72px}
       <div class="ob-dot active" id="dot-0"></div>
       <div class="ob-dot" id="dot-1"></div>
       <div class="ob-dot" id="dot-2"></div>
+      <div class="ob-dot" id="dot-3"></div>
     </div>
 
     <!-- Step 0: Welcome -->
@@ -267,8 +360,25 @@ textarea{resize:vertical;min-height:72px}
           <span class="gender-icon">⚧</span><span id="ob-other">Otro</span>
         </button>
       </div>
-      <button class="btn btn-primary" id="ob-gender-btn" onclick="finishOnboarding()" disabled style="opacity:.4">
-        <i class="ti ti-check"></i><span id="ob-enter">Entrar a JV Training</span>
+      <button class="btn btn-primary" id="ob-gender-btn" onclick="obNext(3)" disabled style="opacity:.4">
+        <i class="ti ti-arrow-right"></i><span id="ob-enter">Entrar a JV Training</span>
+      </button>
+    </div>
+
+    <!-- Step 3: Terms of Service -->
+    <div class="ob-step" id="ob-step-3">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:32px;margin-bottom:8px">📋</div>
+        <div class="ob-title" id="tos-title-el">Términos de Uso</div>
+      </div>
+      <div class="tos-scroll-hint" id="tos-scroll-hint-el">↓ Desplázate para leer antes de aceptar</div>
+      <div class="tos-box" id="tos-content"></div>
+      <div class="tos-checkbox-row">
+        <input type="checkbox" id="tos-check" onchange="toggleTosBtn()">
+        <label for="tos-check" id="tos-check-label">He leído y acepto los Términos de Uso y la Política de Privacidad de JV Training</label>
+      </div>
+      <button class="tos-accept-btn" id="tos-accept-btn" onclick="finishOnboarding()" disabled>
+        ✓ <span id="tos-accept-label">Acepto los Términos y Condiciones</span>
       </button>
     </div>
   </div>
@@ -283,6 +393,18 @@ textarea{resize:vertical;min-height:72px}
         <div class="topbar-name"><span>JV</span> Training</div>
         <div class="topbar-sub" data-i18n="tagline">TU ENTRENADOR CON IA</div>
       </div>
+    </div>
+
+    <!-- PERIODIZATION BANNER -->
+    <div class="period-banner" id="period-banner">
+      <div class="period-title"><i class="ti ti-flame"></i><span id="period-title-text">¡Nuevo ciclo disponible!</span></div>
+      <div class="period-text" id="period-text"></div>
+    </div>
+
+    <!-- MOTIVATION CARD -->
+    <div class="motivation-card" id="motivation-card" style="display:none">
+      <div class="motivation-quote" id="motivation-quote"></div>
+      <div class="motivation-author" id="motivation-author"></div>
     </div>
 
     <div class="card">
@@ -309,12 +431,12 @@ textarea{resize:vertical;min-height:72px}
       <div class="form-row">
         <label data-i18n="nivel">Nivel</label>
         <select id="nivel">
-          <option data-i18n="principiante">Principiante</option>
-          <option selected data-i18n="intermedio">Intermedio</option>
-          <option data-i18n="avanzado">Avanzado</option>
+          <option value="principiante" data-i18n="principiante">Principiante</option>
+          <option value="intermedio" selected data-i18n="intermedio">Intermedio</option>
+          <option value="avanzado" data-i18n="avanzado">Avanzado</option>
         </select>
       </div>
-      <button class="btn btn-primary" onclick="generarRutina()">
+      <button class="btn btn-primary" id="gen-btn" onclick="generarRutina()">
         <i class="ti ti-sparkles"></i><span data-i18n="generar">Generar rutina con IA</span>
       </button>
     </div>
@@ -367,6 +489,9 @@ textarea{resize:vertical;min-height:72px}
         <div class="divider"></div>
         <div class="tip-box" id="res-consejo"></div>
       </div>
+      <button class="btn btn-primary" onclick="startWorkout()" style="margin-bottom:8px">
+        <i class="ti ti-player-play"></i><span data-i18n="iniciar-workout">Iniciar Workout</span>
+      </button>
       <button class="btn btn-ghost" onclick="registrarEntrenamiento()" style="margin-bottom:14px">
         <i class="ti ti-check"></i><span data-i18n="completar">Marcar como completado</span>
       </button>
@@ -444,6 +569,20 @@ textarea{resize:vertical;min-height:72px}
         </div>
       </div>
       <div class="form-row"><label data-i18n="lesiones">Lesiones o condiciones</label><textarea id="p-notas" data-i18n-ph="lesiones-ph"></textarea></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px">
+        <div>
+          <div style="font-size:14px;font-weight:500">Recordatorio diario</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">Notificación para entrenar cada día</div>
+        </div>
+        <button class="btn btn-sm btn-gold" onclick="requestNotificationPermission()"><i class="ti ti-bell"></i>Activar</button>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:500">Mis puntos</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">+50 pts por workout completado</div>
+        </div>
+        <div class="points-badge" id="profile-pts">0 pts</div>
+      </div>
       <div class="form-row">
         <label data-i18n="idioma-label">Idioma de la app</label>
         <select id="p-lang" onchange="setLang(this.value)">
@@ -470,6 +609,29 @@ textarea{resize:vertical;min-height:72px}
   </div>
 </div>
 
+
+<!-- WORKOUT MODE MODAL -->
+<div id="workout-modal" class="workout-modal">
+  <div class="wm-header">
+    <div>
+      <div class="wm-title" id="wm-day-title">Día 1</div>
+      <div style="font-size:12px;color:var(--text2)" id="wm-day-grupo"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="points-badge" id="wm-pts-display">0 pts</div>
+      <button class="wm-close" onclick="closeWorkout()">✕ Cerrar</button>
+    </div>
+  </div>
+  <div class="wm-body">
+    <div class="wm-progress"><div class="wm-progress-fill" id="wm-progress-fill" style="width:0%"></div></div>
+    <div id="wm-content"></div>
+  </div>
+  <div class="wm-nav">
+    <button class="btn btn-ghost" id="wm-prev-btn" onclick="wmPrev()" style="flex:1"><i class="ti ti-arrow-left"></i>Anterior</button>
+    <button class="btn btn-primary" id="wm-next-btn" onclick="wmNext()" style="flex:1">Siguiente<i class="ti ti-arrow-right"></i></button>
+  </div>
+</div>
+
 <div class="bottom-nav">
   <button class="nav-btn active" onclick="showScreen('generar')"><i class="ti ti-sparkles"></i><span data-i18n="nav-generar">Generar</span></button>
   <button class="nav-btn" onclick="showScreen('rutinas')"><i class="ti ti-list"></i><span data-i18n="nav-rutinas">Rutinas</span></button>
@@ -481,13 +643,153 @@ textarea{resize:vertical;min-height:72px}
 <script>
 const BACKEND_URL = 'https://charismatic-youthfulness-production-b8ee.up.railway.app';
 const DB_KEY = 'jvtraining_v3';
-let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, lang:'es' };
+let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, lang:'es', points:0, lastMotivation:'', firstPlanDate:null, reminderEnabled:false, lastReminder:null, onboardingDone:false };
 
 const T = {
-  es:{tagline:'TU ENTRENADOR CON IA',objetivo:'Objetivo',musculo:'Ganar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistencia',equipo:'Equipo disponible',sinequipo:'Sin equipo',nivel:'Nivel',principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado',generar:'Generar rutina con IA',generando:'Espera unos segundos mientras generamos la mejor rutina para ti…',guardar:'Guardar',completar:'Marcar como completado','ejercicios-label':'Ejercicios — toca para ver tutorial','mis-rutinas':'Mis rutinas',historial:'Historial',entrenos:'Entrenos','esta-semana':'Esta semana',racha:'Racha',actividad:'Actividad reciente','no-historial':'Aún no has completado ningún entrenamiento.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'En Safari: Compartir → "Añadir a pantalla de inicio". En Android: menú ⋮ → "Instalar app".','tu-nombre':'Tu nombre','completa-perfil':'Completa tu perfil',nombre:'Nombre','nombre-ph':'Tu nombre completo',edad:'Edad',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Seleccionar…',lesiones:'Lesiones o condiciones','lesiones-ph':'Ej: dolor de rodilla, hernia lumbar…','idioma-label':'Idioma de la app','mis-videos':'Mis videos','mis-videos-desc':'Agrega tus propios links de YouTube para que aparezcan en tus ejercicios.','agregar-video':'Agregar video','ejercicio-nombre':'Ejercicio','ej-nombre-ph':'Ej: Sentadilla, Curl de bíceps…','link-video':'Link YouTube',agregar:'Agregar','guardar-perfil':'Guardar perfil','nav-generar':'Generar','nav-rutinas':'Rutinas','nav-historial':'Historial','nav-perfil':'Perfil','ver-yt':'Ver en YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Guardar','peso-guardado':'✓ Guardado','descanso-dia':'Día 7 — Domingo: Descanso activo','descanso-texto':'Estiramiento, caminata ligera o reposo total','ver-tutorial':'Toca para ver tutorial','mi-video-label':'Tu video personalizado','video-tip':'Observa la técnica antes de empezar.','video-tip2':'Puedes agregar tu video en Perfil → Mis videos.','usar':'Usar','plan-guardado':'✓ Plan semanal guardado','ya-guardado':'Ya está guardado','dia-completado':'🏋️ ¡Día completado!','error-gen':'❌ Error al generar. Verifica tu API key.','video-agregado':'✓ Video agregado','completa-campos':'⚠️ Completa ambos campos','video-eliminado':'Video eliminado','perfil-guardado':'✓ Perfil guardado','genero-label':'Género','lp-title':'Selecciona tu idioma','lp-sub':'Choose your language','ob-welcome-title':'¡Bienvenido a JV Training!','ob-welcome-sub':'Tu entrenador personal con IA. Vamos a personalizar tu experiencia.','ob-start-btn':'Comenzar','ob-name-title':'¿Cómo te llamas?','ob-name-sub':'Tu nombre hará la experiencia más personal.','ob-name-ph':'Tu nombre','ob-continue':'Continuar','ob-gender-title':'¿Cuál es tu género?','ob-gender-sub':'Esto nos permite personalizar mejor tus rutinas.','ob-male':'Hombre','ob-female':'Mujer','ob-other':'Otro','ob-enter':'Entrar a JV Training'},
-  en:{tagline:'YOUR AI PERSONAL TRAINER',objetivo:'Goal',musculo:'Build muscle',bajar:'Lose weight',tonificar:'Tone up',resistencia:'Endurance',equipo:'Available equipment',sinequipo:'No equipment',nivel:'Level',principiante:'Beginner',intermedio:'Intermediate',avanzado:'Advanced',generar:'Generate workout with AI',generando:'Wait a few seconds while we generate your best workout…',guardar:'Save',completar:'Mark as completed','ejercicios-label':'Exercises — tap to watch tutorial','mis-rutinas':'My routines',historial:'History',entrenos:'Workouts','esta-semana':'This week',racha:'Streak',actividad:'Recent activity','no-historial':'No workouts completed yet.',perfil:'Profile','instalar-titulo':'Install as app','instalar-texto':'Safari: Share → "Add to Home Screen". Android: menu ⋮ → "Install app".','tu-nombre':'Your name','completa-perfil':'Complete your profile',nombre:'Name','nombre-ph':'Your full name',edad:'Age',peso:'Weight (kg)','objetivo-principal':'Main goal',seleccionar:'Select…',lesiones:'Injuries or conditions','lesiones-ph':'E.g. knee pain, herniated disc…','idioma-label':'App language','mis-videos':'My videos','mis-videos-desc':'Add your own YouTube links to appear in your exercises.','agregar-video':'Add video','ejercicio-nombre':'Exercise','ej-nombre-ph':'E.g. Squat, Bicep curl…','link-video':'YouTube link',agregar:'Add','guardar-perfil':'Save profile','nav-generar':'Generate','nav-rutinas':'Routines','nav-historial':'History','nav-perfil':'Profile','ver-yt':'Watch on YouTube','peso-label':'Weight used:','peso-ph':'kg','guardar-peso':'Save','peso-guardado':'✓ Saved','descanso-dia':'Day 7 — Sunday: Active rest','descanso-texto':'Stretching, light walk or full rest','ver-tutorial':'Tap to watch tutorial','mi-video-label':'Your personal video','video-tip':'Watch the technique before starting.','video-tip2':'Add your video in Profile → My videos.','usar':'Use','plan-guardado':'✓ Weekly plan saved','ya-guardado':'Already saved','dia-completado':'🏋️ Day completed!','error-gen':'❌ Error generating. Check your API key.','video-agregado':'✓ Video added','completa-campos':'⚠️ Please fill both fields','video-eliminado':'Video deleted','perfil-guardado':'✓ Profile saved','genero-label':'Gender','lp-title':'Choose your language','lp-sub':'Selecciona tu idioma','ob-welcome-title':'Welcome to JV Training!','ob-welcome-sub':'Your AI personal trainer. Let\'s personalize your experience.','ob-start-btn':'Get started','ob-name-title':'What\'s your name?','ob-name-sub':'Your name will make the experience more personal.','ob-name-ph':'Your name','ob-continue':'Continue','ob-gender-title':'What\'s your gender?','ob-gender-sub':'This helps us personalize your workouts better.','ob-male':'Male','ob-female':'Female','ob-other':'Other','ob-enter':'Enter JV Training'},
-  pt:{tagline:'SEU TREINADOR PESSOAL COM IA',objetivo:'Objetivo',musculo:'Ganhar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistência',equipo:'Equipamento disponível',sinequipo:'Sem equipamento',nivel:'Nível',principiante:'Iniciante',intermedio:'Intermediário',avanzado:'Avançado',generar:'Gerar treino com IA',generando:'Aguarde enquanto geramos o melhor treino para você…',guardar:'Salvar',completar:'Marcar como concluído','ejercicios-label':'Exercícios — toque para ver tutorial','mis-rutinas':'Meus treinos',historial:'Histórico',entrenos:'Treinos','esta-semana':'Esta semana',racha:'Sequência',actividad:'Atividade recente','no-historial':'Nenhum treino concluído ainda.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'Safari: Compartilhar → "Adicionar à tela inicial". Android: menu ⋮ → "Instalar app".','tu-nombre':'Seu nome','completa-perfil':'Complete seu perfil',nombre:'Nome','nombre-ph':'Seu nome completo',edad:'Idade',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Selecionar…',lesiones:'Lesões ou condições','lesiones-ph':'Ex: dor no joelho, hérnia…','idioma-label':'Idioma do app','mis-videos':'Meus vídeos','mis-videos-desc':'Adicione seus links do YouTube para aparecerem nos exercícios.','agregar-video':'Adicionar vídeo','ejercicio-nombre':'Exercício','ej-nombre-ph':'Ex: Agachamento, Rosca direta…','link-video':'Link YouTube',agregar:'Adicionar','guardar-perfil':'Salvar perfil','nav-generar':'Gerar','nav-rutinas':'Treinos','nav-historial':'Histórico','nav-perfil':'Perfil','ver-yt':'Ver no YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Salvar','peso-guardado':'✓ Salvo','descanso-dia':'Dia 7 — Domingo: Descanso ativo','descanso-texto':'Alongamento, caminhada leve ou descanso total','ver-tutorial':'Toque para ver tutorial','mi-video-label':'Seu vídeo pessoal','video-tip':'Observe a técnica antes de começar.','video-tip2':'Adicione seu vídeo em Perfil → Meus vídeos.','usar':'Usar','plan-guardado':'✓ Plano semanal salvo','ya-guardado':'Já salvo','dia-completado':'🏋️ Dia concluído!','error-gen':'❌ Erro ao gerar. Verifique sua API key.','video-agregado':'✓ Vídeo adicionado','completa-campos':'⚠️ Preencha os dois campos','video-eliminado':'Vídeo excluído','perfil-guardado':'✓ Perfil salvo','genero-label':'Gênero','lp-title':'Selecione seu idioma','lp-sub':'Select your language','ob-welcome-title':'Bem-vindo ao JV Training!','ob-welcome-sub':'Seu treinador pessoal com IA. Vamos personalizar sua experiência.','ob-start-btn':'Começar','ob-name-title':'Qual é o seu nome?','ob-name-sub':'Seu nome tornará a experiência mais pessoal.','ob-name-ph':'Seu nome','ob-continue':'Continuar','ob-gender-title':'Qual é o seu gênero?','ob-gender-sub':'Isso nos ajuda a personalizar melhor seus treinos.','ob-male':'Masculino','ob-female':'Feminino','ob-other':'Outro','ob-enter':'Entrar no JV Training'},
-  fr:{tagline:'VOTRE COACH PERSONNEL IA',objetivo:'Objectif',musculo:'Prendre du muscle',bajar:'Perdre du poids',tonificar:'Tonifier',resistencia:'Endurance',equipo:'Équipement disponible',sinequipo:'Sans équipement',nivel:'Niveau',principiante:'Débutant',intermedio:'Intermédiaire',avanzado:'Avancé',generar:"Générer l'entraînement avec IA",generando:"Patientez pendant que nous créons votre meilleur entraînement…",guardar:'Sauvegarder',completar:'Marquer comme terminé','ejercicios-label':'Exercices — appuyez pour voir le tutoriel','mis-rutinas':'Mes routines',historial:'Historique',entrenos:'Séances','esta-semana':'Cette semaine',racha:'Série',actividad:'Activité récente','no-historial':'Aucune séance terminée pour le moment.',perfil:'Profil','instalar-titulo':'Installer comme app','instalar-texto':'Safari: Partager → "Sur l\'écran d\'accueil". Android: menu ⋮ → "Installer l\'app".','tu-nombre':'Votre nom','completa-perfil':'Complétez votre profil',nombre:'Nom','nombre-ph':'Votre nom complet',edad:'Âge',peso:'Poids (kg)','objetivo-principal':'Objectif principal',seleccionar:'Sélectionner…',lesiones:'Blessures ou conditions','lesiones-ph':'Ex: douleur genou, hernie…','idioma-label':"Langue de l'app",'mis-videos':'Mes vidéos','mis-videos-desc':'Ajoutez vos liens YouTube pour qu\'ils apparaissent dans vos exercices.','agregar-video':'Ajouter une vidéo','ejercicio-nombre':'Exercice','ej-nombre-ph':'Ex: Squat, Curl biceps…','link-video':'Lien YouTube',agregar:'Ajouter','guardar-perfil':'Sauvegarder le profil','nav-generar':'Générer','nav-rutinas':'Routines','nav-historial':'Historique','nav-perfil':'Profil','ver-yt':'Voir sur YouTube','peso-label':'Poids utilisé:','peso-ph':'kg','guardar-peso':'Sauver','peso-guardado':'✓ Sauvé','descanso-dia':'Jour 7 — Dimanche: Repos actif','descanso-texto':'Étirements, marche légère ou repos complet','ver-tutorial':'Appuyez pour voir le tutoriel','mi-video-label':'Votre vidéo personnelle','video-tip':'Observez la technique avant de commencer.','video-tip2':'Ajoutez votre vidéo dans Profil → Mes vidéos.','usar':'Utiliser','plan-guardado':'✓ Plan hebdomadaire sauvegardé','ya-guardado':'Déjà sauvegardé','dia-completado':'🏋️ Journée terminée!','error-gen':'❌ Erreur. Vérifiez votre clé API.','video-agregado':'✓ Vidéo ajoutée','completa-campos':'⚠️ Remplissez les deux champs','video-eliminado':'Vidéo supprimée','perfil-guardado':'✓ Profil sauvegardé','genero-label':'Genre','lp-title':'Choisissez votre langue','lp-sub':'Selecciona tu idioma','ob-welcome-title':'Bienvenue sur JV Training!','ob-welcome-sub':'Votre coach personnel IA. Personnalisons votre expérience.','ob-start-btn':'Commencer','ob-name-title':'Comment vous appelez-vous?','ob-name-sub':'Votre prénom rendra l\'expérience plus personnelle.','ob-name-ph':'Votre prénom','ob-continue':'Continuer','ob-gender-title':'Quel est votre genre?','ob-gender-sub':'Cela nous aide à mieux personnaliser vos entraînements.','ob-male':'Homme','ob-female':'Femme','ob-other':'Autre','ob-enter':'Entrer dans JV Training'}
+  es:{tagline:'TU ENTRENADOR CON IA',objetivo:'Objetivo',musculo:'Ganar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistencia',equipo:'Equipo disponible',sinequipo:'Sin equipo',nivel:'Nivel',principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado',generar:'Generar rutina con IA',generando:'Espera unos segundos mientras generamos la mejor rutina para ti…',guardar:'Guardar',completar:'Marcar como completado','ejercicios-label':'Ejercicios — toca para ver tutorial','mis-rutinas':'Mis rutinas',historial:'Historial',entrenos:'Entrenos','esta-semana':'Esta semana',racha:'Racha',actividad:'Actividad reciente','no-historial':'Aún no has completado ningún entrenamiento.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'En Safari: Compartir → "Añadir a pantalla de inicio". En Android: menú ⋮ → "Instalar app".','tu-nombre':'Tu nombre','completa-perfil':'Completa tu perfil',nombre:'Nombre','nombre-ph':'Tu nombre completo',edad:'Edad',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Seleccionar…',lesiones:'Lesiones o condiciones','lesiones-ph':'Ej: dolor de rodilla, hernia lumbar…','idioma-label':'Idioma de la app','mis-videos':'Mis videos','mis-videos-desc':'Agrega tus propios links de YouTube para que aparezcan en tus ejercicios.','agregar-video':'Agregar video','ejercicio-nombre':'Ejercicio','ej-nombre-ph':'Ej: Sentadilla, Curl de bíceps…','link-video':'Link YouTube',agregar:'Agregar','guardar-perfil':'Guardar perfil','nav-generar':'Generar','nav-rutinas':'Rutinas','nav-historial':'Historial','nav-perfil':'Perfil','ver-yt':'Ver en YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Guardar','peso-guardado':'✓ Guardado','descanso-dia':'Día 7 — Domingo: Descanso activo','descanso-texto':'Estiramiento, caminata ligera o reposo total','ver-tutorial':'Toca para ver tutorial','mi-video-label':'Tu video personalizado','video-tip':'Observa la técnica antes de empezar.','video-tip2':'Puedes agregar tu video en Perfil → Mis videos.','usar':'Usar','plan-guardado':'✓ Plan semanal guardado','ya-guardado':'Ya está guardado','dia-completado':'🏋️ ¡Día completado!','error-gen':'❌ Error al generar. Verifica tu API key.','video-agregado':'✓ Video agregado','completa-campos':'⚠️ Completa ambos campos','video-eliminado':'Video eliminado','perfil-guardado':'✓ Perfil guardado','genero-label':'Género','lp-title':'Selecciona tu idioma','lp-sub':'Choose your language','ob-welcome-title':'¡Bienvenido a JV Training!','ob-welcome-sub':'Tu entrenador personal con IA. Vamos a personalizar tu experiencia.','ob-start-btn':'Comenzar','ob-name-title':'¿Cómo te llamas?','ob-name-sub':'Tu nombre hará la experiencia más personal.','ob-name-ph':'Tu nombre','ob-continue':'Continuar','ob-gender-title':'¿Cuál es tu género?','ob-gender-sub':'Esto nos permite personalizar mejor tus rutinas.','ob-male':'Hombre','ob-female':'Mujer','ob-other':'Otro','ob-enter':'Entrar a JV Training','buscando-video':'Buscando video…','no-video-pexels':'Sin resultados. Busca en Pexels.','tos-title':'Términos de Uso',
+  'tos-accept-btn':'Acepto los Términos y Condiciones',
+  'tos-scroll-hint':'↓ Desplázate para leer antes de aceptar',
+  'tos-medical':'⚠️ Aviso médico importante',
+  'tos-body':` 
+<p><strong>Al continuar, aceptas los siguientes Términos de Uso de JV Training.</strong></p>
+
+<h4>1. Descripción del Servicio</h4>
+<p>JV Training es una aplicación de entrenamiento personal potenciada por inteligencia artificial que genera rutinas personalizadas, hace seguimiento de tu progreso y ofrece motivación adaptada a tu perfil.</p>
+
+<h4>2. Aviso Médico ⚠️</h4>
+<p><strong>JV Training NO es un servicio médico.</strong> El contenido de la app (rutinas, recomendaciones nutricionales) se proporciona únicamente con fines informativos. No sustituye la consulta con un médico o profesional de la salud.</p>
+<p>Antes de comenzar cualquier programa de ejercicio, consulta con tu médico, especialmente si padeces alguna condición de salud. Si sientes dolor, mareo o dificultad para respirar durante el ejercicio, detente inmediatamente.</p>
+
+<h4>3. Elegibilidad</h4>
+<p>Debes tener 18 años o más (o contar con consentimiento de un tutor legal) para usar esta app.</p>
+
+<h4>4. Contenido Generado por IA</h4>
+<p>Las rutinas son generadas automáticamente por inteligencia artificial y pueden no ser adecuadas para todas las personas. JV Training no garantiza resultados específicos de fitness.</p>
+
+<h4>5. Plan Gratuito y Pro</h4>
+<p>El plan gratuito incluye acceso limitado. El plan Pro incluye funciones adicionales por suscripción mensual. Las suscripciones se renuevan automáticamente salvo cancelación previa.</p>
+
+<h4>6. Privacidad</h4>
+<p>No vendemos tus datos personales a terceros. Los datos de entrenamiento se almacenan localmente en tu dispositivo. Consulta nuestra Política de Privacidad para más detalles.</p>
+
+<h4>7. Propiedad Intelectual</h4>
+<p>Todo el contenido de JV Training (diseño, algoritmos, rutinas) es propiedad exclusiva de JV Training y está protegido por las leyes de propiedad intelectual.</p>
+
+<h4>8. Limitación de Responsabilidad</h4>
+<p>JV Training se proporciona "tal cual", sin garantías de ningún tipo. No nos hacemos responsables de lesiones o daños derivados del uso de la app.</p>
+
+<h4>9. Modificaciones</h4>
+<p>Podemos actualizar estos Términos con aviso previo de 30 días. El uso continuado implica aceptación de los nuevos términos.</p>
+
+<p style="margin-top:16px;color:#888;font-size:11px">📧 soporte@jvtraining.app | Versión 1.0 — Junio 2026</p>`},
+  en:{tagline:'YOUR AI PERSONAL TRAINER',objetivo:'Goal',musculo:'Build muscle',bajar:'Lose weight',tonificar:'Tone up',resistencia:'Endurance',equipo:'Available equipment',sinequipo:'No equipment',nivel:'Level',principiante:'Beginner',intermedio:'Intermediate',avanzado:'Advanced',generar:'Generate workout with AI',generando:'Wait a few seconds while we generate your best workout…',guardar:'Save',completar:'Mark as completed','ejercicios-label':'Exercises — tap to watch tutorial','mis-rutinas':'My routines',historial:'History',entrenos:'Workouts','esta-semana':'This week',racha:'Streak',actividad:'Recent activity','no-historial':'No workouts completed yet.',perfil:'Profile','instalar-titulo':'Install as app','instalar-texto':'Safari: Share → "Add to Home Screen". Android: menu ⋮ → "Install app".','tu-nombre':'Your name','completa-perfil':'Complete your profile',nombre:'Name','nombre-ph':'Your full name',edad:'Age',peso:'Weight (kg)','objetivo-principal':'Main goal',seleccionar:'Select…',lesiones:'Injuries or conditions','lesiones-ph':'E.g. knee pain, herniated disc…','idioma-label':'App language','mis-videos':'My videos','mis-videos-desc':'Add your own YouTube links to appear in your exercises.','agregar-video':'Add video','ejercicio-nombre':'Exercise','ej-nombre-ph':'E.g. Squat, Bicep curl…','link-video':'YouTube link',agregar:'Add','guardar-perfil':'Save profile','nav-generar':'Generate','nav-rutinas':'Routines','nav-historial':'History','nav-perfil':'Profile','ver-yt':'Watch on YouTube','peso-label':'Weight used:','peso-ph':'kg','guardar-peso':'Save','peso-guardado':'✓ Saved','descanso-dia':'Day 7 — Sunday: Active rest','descanso-texto':'Stretching, light walk or full rest','ver-tutorial':'Tap to watch tutorial','mi-video-label':'Your personal video','video-tip':'Watch the technique before starting.','video-tip2':'Add your video in Profile → My videos.','usar':'Use','plan-guardado':'✓ Weekly plan saved','ya-guardado':'Already saved','dia-completado':'🏋️ Day completed!','error-gen':'❌ Error generating. Check your API key.','video-agregado':'✓ Video added','completa-campos':'⚠️ Please fill both fields','video-eliminado':'Video deleted','perfil-guardado':'✓ Profile saved','genero-label':'Gender','lp-title':'Choose your language','lp-sub':'Selecciona tu idioma','ob-welcome-title':'Welcome to JV Training!','ob-welcome-sub':'Your AI personal trainer. Let\'s personalize your experience.','ob-start-btn':'Get started','ob-name-title':'What\'s your name?','ob-name-sub':'Your name will make the experience more personal.','ob-name-ph':'Your name','ob-continue':'Continue','ob-gender-title':'What\'s your gender?','ob-gender-sub':'This helps us personalize your workouts better.','ob-male':'Male','ob-female':'Female','ob-other':'Other','ob-enter':'Enter JV Training','buscando-video':'Searching video…','no-video-pexels':'No results. Search on Pexels.','tos-title':'Terms of Use',
+  'tos-accept-btn':'I Accept the Terms & Conditions',
+  'tos-scroll-hint':'↓ Scroll to read before accepting',
+  'tos-medical':'⚠️ Important Medical Notice',
+  'tos-body':`
+<p><strong>By continuing, you agree to the following JV Training Terms of Use.</strong></p>
+
+<h4>1. Service Description</h4>
+<p>JV Training is an AI-powered personal training app that generates personalized workout routines, tracks your progress and offers motivation adapted to your profile.</p>
+
+<h4>2. Medical Notice ⚠️</h4>
+<p><strong>JV Training is NOT a medical service.</strong> App content (routines, nutritional recommendations) is provided for informational purposes only. It does not replace consultation with a doctor or health professional.</p>
+<p>Before starting any exercise program, consult your doctor, especially if you have any health conditions. If you feel pain, dizziness or difficulty breathing during exercise, stop immediately.</p>
+
+<h4>3. Eligibility</h4>
+<p>You must be 18 years or older (or have parental/guardian consent) to use this app.</p>
+
+<h4>4. AI-Generated Content</h4>
+<p>Routines are automatically generated by artificial intelligence and may not be suitable for everyone. JV Training does not guarantee specific fitness results.</p>
+
+<h4>5. Free & Pro Plan</h4>
+<p>The free plan includes limited access. The Pro plan includes additional features by monthly subscription. Subscriptions auto-renew unless cancelled in advance.</p>
+
+<h4>6. Privacy</h4>
+<p>We do not sell your personal data to third parties. Workout data is stored locally on your device. See our Privacy Policy for details.</p>
+
+<h4>7. Intellectual Property</h4>
+<p>All JV Training content (design, algorithms, routines) is the exclusive property of JV Training and is protected by intellectual property laws.</p>
+
+<h4>8. Limitation of Liability</h4>
+<p>JV Training is provided "as is" without warranties of any kind. We are not responsible for injuries or damages arising from use of the app.</p>
+
+<h4>9. Modifications</h4>
+<p>We may update these Terms with 30 days prior notice. Continued use implies acceptance of new terms.</p>
+
+<p style="margin-top:16px;color:#888;font-size:11px">📧 support@jvtraining.app | Version 1.0 — June 2026</p>`},
+  pt:{tagline:'SEU TREINADOR PESSOAL COM IA',objetivo:'Objetivo',musculo:'Ganhar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistência',equipo:'Equipamento disponível',sinequipo:'Sem equipamento',nivel:'Nível',principiante:'Iniciante',intermedio:'Intermediário',avanzado:'Avançado',generar:'Gerar treino com IA',generando:'Aguarde enquanto geramos o melhor treino para você…',guardar:'Salvar',completar:'Marcar como concluído','ejercicios-label':'Exercícios — toque para ver tutorial','mis-rutinas':'Meus treinos',historial:'Histórico',entrenos:'Treinos','esta-semana':'Esta semana',racha:'Sequência',actividad:'Atividade recente','no-historial':'Nenhum treino concluído ainda.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'Safari: Compartilhar → "Adicionar à tela inicial". Android: menu ⋮ → "Instalar app".','tu-nombre':'Seu nome','completa-perfil':'Complete seu perfil',nombre:'Nome','nombre-ph':'Seu nome completo',edad:'Idade',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Selecionar…',lesiones:'Lesões ou condições','lesiones-ph':'Ex: dor no joelho, hérnia…','idioma-label':'Idioma do app','mis-videos':'Meus vídeos','mis-videos-desc':'Adicione seus links do YouTube para aparecerem nos exercícios.','agregar-video':'Adicionar vídeo','ejercicio-nombre':'Exercício','ej-nombre-ph':'Ex: Agachamento, Rosca direta…','link-video':'Link YouTube',agregar:'Adicionar','guardar-perfil':'Salvar perfil','nav-generar':'Gerar','nav-rutinas':'Treinos','nav-historial':'Histórico','nav-perfil':'Perfil','ver-yt':'Ver no YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Salvar','peso-guardado':'✓ Salvo','descanso-dia':'Dia 7 — Domingo: Descanso ativo','descanso-texto':'Alongamento, caminhada leve ou descanso total','ver-tutorial':'Toque para ver tutorial','mi-video-label':'Seu vídeo pessoal','video-tip':'Observe a técnica antes de começar.','video-tip2':'Adicione seu vídeo em Perfil → Meus vídeos.','usar':'Usar','plan-guardado':'✓ Plano semanal salvo','ya-guardado':'Já salvo','dia-completado':'🏋️ Dia concluído!','error-gen':'❌ Erro ao gerar. Verifique sua API key.','video-agregado':'✓ Vídeo adicionado','completa-campos':'⚠️ Preencha os dois campos','video-eliminado':'Vídeo excluído','perfil-guardado':'✓ Perfil salvo','genero-label':'Gênero','lp-title':'Selecione seu idioma','lp-sub':'Select your language','ob-welcome-title':'Bem-vindo ao JV Training!','ob-welcome-sub':'Seu treinador pessoal com IA. Vamos personalizar sua experiência.','ob-start-btn':'Começar','ob-name-title':'Qual é o seu nome?','ob-name-sub':'Seu nome tornará a experiência mais pessoal.','ob-name-ph':'Seu nome','ob-continue':'Continuar','ob-gender-title':'Qual é o seu gênero?','ob-gender-sub':'Isso nos ajuda a personalizar melhor seus treinos.','ob-male':'Masculino','ob-female':'Feminino','ob-other':'Outro','ob-enter':'Entrar no JV Training','buscando-video':'Procurando vídeo…','no-video-pexels':'Sem resultados. Pesquise no Pexels.','tos-title':'Termos de Uso',
+  'tos-accept-btn':'Aceito os Termos e Condições',
+  'tos-scroll-hint':'↓ Role para ler antes de aceitar',
+  'tos-medical':'⚠️ Aviso Médico Importante',
+  'tos-body':`
+<p><strong>Ao continuar, você concorda com os seguintes Termos de Uso do JV Training.</strong></p>
+
+<h4>1. Descrição do Serviço</h4>
+<p>JV Training é um app de treino pessoal com inteligência artificial que gera rotinas personalizadas, acompanha seu progresso e oferece motivação adaptada ao seu perfil.</p>
+
+<h4>2. Aviso Médico ⚠️</h4>
+<p><strong>JV Training NÃO é um serviço médico.</strong> O conteúdo do app (rotinas, recomendações nutricionais) é fornecido apenas para fins informativos. Não substitui consulta com médico ou profissional de saúde.</p>
+<p>Antes de iniciar qualquer programa de exercícios, consulte seu médico, especialmente se tiver alguma condição de saúde. Se sentir dor, tontura ou dificuldade para respirar durante o exercício, pare imediatamente.</p>
+
+<h4>3. Elegibilidade</h4>
+<p>Você deve ter 18 anos ou mais (ou ter consentimento de responsável) para usar este app.</p>
+
+<h4>4. Conteúdo Gerado por IA</h4>
+<p>As rotinas são geradas automaticamente por inteligência artificial e podem não ser adequadas para todas as pessoas. JV Training não garante resultados específicos de fitness.</p>
+
+<h4>5. Plano Gratuito e Pro</h4>
+<p>O plano gratuito inclui acesso limitado. O plano Pro inclui recursos adicionais por assinatura mensal. As assinaturas são renovadas automaticamente, salvo cancelamento prévio.</p>
+
+<h4>6. Privacidade</h4>
+<p>Não vendemos seus dados pessoais a terceiros. Os dados de treino são armazenados localmente no seu dispositivo. Consulte nossa Política de Privacidade para mais detalhes.</p>
+
+<h4>7. Propriedade Intelectual</h4>
+<p>Todo o conteúdo do JV Training (design, algoritmos, rotinas) é propriedade exclusiva do JV Training e protegido pelas leis de propriedade intelectual.</p>
+
+<h4>8. Limitação de Responsabilidade</h4>
+<p>JV Training é fornecido "como está", sem garantias de nenhum tipo. Não nos responsabilizamos por lesões ou danos decorrentes do uso do app.</p>
+
+<h4>9. Modificações</h4>
+<p>Podemos atualizar estes Termos com aviso prévio de 30 dias. O uso continuado implica aceitação dos novos termos.</p>
+
+<p style="margin-top:16px;color:#888;font-size:11px">📧 suporte@jvtraining.app | Versão 1.0 — Junho 2026</p>`},
+  fr:{tagline:'VOTRE COACH PERSONNEL IA',objetivo:'Objectif',musculo:'Prendre du muscle',bajar:'Perdre du poids',tonificar:'Tonifier',resistencia:'Endurance',equipo:'Équipement disponible',sinequipo:'Sans équipement',nivel:'Niveau',principiante:'Débutant',intermedio:'Intermédiaire',avanzado:'Avancé',generar:"Générer l'entraînement avec IA",generando:"Patientez pendant que nous créons votre meilleur entraînement…",guardar:'Sauvegarder',completar:'Marquer comme terminé','ejercicios-label':'Exercices — appuyez pour voir le tutoriel','mis-rutinas':'Mes routines',historial:'Historique',entrenos:'Séances','esta-semana':'Cette semaine',racha:'Série',actividad:'Activité récente','no-historial':'Aucune séance terminée pour le moment.',perfil:'Profil','instalar-titulo':'Installer comme app','instalar-texto':'Safari: Partager → "Sur l\'écran d\'accueil". Android: menu ⋮ → "Installer l\'app".','tu-nombre':'Votre nom','completa-perfil':'Complétez votre profil',nombre:'Nom','nombre-ph':'Votre nom complet',edad:'Âge',peso:'Poids (kg)','objetivo-principal':'Objectif principal',seleccionar:'Sélectionner…',lesiones:'Blessures ou conditions','lesiones-ph':'Ex: douleur genou, hernie…','idioma-label':"Langue de l'app",'mis-videos':'Mes vidéos','mis-videos-desc':'Ajoutez vos liens YouTube pour qu\'ils apparaissent dans vos exercices.','agregar-video':'Ajouter une vidéo','ejercicio-nombre':'Exercice','ej-nombre-ph':'Ex: Squat, Curl biceps…','link-video':'Lien YouTube',agregar:'Ajouter','guardar-perfil':'Sauvegarder le profil','nav-generar':'Générer','nav-rutinas':'Routines','nav-historial':'Historique','nav-perfil':'Profil','ver-yt':'Voir sur YouTube','peso-label':'Poids utilisé:','peso-ph':'kg','guardar-peso':'Sauver','peso-guardado':'✓ Sauvé','descanso-dia':'Jour 7 — Dimanche: Repos actif','descanso-texto':'Étirements, marche légère ou repos complet','ver-tutorial':'Appuyez pour voir le tutoriel','mi-video-label':'Votre vidéo personnelle','video-tip':'Observez la technique avant de commencer.','video-tip2':'Ajoutez votre vidéo dans Profil → Mes vidéos.','usar':'Utiliser','plan-guardado':'✓ Plan hebdomadaire sauvegardé','ya-guardado':'Déjà sauvegardé','dia-completado':'🏋️ Journée terminée!','error-gen':'❌ Erreur. Vérifiez votre clé API.','video-agregado':'✓ Vidéo ajoutée','completa-campos':'⚠️ Remplissez les deux champs','video-eliminado':'Vidéo supprimée','perfil-guardado':'✓ Profil sauvegardé','genero-label':'Genre','lp-title':'Choisissez votre langue','lp-sub':'Selecciona tu idioma','ob-welcome-title':'Bienvenue sur JV Training!','ob-welcome-sub':'Votre coach personnel IA. Personnalisons votre expérience.','ob-start-btn':'Commencer','ob-name-title':'Comment vous appelez-vous?','ob-name-sub':'Votre prénom rendra l\'expérience plus personnelle.','ob-name-ph':'Votre prénom','ob-continue':'Continuer','ob-gender-title':'Quel est votre genre?','ob-gender-sub':'Cela nous aide à mieux personnaliser vos entraînements.','ob-male':'Homme','ob-female':'Femme','ob-other':'Autre','ob-enter':'Entrer dans JV Training','buscando-video':'Recherche vidéo…','no-video-pexels':'Aucun résultat. Cherchez sur Pexels.','tos-title':"Conditions d'Utilisation",
+  'tos-accept-btn':"J'accepte les Conditions Générales",
+  'tos-scroll-hint':'↓ Faites défiler pour lire avant d\'accepter',
+  'tos-medical':'⚠️ Avis Médical Important',
+  'tos-body':`
+<p><strong>En continuant, vous acceptez les Conditions d'Utilisation de JV Training suivantes.</strong></p>
+
+<h4>1. Description du Service</h4>
+<p>JV Training est une application d'entraînement personnel propulsée par l'IA qui génère des routines personnalisées, suit vos progrès et offre une motivation adaptée à votre profil.</p>
+
+<h4>2. Avis Médical ⚠️</h4>
+<p><strong>JV Training n'est PAS un service médical.</strong> Le contenu de l'app (routines, recommandations nutritionnelles) est fourni à titre informatif uniquement. Il ne remplace pas la consultation d'un médecin ou professionnel de santé.</p>
+<p>Avant de commencer tout programme d'exercice, consultez votre médecin, surtout si vous avez des problèmes de santé. Si vous ressentez de la douleur, des vertiges ou des difficultés à respirer, arrêtez immédiatement.</p>
+
+<h4>3. Éligibilité</h4>
+<p>Vous devez avoir 18 ans ou plus (ou avoir le consentement d'un tuteur) pour utiliser cette app.</p>
+
+<h4>4. Contenu Généré par IA</h4>
+<p>Les routines sont générées automatiquement par l'intelligence artificielle et peuvent ne pas convenir à tout le monde. JV Training ne garantit pas de résultats fitness spécifiques.</p>
+
+<h4>5. Plan Gratuit et Pro</h4>
+<p>Le plan gratuit comprend un accès limité. Le plan Pro comprend des fonctionnalités supplémentaires par abonnement mensuel. Les abonnements se renouvellent automatiquement sauf annulation préalable.</p>
+
+<h4>6. Confidentialité</h4>
+<p>Nous ne vendons pas vos données personnelles à des tiers. Les données d'entraînement sont stockées localement sur votre appareil. Consultez notre Politique de Confidentialité pour plus de détails.</p>
+
+<h4>7. Propriété Intellectuelle</h4>
+<p>Tout le contenu de JV Training (design, algorithmes, routines) est la propriété exclusive de JV Training et est protégé par les lois sur la propriété intellectuelle.</p>
+
+<h4>8. Limitation de Responsabilité</h4>
+<p>JV Training est fourni "tel quel", sans garantie d'aucune sorte. Nous ne sommes pas responsables des blessures ou dommages résultant de l'utilisation de l'app.</p>
+
+<h4>9. Modifications</h4>
+<p>Nous pouvons mettre à jour ces Conditions avec un préavis de 30 jours. L'utilisation continue implique l'acceptation des nouvelles conditions.</p>
+
+<p style="margin-top:16px;color:#888;font-size:11px">📧 support@jvtraining.app | Version 1.0 — Juin 2026</p>`}
 };
 
 function t(key){ return (T[state.lang]||T.es)[key] || key; }
@@ -513,11 +815,27 @@ function setLang(lang){
   if(!state.onboardingDone){
     document.getElementById('onboarding').classList.add('show');
   }
+  // Refresh ToS content if already on that step
+  const tosStep = document.getElementById('ob-step-3');
+  if(tosStep && tosStep.classList.contains('active')){
+    initTosStep();
+  }
 }
 
 function loadState(){
-  try{ const s=localStorage.getItem(DB_KEY); if(s) Object.assign(state,JSON.parse(s)); }catch(e){}
-  applyLang(); renderPerfil(); renderRutinas(); renderHistorial(); renderMisVideos();
+  try{ const s=localStorage.getItem(DB_KEY); if(s) Object.assign(state,JSON.parse(s)); }catch(e){ console.error('loadState error:',e); }
+  try{ applyLang(); }catch(e){ console.error('applyLang error:',e); }
+  try{ renderPerfil(); }catch(e){ console.error('renderPerfil error:',e); }
+  try{ renderRutinas(); }catch(e){ console.error('renderRutinas error:',e); }
+  try{ renderHistorial(); }catch(e){ console.error('renderHistorial error:',e); }
+  try{ renderMisVideos(); }catch(e){ console.error('renderMisVideos error:',e); }
+  updatePointsDisplay();
+  setTimeout(()=>{
+    try{ showDailyMotivation(); }catch(e){ console.error('motivation error:',e); }
+    try{ checkPeriodization(); }catch(e){ console.error('periodization error:',e); }
+    try{ checkDailyReminder(); }catch(e){ console.error('reminder error:',e); }
+    try{ requestNotificationPermission(); }catch(e){ console.error('notification error:',e); }
+  }, 2000);
 }
 function saveState(){ try{ localStorage.setItem(DB_KEY,JSON.stringify(state)); }catch(e){} }
 function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
@@ -556,28 +874,151 @@ function toggleVideo(idx, nombre){
   if(sec.classList.contains('open')){ sec.classList.remove('open'); chev.classList.remove('open'); sec.innerHTML=''; return; }
   sec.classList.add('open'); chev.classList.add('open');
   const mv=getMiVideo(nombre);
-  const pesoKey='peso_'+idx;
   const savedPeso=state.pesos[nombre]||'';
-  let videoHtml='';
+
   if(mv){
+    // User has their own YouTube link — keep YouTube for custom links
     const embed=ytUrlToEmbed(mv.url);
-    videoHtml=`<div class="my-video-badge"><i class="ti ti-star"></i>${t('mi-video-label')}</div>
+    sec.innerHTML=`<div class="my-video-badge"><i class="ti ti-star"></i>${t('mi-video-label')}</div>
     <div class="video-bar"><span class="video-bar-title">${nombre}</span><a href="${mv.url}" target="_blank"><i class="ti ti-brand-youtube" style="color:#FF0000"></i>${t('ver-yt')}</a></div>
-    <iframe class="video-iframe" src="${embed}" allowfullscreen title="${nombre}"></iframe>`;
-  } else {
-    const embed=ytSearchEmbed(nombre);
-    const searchUrl=ytSearchUrl(nombre);
-    videoHtml=`<div class="video-bar"><span class="video-bar-title">${nombre}</span><a href="${searchUrl}" target="_blank"><i class="ti ti-brand-youtube" style="color:#FF0000"></i>${t('ver-yt')}</a></div>
     <iframe class="video-iframe" src="${embed}" allowfullscreen title="${nombre}"></iframe>
-    <div class="video-tip"><i class="ti ti-bulb" style="color:var(--red);vertical-align:-2px;margin-right:4px"></i>${t('video-tip')} ${t('video-tip2')}</div>`;
-  }
-  sec.innerHTML=videoHtml+`
     <div class="weight-log">
       <label>${t('peso-label')}</label>
       <input class="weight-input" type="number" id="wi-${idx}" placeholder="${t('peso-ph')}" value="${savedPeso}" min="0" step="0.5">
       <button class="weight-save" onclick="savePeso('${nombre}',${idx})">${t('guardar-peso')}</button>
     </div>
     <div class="weight-saved" id="ws-${idx}">${t('peso-guardado')}</div>`;
+  } else {
+    // Load Pexels videos
+    sec.innerHTML=`<div class="pexels-loading"><div class="spinner"></div><span>${t('buscando-video')||'Buscando video…'}</span></div>
+    <div class="weight-log">
+      <label>${t('peso-label')}</label>
+      <input class="weight-input" type="number" id="wi-${idx}" placeholder="${t('peso-ph')}" value="${savedPeso}" min="0" step="0.5">
+      <button class="weight-save" onclick="savePeso('${nombre}',${idx})">${t('guardar-peso')}</button>
+    </div>
+    <div class="weight-saved" id="ws-${idx}">${t('peso-guardado')}</div>`;
+    loadPexelsVideo(idx, nombre);
+  }
+}
+
+async function loadPexelsVideo(idx, nombre){
+  try{
+    const resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(nombre)}&lang=${state.lang||'es'}`);
+    const data = await resp.json();
+    const sec = document.getElementById('vs-'+idx);
+    if(!sec) return;
+
+    if(!data.success || !data.videos || data.videos.length===0){
+      // Fallback: show Pexels search link
+      const loadingDiv = sec.querySelector('.pexels-loading');
+      if(loadingDiv) loadingDiv.innerHTML=`<span style="font-size:12px;color:var(--text3)">${t('no-video-pexels')||'No encontramos video. Intenta buscar manualmente.'}</span>
+        <a href="https://www.pexels.com/search/videos/${encodeURIComponent(nombre)}/" target="_blank" class="btn btn-ghost" style="margin-top:8px;font-size:12px">🎬 Buscar en Pexels</a>`;
+      return;
+    }
+
+    const videos = data.videos;
+    let currentIdx = 0;
+
+    function renderPlayer(vidIdx){
+      const v = videos[vidIdx];
+      const thumbsHtml = videos.map((vt,ti)=>
+        `<img class="pexels-thumb ${ti===vidIdx?'active':''}" src="${vt.thumb}" onclick="switchPexelsVideo('pv-${idx}', ${ti})" alt="video ${ti+1}">`
+      ).join('');
+
+      const dur = v.duration;
+      const mins = Math.floor(dur/60);
+      const secs = dur%60;
+
+      return `<div class="pexels-badge">
+        <div class="pexels-logo"><span>P</span> Pexels</div>
+        <a href="${v.pexelsUrl}" target="_blank" style="font-size:10px;color:var(--text3)">Ver en Pexels ↗</a>
+      </div>
+      <div class="pexels-player">
+        <video id="pvid-${idx}" src="${v.url}" preload="metadata" playsinline
+          ontimeupdate="updatePexelsProgress('pprog-${idx}','ptime-${idx}',this)"
+          onended="document.getElementById('pplay-${idx}').textContent='▶'"></video>
+      </div>
+      <div class="pexels-controls">
+        <button class="pexels-play-btn" id="pplay-${idx}" onclick="togglePexelsPlay('pvid-${idx}','pplay-${idx}')">▶</button>
+        <div class="pexels-progress" onclick="seekPexels('pvid-${idx}',event,this)">
+          <div class="pexels-progress-fill" id="pprog-${idx}"></div>
+        </div>
+        <span class="pexels-time" id="ptime-${idx}">0:00 / ${mins}:${secs<10?'0':''}${secs}</span>
+      </div>
+      <div class="pexels-attribution"><a href="${v.authorUrl}" target="_blank">📹 ${v.author}</a> • <a href="https://www.pexels.com" target="_blank">Pexels</a></div>
+      ${videos.length>1?`<div class="pexels-thumbs" id="pthumbs-${idx}">${thumbsHtml}</div>`:''}`;
+    }
+
+    // Store on window for thumb switching
+    window['_pexels_'+idx] = { videos, renderPlayer, idx };
+
+    const loadingDiv = sec.querySelector('.pexels-loading');
+    if(loadingDiv) loadingDiv.outerHTML = renderPlayer(0);
+
+  }catch(err){
+    console.error('Pexels load error:', err);
+    const sec = document.getElementById('vs-'+idx);
+    const loadingDiv = sec?.querySelector('.pexels-loading');
+    if(loadingDiv) loadingDiv.innerHTML='<span style="font-size:12px;color:var(--text3)">Error cargando video.</span>';
+  }
+}
+
+function switchPexelsVideo(containerId, vidIdx){
+  const data = window['_pexels_'+containerId.replace('pv-','')];
+  if(!data) return;
+  const sec = document.getElementById('vs-'+containerId.replace('pv-',''));
+  if(!sec) return;
+  // Stop current video
+  const vid = sec.querySelector('video');
+  if(vid){ vid.pause(); }
+  // Re-render player section only
+  const playerDiv = sec.querySelector('.pexels-player');
+  const controlsDiv = sec.querySelector('.pexels-controls');
+  const attrDiv = sec.querySelector('.pexels-attribution');
+  const thumbsDiv = sec.querySelector('.pexels-thumbs');
+  const badgeDiv = sec.querySelector('.pexels-badge');
+  if(playerDiv){
+    const v = data.videos[vidIdx];
+    const idx = containerId.replace('pv-','');
+    playerDiv.innerHTML = `<video id="pvid-${idx}" src="${v.url}" preload="metadata" playsinline
+      ontimeupdate="updatePexelsProgress('pprog-${idx}','ptime-${idx}',this)"
+      onended="document.getElementById('pplay-${idx}').textContent='▶'"></video>`;
+    const dur = v.duration;
+    const mins = Math.floor(dur/60), secs=dur%60;
+    if(controlsDiv) controlsDiv.querySelector('.pexels-time').textContent=`0:00 / ${mins}:${secs<10?'0':''}${secs}`;
+    if(controlsDiv) controlsDiv.querySelector('.pexels-progress-fill').style.width='0%';
+    if(controlsDiv) controlsDiv.querySelector('.pexels-play-btn').textContent='▶';
+    if(attrDiv) attrDiv.innerHTML=`<a href="${v.authorUrl}" target="_blank">📹 ${v.author}</a> • <a href="https://www.pexels.com" target="_blank">Pexels</a>`;
+    if(thumbsDiv) thumbsDiv.querySelectorAll('.pexels-thumb').forEach((t,i)=>t.classList.toggle('active',i===vidIdx));
+  }
+}
+
+function togglePexelsPlay(videoId, btnId){
+  const vid = document.getElementById(videoId);
+  const btn = document.getElementById(btnId);
+  if(!vid) return;
+  if(vid.paused){ vid.play(); if(btn) btn.textContent='⏸'; }
+  else { vid.pause(); if(btn) btn.textContent='▶'; }
+}
+
+function updatePexelsProgress(progId, timeId, video){
+  const prog = document.getElementById(progId);
+  const time = document.getElementById(timeId);
+  if(!prog || !time || !video.duration) return;
+  const pct = (video.currentTime / video.duration) * 100;
+  prog.style.width = pct + '%';
+  const cur = Math.floor(video.currentTime);
+  const total = Math.floor(video.duration);
+  const fmt = s => Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60);
+  time.textContent = fmt(cur) + ' / ' + fmt(total);
+}
+
+function seekPexels(videoId, event, progressBar){
+  const vid = document.getElementById(videoId);
+  if(!vid || !vid.duration) return;
+  const rect = progressBar.getBoundingClientRect();
+  const pct = (event.clientX - rect.left) / rect.width;
+  vid.currentTime = pct * vid.duration;
 }
 
 function savePeso(nombre, idx){
@@ -613,7 +1054,11 @@ function renderEjercicios(ejercicios, offset=0){
 async function generarRutina(){
   const objetivo=document.querySelector('#chips-objetivo .chip.sel')?.textContent||'Ganar músculo';
   const equipo=getEquip();
-  const nivel=document.getElementById('nivel').value;
+  const nivelKey=document.getElementById('nivel').value||'intermedio';
+    const nivelLabels={principiante:t('principiante'),intermedio:t('intermedio'),avanzado:t('avanzado')};
+    const nivel=nivelLabels[nivelKey]||nivelKey;
+  const genBtn=document.getElementById('gen-btn');
+  if(genBtn){ genBtn.disabled=true; genBtn.style.opacity='.6'; }
   document.getElementById('gen-loading').style.display='block';
   document.getElementById('gen-result').style.display='none';
   try{
@@ -627,22 +1072,34 @@ async function generarRutina(){
         edad:state.perfil.edad||'',
         peso:state.perfil.peso||'',
         notas:state.perfil.notas||'',
-        lang:state.lang||'es'
+        lang:state.lang||'es',
+        variante:Math.floor(Math.random()*1000),
+        historial:(state.historial||[]).slice(0,5).map(h=>h.nombre).join(', ')
       })
     });
     const data=await resp.json();
     if(!data.success) throw new Error(data.error||'Error del servidor');
     const plan=data.plan;
     plan.equipo=equipo; plan.id=Date.now();
+    if(!state.firstPlanDate) state.firstPlanDate=Date.now();
     state.rutinaActual=plan; renderResultado(plan);
   }catch(err){
     document.getElementById('gen-loading').style.display='none';
-    toast(t('error-gen')); console.error(err);
+    toast('❌ '+err.message); console.error(err);
+  } finally {
+    const genBtn=document.getElementById('gen-btn');
+    if(genBtn){ genBtn.disabled=false; genBtn.style.opacity='1'; }
   }
 }
 
 function renderResultado(r){
-  if(!r||!r.dias||!Array.isArray(r.dias)){ toast(t('error-gen')); document.getElementById('gen-loading').style.display='none'; return; }
+  if(!r||!r.dias||!Array.isArray(r.dias)||r.dias.length===0){ 
+    toast('❌ Respuesta inválida del servidor. Intenta de nuevo.');
+    document.getElementById('gen-loading').style.display='none'; 
+    return; 
+  }
+  // Ensure all days have ejercicios array
+  r.dias = r.dias.map(d=>({ ...d, ejercicios: Array.isArray(d.ejercicios) ? d.ejercicios : [] }));
   document.getElementById('gen-loading').style.display='none';
   document.getElementById('res-titulo').textContent=r.titulo;
   document.getElementById('res-tags').innerHTML=`<span class="tag tag-red">${r.objetivo||''}</span><span class="tag tag-blue">${r.nivel}</span><span class="tag tag-gold">6 días · PPL</span>`;
@@ -656,6 +1113,7 @@ function renderResultado(r){
   document.getElementById('res-ejercicios').innerHTML=diasHtml;
   document.getElementById('res-consejo').innerHTML=`<i class="ti ti-bulb"></i><span>${r.consejo}</span>`;
   document.getElementById('gen-result').style.display='block';
+  setTimeout(()=>document.getElementById('gen-result').scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
 
 function guardarRutina(){
@@ -673,7 +1131,9 @@ function registrarEntrenamiento(){
   const planIdx=mapDia[hoy.getDay()];
   const diaInfo=(state.rutinaActual.dias||[])[planIdx]||(state.rutinaActual.dias||[])[0];
   state.historial.unshift({id:Date.now(),nombre:`${diasSem[hoy.getDay()]} — ${diaInfo?.grupo||'Entrenamiento'}`,tipo:diaInfo?.tipo||'PPL',duracion:diaInfo?.duracion||'60 min',fecha:hoy.toLocaleDateString(),ts:hoy.getTime()});
-  saveState(); renderHistorial(); toast(t('dia-completado'));
+  state.points=(state.points||0)+50;
+  saveState(); renderHistorial(); toast(t('dia-completado')+' +50 pts 🏆');
+  checkPeriodization();
 }
 
 function renderRutinas(){
@@ -736,6 +1196,8 @@ function renderPerfil(){
     const gBtn=document.getElementById('pg-'+p.genero);
     if(gBtn) gBtn.classList.add('sel');
   }
+  const ppts=document.getElementById('profile-pts');
+  if(ppts) ppts.textContent=(state.points||0)+' pts';
 }
 
 function agregarMiVideo(){
@@ -755,19 +1217,384 @@ function renderMisVideos(){
   el.innerHTML=state.misVideos.map((v,i)=>`<div class="my-video-item"><i class="ti ti-brand-youtube" style="font-size:20px;color:#FF0000;flex-shrink:0"></i><div class="my-video-item-info"><div class="my-video-item-name">${v.ejercicio}</div><div class="my-video-item-url">${v.url}</div></div><button class="btn btn-sm btn-danger" onclick="borrarMiVideo(${i})"><i class="ti ti-trash"></i></button></div>`).join('');
 }
 
+
+// ── MOTIVATIONAL QUOTES ────────────────────────────────────────────────────
+const QUOTES = [
+  {q:"El dolor que sientes hoy será la fuerza que sentirás mañana.",a:"Arnold Schwarzenegger"},
+  {q:"No cuentes los días. Haz que los días cuenten.",a:"Muhammad Ali"},
+  {q:"El éxito no es dado. Se gana en la pista, en el gimnasio, con el sudor.",a:"Eminem"},
+  {q:"La disciplina es elegir entre lo que quieres ahora y lo que más quieres.",a:"Abraham Lincoln"},
+  {q:"Tu cuerpo puede aguantar casi cualquier cosa. Es tu mente la que debes convencer.",a:"Anónimo"},
+  {q:"Los campeones no se hacen en los gimnasios. Los campeones se hacen de algo que llevan dentro.",a:"Muhammad Ali"},
+  {q:"Si no te desafías a ti mismo, nunca sabrás tu potencial.",a:"Anónimo"},
+  {q:"El único mal entrenamiento es el que no hiciste.",a:"Anónimo"},
+  {q:"Trabaja duro en silencio. Deja que tu éxito haga el ruido.",a:"Frank Ocean"},
+  {q:"Cada repetición te acerca más a la versión que quieres ser.",a:"JV Training"},
+  {q:"La constancia es el secreto del progreso. No la perfección.",a:"Anónimo"},
+  {q:"Sé el bombero de tu propia vida. Apaga la flojera, enciende el fuego.",a:"JV Training"},
+];
+
+function showDailyMotivation(){
+  const today = new Date().toDateString();
+  if(state.lastMotivation === today) return;
+  const idx = Math.floor(Math.random()*QUOTES.length);
+  const q = QUOTES[idx];
+  document.getElementById('motivation-quote').textContent = '"'+q.q+'"';
+  document.getElementById('motivation-author').textContent = '— '+q.a;
+  document.getElementById('motivation-card').style.display='block';
+  state.lastMotivation = today;
+  saveState();
+}
+
+// ── POINTS SYSTEM ───────────────────────────────────────────────────────────
+function addPoints(pts, reason){
+  state.points = (state.points||0) + pts;
+  saveState();
+  toast('🏆 +'+pts+' puntos — '+reason);
+  updatePointsDisplay();
+}
+function updatePointsDisplay(){
+  const el=document.getElementById('wm-pts-display');
+  if(el) el.textContent=(state.points||0)+' pts';
+}
+
+// ── PERIODIZATION ───────────────────────────────────────────────────────────
+function checkPeriodization(){
+  if(!state.firstPlanDate){
+    state.firstPlanDate = Date.now();
+    saveState();
+    return;
+  }
+  const daysSince = (Date.now()-state.firstPlanDate)/(1000*60*60*24);
+  const banner = document.getElementById('period-banner');
+  if(!banner) return;
+  if(daysSince >= 54 && daysSince < 60){
+    // Warning: 6 days before 2 months
+    banner.classList.add('show');
+    document.getElementById('period-title-text').textContent = '⚡ Cambio de ciclo en '+(60-Math.floor(daysSince))+' días';
+    document.getElementById('period-text').textContent = 'Tu cuerpo ya dominó este ciclo. En unos días generaremos una nueva rutina con mayor intensidad para seguir progresando. ¡Prepárate!';
+  } else if(daysSince >= 60){
+    banner.classList.add('show');
+    document.getElementById('period-title-text').textContent = '🔥 ¡Tu cuerpo necesita un nuevo desafío!';
+    document.getElementById('period-text').textContent = 'Han pasado 2 meses. Tu cuerpo ya se adaptó a este estímulo. Genera una nueva rutina con mayor resistencia para seguir evolucionando.';
+    // Reset date if they generate new plan
+    state.firstPlanDate = null;
+    saveState();
+  }
+}
+
+// ── DAILY REMINDER ──────────────────────────────────────────────────────────
+function requestNotificationPermission(){
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'default'){
+    Notification.requestPermission().then(p=>{
+      if(p==='granted') scheduleReminder();
+    });
+  } else if(Notification.permission==='granted'){
+    scheduleReminder();
+  }
+}
+function scheduleReminder(){
+  if(!('serviceWorker' in navigator)) return;
+  // Store reminder preference
+  state.reminderEnabled = true;
+  saveState();
+  toast('🔔 Recordatorio diario activado');
+}
+function checkDailyReminder(){
+  if(!state.reminderEnabled) return;
+  const now = new Date();
+  const lastReminder = state.lastReminder ? new Date(state.lastReminder) : null;
+  const today = now.toDateString();
+  if(!lastReminder || lastReminder.toDateString() !== today){
+    // Check if it's after 8am
+    if(now.getHours() >= 8 && Notification.permission==='granted'){
+      new Notification('JV Training 💪', {
+        body: '¡Es hora de entrenar! Tu rutina de hoy te espera.',
+        icon: '/manifest.json'
+      });
+      state.lastReminder = now.toISOString();
+      saveState();
+    }
+  }
+}
+
+// ── WORKOUT MODE ────────────────────────────────────────────────────────────
+let wmState = {
+  dias:[], diaIdx:0, exIdx:0, setIdx:0,
+  totalSets:0, doneSets:0,
+  timerInterval:null, timerSeconds:0, timerRunning:false, timerType:'',
+  startTime:null, workoutPesos:{}, totalReps:0
+};
+
+function startWorkout(){
+  if(!state.rutinaActual||!state.rutinaActual.dias) return;
+  const hoy = new Date().getDay();
+  const mapDia={1:0,2:1,3:2,4:3,5:4,6:5,0:0};
+  const diaIdx = mapDia[hoy]||0;
+  wmState = {
+    dias: state.rutinaActual.dias,
+    diaIdx, exIdx:0, setIdx:0,
+    totalSets:0, doneSets:0,
+    timerInterval:null, timerSeconds:0, timerRunning:false, timerType:'',
+    startTime:Date.now(), workoutPesos:{}, totalReps:0
+  };
+  // Calculate total sets
+  const dia = wmState.dias[wmState.diaIdx];
+  if(dia) wmState.totalSets = (dia.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
+  document.getElementById('workout-modal').classList.add('open');
+  document.getElementById('wm-pts-display').textContent=(state.points||0)+' pts';
+  renderWorkoutStep();
+}
+
+function renderWorkoutStep(){
+  const dia = wmState.dias[wmState.diaIdx];
+  if(!dia){ finishWorkout(); return; }
+  document.getElementById('wm-day-title').textContent = dia.dia||'Workout';
+  document.getElementById('wm-day-grupo').textContent = dia.grupo||'';
+  const ejercicios = dia.ejercicios||[];
+  const ex = ejercicios[wmState.exIdx];
+  if(!ex){ finishWorkout(); return; }
+
+  // Progress
+  const progress = wmState.totalSets>0 ? (wmState.doneSets/wmState.totalSets)*100 : 0;
+  document.getElementById('wm-progress-fill').style.width = progress+'%';
+
+  const totalSeries = ex.series||3;
+  const savedPeso = wmState.workoutPesos[ex.nombre] || state.pesos[ex.nombre] || '';
+
+  // Build sets indicators
+  let setsHtml = '';
+  for(let i=0;i<totalSeries;i++){
+    const cls = i<wmState.setIdx?'done':i===wmState.setIdx?'current':'';
+    setsHtml += `<button class="wm-set-btn ${cls}" onclick="jumpToSet(${i})">${i+1}</button>`;
+  }
+
+  // Parse reps
+  const repsStr = ex.reps||'10';
+  const repsNum = parseInt(repsStr.split('-')[0])||10;
+
+  document.getElementById('wm-content').innerHTML = `
+    <div class="wm-ex-name">${ex.nombre}</div>
+    <div class="wm-ex-muscles">${ex.musculos||''}</div>
+    <div style="text-align:center;margin-bottom:12px;font-size:13px;color:var(--text2)">
+      Ejercicio ${wmState.exIdx+1} de ${ejercicios.length} · Serie ${wmState.setIdx+1} de ${totalSeries}
+    </div>
+    <div class="wm-sets">${setsHtml}</div>
+
+    <div class="wm-counter">
+      <div class="wm-reps-display" id="wm-reps-num">${repsNum}</div>
+      <div class="wm-reps-label">REPETICIONES</div>
+      <div class="wm-counter-btns">
+        <button class="wm-count-btn" onclick="changeReps(-1)">−</button>
+        <button class="wm-count-btn" onclick="changeReps(1)">+</button>
+      </div>
+    </div>
+
+    <div class="wm-weight">
+      <label><i class="ti ti-weight" style="vertical-align:-2px"></i> Peso:</label>
+      <input type="number" id="wm-peso-input" placeholder="kg" value="${savedPeso}" min="0" step="0.5">
+      <span style="font-size:13px;color:var(--text2)">kg</span>
+    </div>
+
+    <div id="wm-timer-section" style="display:none">
+      <div class="wm-timer">
+        <div class="wm-timer-display" id="wm-timer-display">0:30</div>
+        <div class="wm-timer-label" id="wm-timer-label">DESCANSO ENTRE SERIES</div>
+        <div class="wm-timer-btns">
+          <button class="btn btn-sm btn-ghost" onclick="toggleTimer()"><i class="ti ti-player-pause" id="wm-pause-icon"></i> <span id="wm-pause-label">Pausar</span></button>
+          <button class="btn btn-sm btn-ghost" onclick="skipTimer()">Saltar <i class="ti ti-forward-skip"></i></button>
+        </div>
+      </div>
+    </div>`;
+
+  // Update nav buttons
+  document.getElementById('wm-prev-btn').style.display = (wmState.exIdx===0&&wmState.setIdx===0)?'none':'flex';
+  const isLast = wmState.exIdx===ejercicios.length-1 && wmState.setIdx===totalSeries-1;
+  document.getElementById('wm-next-btn').textContent = isLast ? '✓ Finalizar' : 'Serie completa →';
+}
+
+function changeReps(delta){
+  const el=document.getElementById('wm-reps-num');
+  if(!el) return;
+  let v=parseInt(el.textContent)||0;
+  v=Math.max(0,v+delta);
+  el.textContent=v;
+  wmState.totalReps+=delta>0?1:0;
+}
+
+function jumpToSet(i){ wmState.setIdx=i; clearWmTimer(); renderWorkoutStep(); }
+
+function wmNext(){
+  // Save peso
+  const pesoEl=document.getElementById('wm-peso-input');
+  const ex=wmState.dias[wmState.diaIdx]?.ejercicios[wmState.exIdx];
+  if(pesoEl&&ex){
+    wmState.workoutPesos[ex.nombre]=pesoEl.value;
+    state.pesos[ex.nombre]=pesoEl.value;
+  }
+  wmState.doneSets++;
+  const totalSeries=ex?.series||3;
+  const ejercicios=wmState.dias[wmState.diaIdx]?.ejercicios||[];
+
+  if(wmState.setIdx < totalSeries-1){
+    wmState.setIdx++;
+    startRestTimer(30,'DESCANSO ENTRE SERIES');
+  } else if(wmState.exIdx < ejercicios.length-1){
+    wmState.exIdx++;
+    wmState.setIdx=0;
+    startRestTimer(60,'DESCANSO ENTRE EJERCICIOS');
+  } else {
+    finishWorkout();
+    return;
+  }
+  renderWorkoutStep();
+}
+
+function wmPrev(){
+  if(wmState.setIdx>0){ wmState.setIdx--; }
+  else if(wmState.exIdx>0){ wmState.exIdx--; const ex=wmState.dias[wmState.diaIdx]?.ejercicios[wmState.exIdx]; wmState.setIdx=(ex?.series||3)-1; }
+  clearWmTimer();
+  renderWorkoutStep();
+}
+
+function startRestTimer(seconds, label){
+  clearWmTimer();
+  wmState.timerSeconds=seconds;
+  wmState.timerRunning=true;
+  wmState.timerType=label;
+  const sec=document.getElementById('wm-timer-section');
+  if(sec) sec.style.display='block';
+  updateTimerDisplay();
+  wmState.timerInterval=setInterval(()=>{
+    if(!wmState.timerRunning) return;
+    wmState.timerSeconds--;
+    updateTimerDisplay();
+    if(wmState.timerSeconds<=0){
+      clearWmTimer();
+      const sec2=document.getElementById('wm-timer-section');
+      if(sec2) sec2.style.display='none';
+      // Vibrate if supported
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const el=document.getElementById('wm-timer-display');
+  const lbl=document.getElementById('wm-timer-label');
+  const pauseEl=document.getElementById('wm-pause-label');
+  if(!el) return;
+  const m=Math.floor(wmState.timerSeconds/60);
+  const s=wmState.timerSeconds%60;
+  el.textContent=m+':'+(s<10?'0':'')+s;
+  el.className='wm-timer-display '+(wmState.timerSeconds>10?'rest':'go');
+  if(lbl) lbl.textContent=wmState.timerType;
+  if(pauseEl) pauseEl.textContent=wmState.timerRunning?'Pausar':'Reanudar';
+}
+
+function toggleTimer(){
+  wmState.timerRunning=!wmState.timerRunning;
+  const icon=document.getElementById('wm-pause-icon');
+  if(icon) icon.className=wmState.timerRunning?'ti ti-player-pause':'ti ti-player-play';
+}
+
+function skipTimer(){
+  clearWmTimer();
+  const sec=document.getElementById('wm-timer-section');
+  if(sec) sec.style.display='none';
+}
+
+function clearWmTimer(){
+  if(wmState.timerInterval){ clearInterval(wmState.timerInterval); wmState.timerInterval=null; }
+  wmState.timerRunning=false; wmState.timerSeconds=0;
+}
+
+function finishWorkout(){
+  clearWmTimer();
+  const duration = Math.round((Date.now()-wmState.startTime)/60000);
+  const dia = wmState.dias[wmState.diaIdx];
+
+  // Save progress
+  const hoy = new Date();
+  state.historial.unshift({
+    id:Date.now(),
+    nombre:`${dia?.dia||'Workout'} — ${dia?.grupo||''}`,
+    tipo:dia?.tipo||'PPL',
+    duracion:duration+' min',
+    fecha:hoy.toLocaleDateString(),
+    ts:hoy.getTime(),
+    pesos:{...wmState.workoutPesos},
+    totalReps:wmState.totalReps
+  });
+
+  // Save pesos permanently
+  Object.assign(state.pesos, wmState.workoutPesos);
+
+  // Add points
+  const pts = 50 + Math.min(duration, 60);
+  state.points = (state.points||0) + pts;
+
+  saveState();
+  renderHistorial();
+  document.getElementById('workout-modal').classList.remove('open');
+  toast('🏆 Workout completado! +'+pts+' puntos · '+duration+' min');
+
+  // Check periodization
+  checkPeriodization();
+}
+
+function closeWorkout(){
+  clearWmTimer();
+  if(confirm('¿Seguro que quieres salir del workout?')){
+    document.getElementById('workout-modal').classList.remove('open');
+  }
+}
+
 // ONBOARDING
 let selectedGender = null;
 function obNext(step){
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('ob-step-'+step).classList.add('active');
-  // Update dots
-  for(let i=0;i<3;i++){
+  // Update dots (now 4 dots: 0,1,2,3)
+  for(let i=0;i<=3;i++){
     const d=document.getElementById('dot-'+i);
+    if(!d) continue;
     if(i<step){ d.className='ob-dot done'; }
     else if(i===step){ d.className='ob-dot active'; }
     else{ d.className='ob-dot'; }
   }
   if(step===1){ setTimeout(()=>{ const n=document.getElementById('ob-nombre'); if(n) n.focus(); },200); }
+  if(step===3){ initTosStep(); }
+}
+
+function initTosStep(){
+  const content = t('tos-body');
+  document.getElementById('tos-content').innerHTML = content;
+  const tosTitle = document.getElementById('tos-title-el');
+  if(tosTitle) tosTitle.textContent = t('tos-title');
+  const tosHint = document.getElementById('tos-scroll-hint-el');
+  if(tosHint) tosHint.textContent = t('tos-scroll-hint');
+  const tosLabel = document.getElementById('tos-accept-label');
+  if(tosLabel) tosLabel.textContent = t('tos-accept-btn');
+  const labels = {
+    es:'He leído y acepto los Términos de Uso y la Política de Privacidad de JV Training',
+    en:'I have read and accept the Terms of Use and Privacy Policy of JV Training',
+    pt:'Li e aceito os Termos de Uso e a Política de Privacidade do JV Training',
+    fr:"J'ai lu et j'accepte les Conditions d'Utilisation et la Politique de Confidentialité de JV Training"
+  };
+  const tosCheckLabel = document.getElementById('tos-check-label');
+  if(tosCheckLabel) tosCheckLabel.textContent = labels[state.lang]||labels.es;
+  const cb = document.getElementById('tos-check');
+  if(cb) cb.checked = false;
+  const btn = document.getElementById('tos-accept-btn');
+  if(btn) btn.disabled = true;
+}
+
+function toggleTosBtn(){
+  const cb = document.getElementById('tos-check');
+  const btn = document.getElementById('tos-accept-btn');
+  if(btn) btn.disabled = !cb?.checked;
 }
 function checkObName(){
   const val=document.getElementById('ob-nombre').value.trim();
@@ -799,17 +1626,45 @@ function finishOnboarding(){
 }
 
 // Init
-setTimeout(()=>{
-  document.getElementById('splash').classList.add('hide');
-  const s=localStorage.getItem(DB_KEY);
-  const saved=s?JSON.parse(s):null;
-  if(!saved||!saved.lang){
+function initApp(){
+  const splash = document.getElementById('splash');
+  splash.classList.add('hide');
+  splash.style.pointerEvents = 'none'; // Immediately stop blocking clicks
+  // Fully remove splash after fade so it can't block clicks
+  setTimeout(()=>{ splash.style.display='none'; }, 600);
+
+  let saved = null;
+  try {
+    const s = localStorage.getItem(DB_KEY);
+    saved = s ? JSON.parse(s) : null;
+  } catch(e) { console.error('localStorage error:', e); }
+
+  if(!saved || !saved.lang){
     document.getElementById('lang-picker').classList.add('show');
   } else if(!saved.onboardingDone){
     document.getElementById('onboarding').classList.add('show');
   }
-},1800);
+}
+setTimeout(initApp, 1800);
 loadState();
+
+// Global error handler - shows errors visually for debugging
+window.onerror = function(msg, src, line, col, err){
+  console.error('Global error:', msg, 'at line', line);
+  // Only show toast for non-network errors to not confuse user
+  if(!msg.includes('fetch') && !msg.includes('network')){
+    const t2=document.getElementById('toast');
+    if(t2){ t2.textContent='⚠️ Error: '+msg.slice(0,60); t2.classList.add('show'); setTimeout(()=>t2.classList.remove('show'),4000); }
+  }
+  return false;
+};
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('/sw.js').catch(()=>{});
+  });
+}
 </script>
 </body>
 </html>
