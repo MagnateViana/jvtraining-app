@@ -198,6 +198,16 @@ textarea{resize:vertical;min-height:72px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 
 /* ── WORKOUT MODE ────────────────────────────────── */
+.wm-ex-map{display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
+.wm-ex-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);transition:all .2s;flex-shrink:0}
+.wm-ex-dot.active{background:var(--red);border-color:var(--red);transform:scale(1.3)}
+.wm-ex-dot.done{background:var(--gold);border-color:var(--gold)}
+.wm-dots-row{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.wm-set-dot{width:14px;height:14px;border-radius:50%;background:var(--bg3);border:2px solid var(--border2);transition:all .2s}
+.wm-set-dot.current{border-color:var(--gold);background:rgba(184,134,11,.2);transform:scale(1.2)}
+.wm-set-dot.done{background:var(--red);border-color:var(--red)}
+.wm-sets-row{margin-bottom:16px}
+
 .workout-modal{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:500;display:none;flex-direction:column;overflow-y:auto}
 .workout-modal.open{display:flex}
 .wm-header{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:0.5px solid var(--border)}
@@ -259,6 +269,7 @@ textarea{resize:vertical;min-height:72px}
 .tos-medical-badge{background:rgba(204,34,0,.12);border:0.5px solid var(--red);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--red);font-weight:600;display:flex;align-items:center;gap:6px}
 .tos-scroll-hint{text-align:center;font-size:11px;color:var(--text3);margin-bottom:10px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
 .tos-accept-btn{width:100%;padding:14px;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
 .tos-accept-btn:disabled{opacity:.4;cursor:not-allowed}
 .tos-checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 0;margin-bottom:4px}
@@ -903,16 +914,33 @@ function toggleVideo(idx, nombre){
 
 async function loadPexelsVideo(idx, nombre){
   try{
-    const resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(nombre)}&lang=${state.lang||'es'}`);
-    const data = await resp.json();
+    // Try with original name first, then fallback to English exercise terms
+    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(nombre)}&lang=en`);
+    let data = await resp.json();
+
+    // If no results, try simpler generic term
+    if(!data.success || !data.videos || data.videos.length===0){
+      const simpleTerms = nombre.toLowerCase()
+        .replace(/press/gi,'press')
+        .replace(/curl/gi,'curl')
+        .replace(/sentadilla|squat/gi,'squat')
+        .replace(/peso muerto|deadlift/gi,'deadlift')
+        .replace(/dominadas|pullup/gi,'pullup')
+        .replace(/fondos|dips/gi,'dips')
+        .replace(/remo|row/gi,'row')
+        .replace(/plancha|plank/gi,'plank')
+        .split(' ').slice(0,2).join(' ');
+      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(simpleTerms+' exercise gym')}&lang=en`);
+      data = await resp.json();
+    }
+
     const sec = document.getElementById('vs-'+idx);
     if(!sec) return;
 
     if(!data.success || !data.videos || data.videos.length===0){
-      // Fallback: show Pexels search link
       const loadingDiv = sec.querySelector('.pexels-loading');
-      if(loadingDiv) loadingDiv.innerHTML=`<span style="font-size:12px;color:var(--text3)">${t('no-video-pexels')||'No encontramos video. Intenta buscar manualmente.'}</span>
-        <a href="https://www.pexels.com/search/videos/${encodeURIComponent(nombre)}/" target="_blank" class="btn btn-ghost" style="margin-top:8px;font-size:12px">🎬 Buscar en Pexels</a>`;
+      if(loadingDiv) loadingDiv.innerHTML=`<span style="font-size:12px;color:var(--text3)">${t('no-video-pexels')||'No encontramos video.'}</span>
+        <a href="https://www.pexels.com/search/videos/${encodeURIComponent(nombre+' exercise')}/" target="_blank" class="btn btn-ghost" style="margin-top:8px;font-size:12px">🎬 Buscar en Pexels</a>`;
       return;
     }
 
@@ -1356,31 +1384,42 @@ function renderWorkoutStep(){
   const ex = ejercicios[wmState.exIdx];
   if(!ex){ finishWorkout(); return; }
 
-  // Progress
+  // Progress bar
   const progress = wmState.totalSets>0 ? (wmState.doneSets/wmState.totalSets)*100 : 0;
   document.getElementById('wm-progress-fill').style.width = progress+'%';
 
   const totalSeries = ex.series||3;
   const savedPeso = wmState.workoutPesos[ex.nombre] || state.pesos[ex.nombre] || '';
-
-  // Build sets indicators
-  let setsHtml = '';
-  for(let i=0;i<totalSeries;i++){
-    const cls = i<wmState.setIdx?'done':i===wmState.setIdx?'current':'';
-    setsHtml += `<button class="wm-set-btn ${cls}" onclick="jumpToSet(${i})">${i+1}</button>`;
-  }
-
-  // Parse reps
   const repsStr = ex.reps||'10';
   const repsNum = parseInt(repsStr.split('-')[0])||10;
 
+  // Dots for sets (cleaner than buttons)
+  let dotsHtml = '';
+  for(let i=0;i<totalSeries;i++){
+    const cls = i<wmState.setIdx?'done':i===wmState.setIdx?'current':'';
+    dotsHtml += `<div class="wm-set-dot ${cls}"></div>`;
+  }
+
+  // Exercise mini-map (show all exercises, highlight current)
+  const exMapHtml = ejercicios.map((e,i)=>`
+    <div class="wm-ex-dot ${i===wmState.exIdx?'active':i<wmState.exIdx?'done':''}"></div>
+  `).join('');
+
   document.getElementById('wm-content').innerHTML = `
-    <div class="wm-ex-name">${ex.nombre}</div>
-    <div class="wm-ex-muscles">${ex.musculos||''}</div>
-    <div style="text-align:center;margin-bottom:12px;font-size:13px;color:var(--text2)">
-      Ejercicio ${wmState.exIdx+1} de ${ejercicios.length} · Serie ${wmState.setIdx+1} de ${totalSeries}
+    <div class="wm-ex-map">${exMapHtml}</div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-bottom:16px">
+      Ejercicio ${wmState.exIdx+1} de ${ejercicios.length}
     </div>
-    <div class="wm-sets">${setsHtml}</div>
+
+    <div class="wm-ex-name">${ex.nombre}</div>
+    <div class="wm-ex-muscles">${ex.musculos||ex.series+' series · '+ex.reps+' reps'}</div>
+
+    <div class="wm-sets-row">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center">
+        Serie ${wmState.setIdx+1} de ${totalSeries}
+      </div>
+      <div class="wm-dots-row">${dotsHtml}</div>
+    </div>
 
     <div class="wm-counter">
       <div class="wm-reps-display" id="wm-reps-num">${repsNum}</div>
@@ -1392,8 +1431,9 @@ function renderWorkoutStep(){
     </div>
 
     <div class="wm-weight">
-      <label><i class="ti ti-weight" style="vertical-align:-2px"></i> Peso:</label>
-      <input type="number" id="wm-peso-input" placeholder="kg" value="${savedPeso}" min="0" step="0.5">
+      <label>🏋️ Peso:</label>
+      <input type="number" id="wm-peso-input" placeholder="kg" value="${savedPeso}" min="0" step="0.5"
+        inputmode="decimal" style="font-size:18px;text-align:center;width:80px">
       <span style="font-size:13px;color:var(--text2)">kg</span>
     </div>
 
@@ -1402,16 +1442,20 @@ function renderWorkoutStep(){
         <div class="wm-timer-display" id="wm-timer-display">0:30</div>
         <div class="wm-timer-label" id="wm-timer-label">DESCANSO ENTRE SERIES</div>
         <div class="wm-timer-btns">
-          <button class="btn btn-sm btn-ghost" onclick="toggleTimer()"><i class="ti ti-player-pause" id="wm-pause-icon"></i> <span id="wm-pause-label">Pausar</span></button>
-          <button class="btn btn-sm btn-ghost" onclick="skipTimer()">Saltar <i class="ti ti-forward-skip"></i></button>
+          <button class="btn btn-sm btn-ghost" onclick="toggleTimer()">
+            <span id="wm-pause-label">⏸ Pausar</span>
+          </button>
+          <button class="btn btn-sm btn-ghost" onclick="skipTimer()">Saltar ⏭</button>
         </div>
       </div>
     </div>`;
 
-  // Update nav buttons
+  // Nav buttons
   document.getElementById('wm-prev-btn').style.display = (wmState.exIdx===0&&wmState.setIdx===0)?'none':'flex';
   const isLast = wmState.exIdx===ejercicios.length-1 && wmState.setIdx===totalSeries-1;
-  document.getElementById('wm-next-btn').textContent = isLast ? '✓ Finalizar' : 'Serie completa →';
+  const nextBtn = document.getElementById('wm-next-btn');
+  nextBtn.textContent = isLast ? '✓ Finalizar' : 'Serie completa →';
+  nextBtn.style.background = isLast ? 'var(--gold)' : '';
 }
 
 function changeReps(delta){
@@ -1437,18 +1481,21 @@ function wmNext(){
   const totalSeries=ex?.series||3;
   const ejercicios=wmState.dias[wmState.diaIdx]?.ejercicios||[];
 
+  let restSecs=0, restLabel='';
   if(wmState.setIdx < totalSeries-1){
     wmState.setIdx++;
-    startRestTimer(30,'DESCANSO ENTRE SERIES');
+    restSecs=30; restLabel='DESCANSO ENTRE SERIES';
   } else if(wmState.exIdx < ejercicios.length-1){
     wmState.exIdx++;
     wmState.setIdx=0;
-    startRestTimer(60,'DESCANSO ENTRE EJERCICIOS');
+    restSecs=60; restLabel='DESCANSO ENTRE EJERCICIOS';
   } else {
     finishWorkout();
     return;
   }
+  // Render first so timer section exists in DOM, then start timer
   renderWorkoutStep();
+  if(restSecs>0) startRestTimer(restSecs, restLabel);
 }
 
 function wmPrev(){
@@ -1463,8 +1510,9 @@ function startRestTimer(seconds, label){
   wmState.timerSeconds=seconds;
   wmState.timerRunning=true;
   wmState.timerType=label;
+  // Show timer - need to re-render first so element exists, then show
   const sec=document.getElementById('wm-timer-section');
-  if(sec) sec.style.display='block';
+  if(sec){ sec.style.display='block'; }
   updateTimerDisplay();
   wmState.timerInterval=setInterval(()=>{
     if(!wmState.timerRunning) return;
@@ -1474,8 +1522,16 @@ function startRestTimer(seconds, label){
       clearWmTimer();
       const sec2=document.getElementById('wm-timer-section');
       if(sec2) sec2.style.display='none';
-      // Vibrate if supported
       if(navigator.vibrate) navigator.vibrate([200,100,200]);
+      // Show "Go!" flash
+      const content=document.getElementById('wm-content');
+      if(content){
+        const flash=document.createElement('div');
+        flash.textContent='¡Vamos! 💪';
+        flash.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;font-weight:900;color:var(--red);z-index:9999;pointer-events:none;animation:fadeOut .8s forwards';
+        document.body.appendChild(flash);
+        setTimeout(()=>flash.remove(),900);
+      }
     }
   },1000);
 }
