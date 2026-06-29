@@ -119,6 +119,25 @@ textarea{resize:vertical;min-height:72px}
 
 /* EXERCISE */
 .ex-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden}
+/* ── EXERCISE CAROUSEL ───────────────────────────────── */
+.ex-carousel{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.ex-card{padding:18px 16px 8px;animation:fadeIn .25s ease}
+.ex-card-num{font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.ex-card-name{font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1.2}
+.ex-card-muscles{font-size:13px;color:var(--text2);margin-bottom:14px}
+.ex-card-stats{display:flex;gap:8px;margin-bottom:12px}
+.ex-stat{flex:1;background:var(--bg3);border-radius:var(--radius-sm);padding:10px 6px;text-align:center}
+.ex-stat-val{font-size:16px;font-weight:800;color:var(--red)}
+.ex-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
+.ex-card-peso{font-size:12px;color:var(--gold);background:rgba(184,134,11,.1);border-radius:var(--radius-sm);padding:6px 10px;margin-bottom:10px}
+.ex-card-video{margin-bottom:12px}
+.ex-video-btn{width:100%;padding:10px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;text-align:center}
+.ex-video-btn:active{background:var(--bg2)}
+.ex-carousel-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 14px;border-top:0.5px solid var(--border)}
+.ex-nav-btn{background:none;border:none;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 8px}
+.ex-carousel-dots{display:flex;gap:6px;align-items:center}
+.ex-cdot{width:7px;height:7px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);cursor:pointer;transition:all .2s}
+.ex-cdot.active{background:var(--red);border-color:var(--red);transform:scale(1.3)}
 .ex-header{display:flex;align-items:center;gap:10px;padding:12px;cursor:pointer}
 .ex-num{width:28px;height:28px;border-radius:50%;background:rgba(204,34,0,.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--red);flex-shrink:0}
 .ex-body{flex:1}
@@ -912,25 +931,44 @@ function toggleVideo(idx, nombre){
   }
 }
 
+// Map Spanish exercise names to English for better Pexels results
+function traducirEjercicio(nombre){
+  const map = {
+    'sentadilla':'squat','sentadillas':'squats','peso muerto':'deadlift',
+    'press banca':'bench press','press de banca':'bench press','press inclinado':'incline press',
+    'press plano':'bench press','press militar':'overhead press','press hombros':'shoulder press',
+    'dominadas':'pull ups','jalón al pecho':'lat pulldown','jalón':'lat pulldown',
+    'remo':'row','remo con barra':'barbell row','remo con mancuerna':'dumbbell row',
+    'curl de bíceps':'bicep curl','curl bíceps':'bicep curl','curl alternado':'alternating curl',
+    'fondos':'dips','extensión de tríceps':'tricep extension','press francés':'skull crusher',
+    'elevaciones laterales':'lateral raises','elevaciones frontales':'front raises',
+    'aperturas':'chest fly','cruces en polea':'cable fly','press en polea':'cable press',
+    'hip thrust':'hip thrust','peso muerto rumano':'romanian deadlift',
+    'prensa':'leg press','extensión de cuádriceps':'leg extension',
+    'curl de isquiotibiales':'leg curl','pantorrillas':'calf raises',
+    'plancha':'plank','abdominales':'crunches','crunch':'crunch',
+    'burpees':'burpees','zancadas':'lunges','estocadas':'lunges'
+  };
+  const lower = nombre.toLowerCase().trim();
+  // Try exact match first
+  if(map[lower]) return map[lower];
+  // Try partial match
+  for(const [es, en] of Object.entries(map)){
+    if(lower.includes(es)) return en;
+  }
+  // Return first 2 words + 'exercise'
+  return lower.split(' ').slice(0,2).join(' ') + ' exercise';
+}
+
 async function loadPexelsVideo(idx, nombre){
   try{
-    // Try with original name first, then fallback to English exercise terms
-    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(nombre)}&lang=en`);
+    const enQuery = traducirEjercicio(nombre);
+    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
     let data = await resp.json();
 
-    // If no results, try simpler generic term
+    // Fallback: just use 'gym workout exercise'
     if(!data.success || !data.videos || data.videos.length===0){
-      const simpleTerms = nombre.toLowerCase()
-        .replace(/press/gi,'press')
-        .replace(/curl/gi,'curl')
-        .replace(/sentadilla|squat/gi,'squat')
-        .replace(/peso muerto|deadlift/gi,'deadlift')
-        .replace(/dominadas|pullup/gi,'pullup')
-        .replace(/fondos|dips/gi,'dips')
-        .replace(/remo|row/gi,'row')
-        .replace(/plancha|plank/gi,'plank')
-        .split(' ').slice(0,2).join(' ');
-      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(simpleTerms+' exercise gym')}&lang=en`);
+      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent('gym workout exercise fitness')}&lang=en`);
       data = await resp.json();
     }
 
@@ -939,8 +977,10 @@ async function loadPexelsVideo(idx, nombre){
 
     if(!data.success || !data.videos || data.videos.length===0){
       const loadingDiv = sec.querySelector('.pexels-loading');
-      if(loadingDiv) loadingDiv.innerHTML=`<span style="font-size:12px;color:var(--text3)">${t('no-video-pexels')||'No encontramos video.'}</span>
-        <a href="https://www.pexels.com/search/videos/${encodeURIComponent(nombre+' exercise')}/" target="_blank" class="btn btn-ghost" style="margin-top:8px;font-size:12px">🎬 Buscar en Pexels</a>`;
+      if(loadingDiv) loadingDiv.innerHTML=`<div style="text-align:center;padding:8px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Video no disponible</div>
+        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(nombre+' ejercicio tutorial')}" target="_blank" style="font-size:12px;color:var(--red)">🎬 Ver en YouTube</a>
+      </div>`;
       return;
     }
 
@@ -1058,25 +1098,67 @@ function savePeso(nombre, idx){
 }
 
 function renderEjercicios(ejercicios, offset=0){
-  return ejercicios.map((e,i)=>{
+  if(!ejercicios||ejercicios.length===0) return '';
+  const uid = 'ec-'+offset;
+  // Build carousel cards
+  const cards = ejercicios.map((e,i)=>{
     const idx=i+offset;
-    const savedPeso=state.pesos[e.nombre];
+    const savedPeso=state.pesos[e.nombre]||'';
     const hasMv=!!getMiVideo(e.nombre);
-    return `<div class="ex-item">
-      <div class="ex-header" onclick="toggleVideo(${idx},'${e.nombre.replace(/'/g,"\\'")}')">
-        <div class="ex-num">${i+1}</div>
-        <div class="ex-body">
-          <div class="ex-name">${e.nombre}${hasMv?' <span style="color:var(--gold);font-size:10px">★</span>':''}</div>
-          <div class="ex-detail">${e.series} series · ${e.reps} reps · ${e.descanso}</div>
-          <div class="ex-detail" style="margin-top:2px;color:var(--text3)">${e.musculos}</div>
-          ${savedPeso?`<div style="font-size:11px;color:var(--gold);margin-top:3px"><i class="ti ti-weight" style="font-size:11px;vertical-align:-1px"></i> ${savedPeso}kg registrado</div>`:''}
-          <div class="ex-hint"><i class="ti ti-player-play" style="font-size:11px"></i>${t('ver-tutorial')}</div>
-        </div>
-        <i class="ti ti-chevron-down ex-chevron" id="chev-${idx}"></i>
+    return `<div class="ex-card" id="excard-${idx}" style="display:${i===0?'block':'none'}">
+      <div class="ex-card-num">${i+1} / ${ejercicios.length}</div>
+      <div class="ex-card-name">${e.nombre}${hasMv?' <span style="color:var(--gold);font-size:12px">★</span>':''}</div>
+      <div class="ex-card-muscles">${e.musculos||''}</div>
+      <div class="ex-card-stats">
+        <div class="ex-stat"><div class="ex-stat-val">${e.series}</div><div class="ex-stat-lbl">Series</div></div>
+        <div class="ex-stat"><div class="ex-stat-val">${e.reps}</div><div class="ex-stat-lbl">Reps</div></div>
+        <div class="ex-stat"><div class="ex-stat-val">${e.descanso}</div><div class="ex-stat-lbl">Descanso</div></div>
       </div>
-      <div class="ex-video" id="vs-${idx}"></div>
+      ${savedPeso?`<div class="ex-card-peso">🏋️ Último peso: <strong>${savedPeso} kg</strong></div>`:''}
+      <div class="ex-card-video" id="vs-${idx}">
+        <button class="ex-video-btn" onclick="loadVideoCard(${idx},'${e.nombre.replace(/'/g,"\\'")}')">
+          ▶ Ver video del ejercicio
+        </button>
+      </div>
     </div>`;
   }).join('');
+
+  return `<div class="ex-carousel" id="${uid}">
+    ${cards}
+    <div class="ex-carousel-nav">
+      <button class="ex-nav-btn" onclick="exCarouselPrev('${uid}',${ejercicios.length},${offset})" id="${uid}-prev" style="opacity:.3;pointer-events:none">‹ Anterior</button>
+      <div class="ex-carousel-dots" id="${uid}-dots">
+        ${ejercicios.map((_,i)=>`<div class="ex-cdot ${i===0?'active':''}" onclick="exCarouselGo('${uid}',${ejercicios.length},${offset},${i})"></div>`).join('')}
+      </div>
+      <button class="ex-nav-btn" onclick="exCarouselNext('${uid}',${ejercicios.length},${offset})" id="${uid}-next" ${ejercicios.length<=1?'style="opacity:.3;pointer-events:none"':''}>Siguiente ›</button>
+    </div>
+  </div>`;
+}
+
+// Carousel state
+const carouselIdx = {};
+
+function exCarouselGo(uid, total, offset, newIdx){
+  const old = carouselIdx[uid]||0;
+  document.getElementById('excard-'+(old+offset)).style.display='none';
+  document.getElementById('excard-'+(newIdx+offset)).style.display='block';
+  carouselIdx[uid]=newIdx;
+  // Update dots
+  document.querySelectorAll('#'+uid+'-dots .ex-cdot').forEach((d,i)=>d.classList.toggle('active',i===newIdx));
+  // Update nav buttons
+  const prev=document.getElementById(uid+'-prev');
+  const next=document.getElementById(uid+'-next');
+  if(prev){prev.style.opacity=newIdx===0?'.3':'1';prev.style.pointerEvents=newIdx===0?'none':'auto';}
+  if(next){next.style.opacity=newIdx===total-1?'.3':'1';next.style.pointerEvents=newIdx===total-1?'none':'auto';}
+}
+function exCarouselNext(uid,total,offset){ exCarouselGo(uid,total,offset,Math.min((carouselIdx[uid]||0)+1,total-1)); }
+function exCarouselPrev(uid,total,offset){ exCarouselGo(uid,total,offset,Math.max((carouselIdx[uid]||0)-1,0)); }
+
+function loadVideoCard(idx, nombre){
+  const sec = document.getElementById('vs-'+idx);
+  if(!sec) return;
+  sec.innerHTML=`<div class="pexels-loading"><div class="spinner"></div><span>Buscando video…</span></div>`;
+  loadPexelsVideo(idx, nombre);
 }
 
 async function generarRutina(){
@@ -1263,14 +1345,16 @@ const QUOTES = [
 ];
 
 function showDailyMotivation(){
-  const today = new Date().toDateString();
-  if(state.lastMotivation === today) return;
-  const idx = Math.floor(Math.random()*QUOTES.length);
+  // Show a different random quote every time the app opens
+  // Track last shown index to avoid repeating
+  const lastIdx = state.lastMotivationIdx || -1;
+  let idx;
+  do { idx = Math.floor(Math.random()*QUOTES.length); } while(idx===lastIdx && QUOTES.length>1);
   const q = QUOTES[idx];
   document.getElementById('motivation-quote').textContent = '"'+q.q+'"';
   document.getElementById('motivation-author').textContent = '— '+q.a;
   document.getElementById('motivation-card').style.display='block';
-  state.lastMotivation = today;
+  state.lastMotivationIdx = idx;
   saveState();
 }
 
