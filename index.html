@@ -264,6 +264,27 @@ textarea{resize:vertical;min-height:72px}
 .rest-day{padding:10px;background:rgba(184,134,11,.08);border:0.5px solid rgba(184,134,11,.3);border-radius:8px;text-align:center;margin-top:8px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 
+/* ── DAY PICKER MODAL ───────────────────────────────── */
+.day-picker-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:600;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)}
+.day-picker-modal.open{display:flex}
+.day-picker-sheet{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 40px;width:100%;max-width:480px;border-top:0.5px solid var(--border2);box-shadow:0 -8px 40px rgba(0,0,0,.6)}
+.day-picker-title{font-size:17px;font-weight:800;margin-bottom:4px}
+.day-picker-sub{font-size:13px;color:var(--text2);margin-bottom:18px}
+.day-picker-list{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto}
+.day-picker-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s}
+.day-picker-item:active{transform:scale(.98)}
+.day-picker-item.today{border-color:var(--red);background:rgba(204,34,0,.08)}
+.day-picker-item.completed{border-color:var(--gold);opacity:.7}
+.day-picker-num{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;color:var(--text2)}
+.day-picker-num.active{background:var(--red);color:#fff}
+.day-picker-num.done{background:rgba(184,134,11,.2);color:var(--gold)}
+.day-picker-info{flex:1}
+.day-picker-name{font-size:14px;font-weight:700}
+.day-picker-grupo{font-size:12px;color:var(--text2);margin-top:1px}
+.day-picker-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px}
+.dpb-push{background:rgba(204,34,0,.15);color:#FF6644}
+.dpb-pull{background:rgba(100,150,255,.12);color:#7BA8FF}
+.dpb-legs{background:rgba(0,200,100,.1);color:#4ade80}
 /* ── PESO MODAL ─────────────────────────────────────── */
 .peso-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
 .peso-modal.open{display:flex}
@@ -627,7 +648,7 @@ textarea{resize:vertical;min-height:72px}
         <div class="divider"></div>
         <div class="tip-box" id="res-consejo"></div>
       </div>
-      <button class="btn btn-primary" onclick="startWorkout()" style="margin-bottom:8px;font-size:16px;padding:15px">
+      <button class="btn btn-primary" onclick="openDayPicker()" style="margin-bottom:8px;font-size:16px;padding:15px">
         ▶ <span data-i18n="iniciar-workout">Iniciar Workout</span>
       </button>
       <button class="btn btn-ghost" onclick="registrarEntrenamiento()" style="margin-bottom:14px">
@@ -768,6 +789,16 @@ textarea{resize:vertical;min-height:72px}
 </div>
 
 
+<!-- DAY PICKER MODAL -->
+<div id="day-picker-modal" class="day-picker-modal" onclick="if(event.target===this)closeDayPicker()">
+  <div class="day-picker-sheet">
+    <div class="day-picker-title">¿Qué día quieres entrenar?</div>
+    <div class="day-picker-sub">Elige el día de tu rutina — no importa qué día es hoy</div>
+    <div class="day-picker-list" id="day-picker-list"></div>
+    <button class="btn btn-ghost" onclick="closeDayPicker()" style="margin-top:14px;width:100%">Cancelar</button>
+  </div>
+</div>
+
 <!-- PESO MODAL -->
 <div id="peso-modal" class="peso-modal">
   <div class="peso-box">
@@ -789,9 +820,10 @@ textarea{resize:vertical;min-height:72px}
 <!-- WORKOUT MODE MODAL -->
 <div id="workout-modal" class="workout-modal">
   <div class="wm-header">
-    <div>
+    <div onclick="openDayPickerInWorkout()" style="cursor:pointer">
       <div class="wm-title" id="wm-day-title">Día 1</div>
       <div style="font-size:12px;color:var(--text2)" id="wm-day-grupo"></div>
+      <div style="font-size:10px;color:var(--red);margin-top:2px">↕ Cambiar día</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="points-badge" id="wm-pts-display">0 pts</div>
@@ -1756,11 +1788,88 @@ let wmState = {
   startTime:null, workoutPesos:{}, totalReps:0
 };
 
-function startWorkout(){
+function openDayPicker(){
   if(!state.rutinaActual||!state.rutinaActual.dias) return;
+  renderDayPickerList(false);
+  document.getElementById('day-picker-modal').classList.add('open');
+}
+
+function openDayPickerInWorkout(){
+  renderDayPickerList(true);
+  document.getElementById('day-picker-modal').classList.add('open');
+}
+
+function closeDayPicker(){
+  document.getElementById('day-picker-modal').classList.remove('open');
+}
+
+function renderDayPickerList(inWorkout){
+  const dias = state.rutinaActual?.dias || [];
   const hoy = new Date().getDay();
-  const mapDia={1:0,2:1,3:2,4:3,5:4,6:5,0:0};
-  const diaIdx = mapDia[hoy]||0;
+  const mapDia = {1:0,2:1,3:2,4:3,5:4,6:5,0:0};
+  const todayIdx = mapDia[hoy];
+
+  // Check which days have been done recently
+  const doneDays = new Set(
+    (state.historial||[])
+      .filter(h => Date.now()-h.ts < 7*24*3600*1000)
+      .map(h => h.nombre?.split('—')[0]?.trim())
+  );
+
+  const list = document.getElementById('day-picker-list');
+  list.innerHTML = dias.map((d, i) => {
+    const tipo = d.tipo || d.grupo || '';
+    const tipoClass = tipo.toLowerCase().includes('push') ? 'dpb-push'
+      : tipo.toLowerCase().includes('pull') ? 'dpb-pull'
+      : tipo.toLowerCase().includes('leg') || tipo.toLowerCase().includes('pier') ? 'dpb-legs'
+      : 'dpb-push';
+    const isToday = i === todayIdx;
+    const isDone = doneDays.has(d.dia);
+    const numClass = isToday ? 'active' : isDone ? 'done' : '';
+    const itemClass = isToday ? 'today' : isDone ? 'completed' : '';
+    const tag = isToday ? '📅 Hoy' : isDone ? '✓ Esta semana' : '';
+
+    return `<div class="day-picker-item ${itemClass}" onclick="selectDay(${i}, ${inWorkout})">
+      <div class="day-picker-num ${numClass}">${i+1}</div>
+      <div class="day-picker-info">
+        <div class="day-picker-name">${d.dia||'Día '+(i+1)}</div>
+        <div class="day-picker-grupo">${d.grupo||''} · ${d.duracion||'50-60 min'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="day-picker-badge ${tipoClass}">${d.tipo||''}</div>
+        ${tag?`<div style="font-size:10px;color:var(--text3)">${tag}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectDay(diaIdx, inWorkout){
+  closeDayPicker();
+  if(inWorkout){
+    // Switch day within active workout
+    clearWmTimer();
+    wmState.diaIdx = diaIdx;
+    wmState.exIdx = 0;
+    wmState.setIdx = 0;
+    wmState.doneSets = 0;
+    const dia = wmState.dias[diaIdx];
+    wmState.totalSets = (dia?.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
+    renderWorkoutStep();
+  } else {
+    startWorkout(diaIdx);
+  }
+}
+
+function startWorkout(forceDiaIdx){
+  if(!state.rutinaActual||!state.rutinaActual.dias) return;
+  let diaIdx;
+  if(forceDiaIdx !== undefined){
+    diaIdx = forceDiaIdx;
+  } else {
+    const hoy = new Date().getDay();
+    const mapDia={1:0,2:1,3:2,4:3,5:4,6:5,0:0};
+    diaIdx = mapDia[hoy]||0;
+  }
   wmState = {
     dias: state.rutinaActual.dias,
     diaIdx, exIdx:0, setIdx:0,
@@ -1768,7 +1877,6 @@ function startWorkout(){
     timerInterval:null, timerSeconds:0, timerRunning:false, timerType:'',
     startTime:Date.now(), workoutPesos:{}, totalReps:0
   };
-  // Calculate total sets
   const dia = wmState.dias[wmState.diaIdx];
   if(dia) wmState.totalSets = (dia.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
   document.getElementById('workout-modal').classList.add('open');
