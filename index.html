@@ -1110,11 +1110,19 @@ function traducirEjercicio(nombre){
 
 async function loadPexelsVideo(idx, nombre){
   try{
+    const genero = state.perfil?.genero || '';
+    const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
     const enQuery = traducirEjercicio(nombre);
-    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
+    const fullQuery = genderTerm ? `${enQuery} ${genderTerm}` : enQuery;
+    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
     let data = await resp.json();
 
-    // Fallback: just use 'gym workout exercise'
+    // Fallback without gender if no results
+    if(!data.success || !data.videos || data.videos.length===0){
+      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
+      data = await resp.json();
+    }
+    // Final fallback
     if(!data.success || !data.videos || data.videos.length===0){
       resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent('gym workout exercise fitness')}&lang=en`);
       data = await resp.json();
@@ -1856,9 +1864,17 @@ async function loadWmVideo(nombre, vidId){
   if(!ph) return;
   ph.innerHTML = `<div class="spinner" style="width:28px;height:28px;border-width:3px"></div>`;
   try{
+    const genero = state.perfil?.genero || '';
+    const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
     const enQuery = traducirEjercicio(nombre);
-    const resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
-    const data = await resp.json();
+    const fullQuery = genderTerm ? `${enQuery} ${genderTerm}` : enQuery;
+    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
+    let data = await resp.json();
+    // Fallback without gender
+    if(!data.success || !data.videos || data.videos.length===0){
+      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
+      data = await resp.json();
+    }
     if(data.success && data.videos && data.videos.length > 0){
       const v = data.videos[0];
       ph.outerHTML = `<video id="${vidId}" src="${v.url}" autoplay muted loop playsinline
@@ -2036,15 +2052,18 @@ function updateTimerDisplay(){
 }
 
 function toggleTimer(){
-  wmState.timerRunning=!wmState.timerRunning;
-  const icon=document.getElementById('wm-pause-icon');
-  if(icon) icon.className=wmState.timerRunning?'ti ti-player-pause':'ti ti-player-play';
+  wmState.timerRunning = !wmState.timerRunning;
+  const lbl = document.getElementById('wm-pause-label');
+  if(lbl) lbl.textContent = wmState.timerRunning ? '⏸ Pausar' : '▶ Reanudar';
 }
 
 function skipTimer(){
   clearWmTimer();
-  const sec=document.getElementById('wm-timer-section');
-  if(sec) sec.style.display='none';
+  // Restore nav buttons and re-render current exercise step
+  const nextBtn = document.getElementById('wm-next-btn');
+  const prevBtn = document.getElementById('wm-prev-btn');
+  if(nextBtn) nextBtn.style.display = 'flex';
+  renderWorkoutStep();
 }
 
 function clearWmTimer(){
