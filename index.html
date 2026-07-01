@@ -277,6 +277,19 @@ textarea{resize:vertical;min-height:72px}
 .peso-box-last{font-size:12px;color:var(--gold);margin-bottom:16px}
 .peso-skip{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px;text-decoration:underline}
 /* ── WORKOUT MODE ────────────────────────────────── */
+.wm-video-section{border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;background:#000;position:relative;max-height:220px}
+.wm-video-section video{width:100%;display:block;max-height:220px;object-fit:cover}
+.wm-video-section iframe{width:100%;height:200px;border:none;display:block}
+.wm-video-placeholder{width:100%;height:160px;background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.wm-video-play-btn{width:52px;height:52px;border-radius:50%;background:rgba(204,34,0,.9);display:flex;align-items:center;justify-content:center;font-size:22px}
+.wm-rest-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;min-height:420px}
+.wm-rest-circle{width:160px;height:160px;border-radius:50%;border:4px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto 20px;position:relative;box-shadow:0 0 30px rgba(184,134,11,.3)}
+.wm-rest-time{font-size:52px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--gold);line-height:1}
+.wm-rest-label{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.wm-rest-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.wm-rest-sub{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:24px}
+.wm-rest-btns{display:flex;gap:10px}
+
 .wm-ex-map{display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
 .wm-ex-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);transition:all .2s;flex-shrink:0}
 .wm-ex-dot.active{background:var(--red);border-color:var(--red);transform:scale(1.3)}
@@ -1769,56 +1782,59 @@ function renderWorkoutStep(){
   document.getElementById('wm-progress-fill').style.width = progress+'%';
 
   const totalSeries = ex.series||3;
-  const savedPeso = wmState.workoutPesos[ex.nombre] || state.pesos[ex.nombre] || '';
   const repsStr = ex.reps||'10';
   const repsNum = parseInt(repsStr.split('-')[0])||10;
+  const savedPeso = state.pesos[ex.nombre] || '';
 
-  // Dots for sets (cleaner than buttons)
+  // Set dots
   let dotsHtml = '';
   for(let i=0;i<totalSeries;i++){
     const cls = i<wmState.setIdx?'done':i===wmState.setIdx?'current':'';
     dotsHtml += `<div class="wm-set-dot ${cls}"></div>`;
   }
 
-  // Exercise mini-map (show all exercises, highlight current)
+  // Exercise mini-map
   const exMapHtml = ejercicios.map((e,i)=>`
     <div class="wm-ex-dot ${i===wmState.exIdx?'active':i<wmState.exIdx?'done':''}"></div>
   `).join('');
 
+  // Video section — load Pexels video
+  const vidId = 'wm-vid-'+wmState.exIdx;
+
   document.getElementById('wm-content').innerHTML = `
-    <div class="wm-ex-map">${exMapHtml}</div>
-    <div style="text-align:center;font-size:11px;color:var(--text3);margin-bottom:16px">
-      Ejercicio ${wmState.exIdx+1} de ${ejercicios.length}
-    </div>
-
-    <div class="wm-ex-name">${ex.nombre}</div>
-    <div class="wm-ex-muscles">${ex.musculos||ex.series+' series · '+ex.reps+' reps'}</div>
-
-    <div class="wm-sets-row">
-      <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center">
-        Serie ${wmState.setIdx+1} de ${totalSeries}
-      </div>
-      <div class="wm-dots-row">${dotsHtml}</div>
-    </div>
-
-    <div class="wm-counter">
-      <div class="wm-reps-display" id="wm-reps-num">${repsNum}</div>
-      <div class="wm-reps-label">REPETICIONES</div>
-      <div class="wm-counter-btns">
-        <button class="wm-count-btn" onclick="changeReps(-1)">−</button>
-        <button class="wm-count-btn" onclick="changeReps(1)">+</button>
+    <!-- VIDEO -->
+    <div class="wm-video-section" id="wm-video-wrap">
+      <div class="wm-video-placeholder" id="${vidId}-ph" onclick="loadWmVideo('${ex.nombre.replace(/'/g,"\'")}','${vidId}')">
+        <div class="wm-video-play-btn">▶</div>
+        <div style="font-size:12px;color:var(--text3)">Ver video del ejercicio</div>
       </div>
     </div>
 
-    <div id="wm-timer-section" style="display:none">
-      <div class="wm-timer">
-        <div class="wm-timer-display" id="wm-timer-display">0:30</div>
-        <div class="wm-timer-label" id="wm-timer-label">DESCANSO ENTRE SERIES</div>
-        <div class="wm-timer-btns">
-          <button class="btn btn-sm btn-ghost" onclick="toggleTimer()">
-            <span id="wm-pause-label">⏸ Pausar</span>
-          </button>
-          <button class="btn btn-sm btn-ghost" onclick="skipTimer()">Saltar ⏭</button>
+    <!-- EXERCISE INFO -->
+    <div style="padding:14px 16px 0">
+      <div class="wm-ex-map" style="margin-bottom:8px">${exMapHtml}</div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:10px">
+        Ejercicio ${wmState.exIdx+1} de ${ejercicios.length}
+      </div>
+      <div class="wm-ex-name">${ex.nombre}</div>
+      <div class="wm-ex-muscles">${ex.musculos||''}</div>
+      ${savedPeso ? `<div style="font-size:12px;color:var(--gold);margin-top:4px">🏋️ Último peso: ${savedPeso} kg</div>` : ''}
+    </div>
+
+    <!-- SET INFO + REPS -->
+    <div style="padding:12px 16px 0">
+      <div class="wm-sets-row">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;text-align:center">
+          Serie <strong style="color:var(--text)">${wmState.setIdx+1}</strong> de ${totalSeries}
+        </div>
+        <div class="wm-dots-row">${dotsHtml}</div>
+      </div>
+      <div class="wm-counter">
+        <div class="wm-reps-display" id="wm-reps-num">${repsNum}</div>
+        <div class="wm-reps-label">REPETICIONES</div>
+        <div class="wm-counter-btns">
+          <button class="wm-count-btn" onclick="changeReps(-1)">−</button>
+          <button class="wm-count-btn" onclick="changeReps(1)">+</button>
         </div>
       </div>
     </div>`;
@@ -1829,6 +1845,32 @@ function renderWorkoutStep(){
   const nextBtn = document.getElementById('wm-next-btn');
   nextBtn.textContent = isLast ? '✓ Finalizar' : 'Serie completa →';
   nextBtn.style.background = isLast ? 'var(--gold)' : '';
+
+  // Auto-load video
+  setTimeout(()=>loadWmVideo(ex.nombre, vidId), 300);
+}
+
+// Load Pexels video inside workout
+async function loadWmVideo(nombre, vidId){
+  const ph = document.getElementById(vidId+'-ph');
+  if(!ph) return;
+  ph.innerHTML = `<div class="spinner" style="width:28px;height:28px;border-width:3px"></div>`;
+  try{
+    const enQuery = traducirEjercicio(nombre);
+    const resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
+    const data = await resp.json();
+    if(data.success && data.videos && data.videos.length > 0){
+      const v = data.videos[0];
+      ph.outerHTML = `<video id="${vidId}" src="${v.url}" autoplay muted loop playsinline
+        style="width:100%;max-height:220px;object-fit:cover;display:block"
+        onclick="this.paused?this.play():this.pause()"></video>`;
+    } else {
+      document.getElementById(vidId+'-ph').innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Sin video disponible</div>`;
+    }
+  } catch(e){
+    const el = document.getElementById(vidId+'-ph');
+    if(el) el.innerHTML = `<div style="font-size:12px;color:var(--text3);padding:20px;text-align:center">Sin video disponible</div>`;
+  }
 }
 
 function changeReps(delta){
@@ -1920,33 +1962,64 @@ function wmPrev(){
 
 function startRestTimer(seconds, label){
   clearWmTimer();
-  wmState.timerSeconds=seconds;
-  wmState.timerRunning=true;
-  wmState.timerType=label;
-  // Show timer - need to re-render first so element exists, then show
-  const sec=document.getElementById('wm-timer-section');
-  if(sec){ sec.style.display='block'; }
-  updateTimerDisplay();
-  wmState.timerInterval=setInterval(()=>{
+  wmState.timerSeconds = seconds;
+  wmState.timerRunning = true;
+  wmState.timerType = label;
+
+  const isBetweenSets = seconds <= 30;
+  const subtitle = isBetweenSets
+    ? 'Respira. La siguiente serie viene ya.'
+    : 'Descansa bien antes del siguiente ejercicio.';
+
+  // Show full rest screen over current content
+  document.getElementById('wm-content').innerHTML = `
+    <div class="wm-rest-screen">
+      <div class="wm-rest-title">${label}</div>
+      <div class="wm-rest-sub">${subtitle}</div>
+      <div class="wm-rest-circle">
+        <div class="wm-rest-time" id="wm-timer-display">0:${seconds<10?'0':''}${seconds}</div>
+        <div class="wm-rest-label">DESCANSO</div>
+      </div>
+      <div class="wm-rest-btns">
+        <button class="btn btn-ghost" onclick="toggleTimer()" style="min-width:110px">
+          <span id="wm-pause-label">⏸ Pausar</span>
+        </button>
+        <button class="btn btn-primary" onclick="skipTimer()" style="min-width:110px">
+          Saltar ⏭
+        </button>
+      </div>
+    </div>`;
+
+  // Hide nav buttons during rest
+  document.getElementById('wm-next-btn').style.display = 'none';
+  document.getElementById('wm-prev-btn').style.display = 'none';
+
+  wmState.timerInterval = setInterval(()=>{
     if(!wmState.timerRunning) return;
     wmState.timerSeconds--;
-    updateTimerDisplay();
-    if(wmState.timerSeconds<=0){
-      clearWmTimer();
-      const sec2=document.getElementById('wm-timer-section');
-      if(sec2) sec2.style.display='none';
-      if(navigator.vibrate) navigator.vibrate([200,100,200]);
-      // Show "Go!" flash
-      const content=document.getElementById('wm-content');
-      if(content){
-        const flash=document.createElement('div');
-        flash.textContent='¡Vamos! 💪';
-        flash.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:48px;font-weight:900;color:var(--red);z-index:9999;pointer-events:none;animation:fadeOut .8s forwards';
-        document.body.appendChild(flash);
-        setTimeout(()=>flash.remove(),900);
+    const el = document.getElementById('wm-timer-display');
+    if(el){
+      const m = Math.floor(wmState.timerSeconds/60);
+      const s = wmState.timerSeconds % 60;
+      el.textContent = m+':'+(s<10?'0':'')+s;
+      el.style.color = wmState.timerSeconds <= 5 ? 'var(--red)' : 'var(--gold)';
+      // Pulse when almost done
+      if(wmState.timerSeconds <= 3){
+        el.style.transform = 'scale(1.15)';
+        setTimeout(()=>{ if(el) el.style.transform='scale(1)'; }, 200);
       }
     }
-  },1000);
+    if(wmState.timerSeconds <= 0){
+      clearWmTimer();
+      if(navigator.vibrate) navigator.vibrate([200,100,200]);
+      // Restore nav and render next step
+      document.getElementById('wm-next-btn').style.display = 'flex';
+      // The callback (renderWorkoutStep) was called before startRestTimer
+      // so we just need to re-show the nav buttons — content is already set
+      // Actually we need to re-render current step after rest
+      renderWorkoutStep();
+    }
+  }, 1000);
 }
 
 function updateTimerDisplay(){
