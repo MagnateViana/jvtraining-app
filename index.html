@@ -286,6 +286,31 @@ textarea{resize:vertical;min-height:72px}
 .rest-day{padding:10px;background:rgba(184,134,11,.08);border:0.5px solid rgba(184,134,11,.3);border-radius:8px;text-align:center;margin-top:8px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 
+/* ── CHECK-IN MODAL ─────────────────────────────────── */
+.checkin-modal{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:700;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(10px)}
+.checkin-modal.open{display:flex}
+.checkin-sheet{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px 44px;width:100%;max-width:480px;border-top:0.5px solid var(--border2);box-shadow:0 -12px 40px rgba(0,0,0,.7)}
+.checkin-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.checkin-sub{font-size:13px;color:var(--text2);margin-bottom:22px;line-height:1.5}
+.checkin-section{margin-bottom:20px}
+.checkin-q{font-size:14px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.checkin-opts{display:flex;gap:8px;flex-wrap:wrap}
+.checkin-opt{padding:9px 16px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;gap:6px}
+.checkin-opt.sel{background:rgba(204,34,0,.15);border-color:var(--red);color:#fff;font-weight:600}
+.checkin-opt.sel-warn{background:rgba(255,165,0,.12);border-color:orange;color:orange;font-weight:600}
+.checkin-opt.sel-stop{background:rgba(255,50,50,.12);border-color:#ff4444;color:#ff4444;font-weight:600}
+.checkin-pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checkin-pain-item{padding:10px 12px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px}
+.checkin-pain-item.sel{background:rgba(255,100,0,.12);border-color:orange;color:orange}
+.checkin-alert{background:rgba(255,50,50,.1);border:0.5px solid #ff4444;border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;display:none}
+.checkin-alert.show{display:block}
+.checkin-alert-title{font-size:14px;font-weight:700;color:#ff4444;margin-bottom:4px}
+.checkin-alert-text{font-size:13px;color:var(--text2);line-height:1.5}
+.checkin-warn{background:rgba(255,165,0,.1);border:0.5px solid orange;border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;display:none}
+.checkin-warn.show{display:block}
+.checkin-warn-title{font-size:14px;font-weight:700;color:orange;margin-bottom:4px}
+.checkin-warn-text{font-size:13px;color:var(--text2);line-height:1.5}
+
 /* ── DAY PICKER MODAL ───────────────────────────────── */
 .day-picker-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:600;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px)}
 .day-picker-modal.open{display:flex}
@@ -883,6 +908,77 @@ textarea{resize:vertical;min-height:72px}
   </div>
 </div>
 
+
+<!-- CHECK-IN MODAL -->
+<div id="checkin-modal" class="checkin-modal" onclick="if(event.target===this)closeCheckin()">
+  <div class="checkin-sheet">
+    <div class="checkin-title">¿Cómo estás hoy? 🔍</div>
+    <div class="checkin-sub">Cuéntanos tu estado para adaptar el workout de hoy</div>
+
+    <!-- Dolor / molestias -->
+    <div class="checkin-section">
+      <div class="checkin-q">🤕 ¿Tienes algún dolor o molestia hoy?</div>
+      <div class="checkin-pain-grid">
+        <button class="checkin-pain-item" data-pain="none" onclick="selectPain(this,'none')">✅ Sin dolor</button>
+        <button class="checkin-pain-item" data-pain="shoulder" onclick="selectPain(this,'shoulder')">💪 Hombro</button>
+        <button class="checkin-pain-item" data-pain="back" onclick="selectPain(this,'back')">🔙 Espalda baja</button>
+        <button class="checkin-pain-item" data-pain="knee" onclick="selectPain(this,'knee')">🦵 Rodilla</button>
+        <button class="checkin-pain-item" data-pain="neck" onclick="selectPain(this,'neck')">🙆 Cuello</button>
+        <button class="checkin-pain-item" data-pain="elbow" onclick="selectPain(this,'elbow')">🦾 Codo</button>
+        <button class="checkin-pain-item" data-pain="hip" onclick="selectPain(this,'hip')">🦴 Cadera</button>
+        <button class="checkin-pain-item" data-pain="wrist" onclick="selectPain(this,'wrist')">🖐 Muñeca</button>
+      </div>
+    </div>
+
+    <!-- Intensidad del dolor -->
+    <div class="checkin-section" id="pain-level-section" style="display:none">
+      <div class="checkin-q">📊 ¿Qué tan fuerte es el dolor?</div>
+      <div class="checkin-opts">
+        <button class="checkin-opt" data-level="mild" onclick="selectPainLevel(this,'mild')">😐 Leve — puedo entrenar</button>
+        <button class="checkin-opt" data-level="moderate" onclick="selectPainLevel(this,'moderate')">😟 Moderado — con cuidado</button>
+        <button class="checkin-opt" data-level="severe" onclick="selectPainLevel(this,'severe')">😣 Fuerte — me preocupa</button>
+      </div>
+    </div>
+
+    <!-- Sueño -->
+    <div class="checkin-section">
+      <div class="checkin-q">😴 ¿Cómo dormiste anoche?</div>
+      <div class="checkin-opts">
+        <button class="checkin-opt" data-sleep="good" onclick="selectSleep(this,'good')">😴 Bien</button>
+        <button class="checkin-opt" data-sleep="ok" onclick="selectSleep(this,'ok')">😐 Regular</button>
+        <button class="checkin-opt" data-sleep="bad" onclick="selectSleep(this,'bad')">😫 Mal</button>
+      </div>
+    </div>
+
+    <!-- Energía -->
+    <div class="checkin-section">
+      <div class="checkin-q">⚡ ¿Cómo está tu energía ahora?</div>
+      <div class="checkin-opts">
+        <button class="checkin-opt" data-energy="high" onclick="selectEnergy(this,'high')">🔥 Alta</button>
+        <button class="checkin-opt" data-energy="normal" onclick="selectEnergy(this,'normal')">💪 Normal</button>
+        <button class="checkin-opt" data-energy="low" onclick="selectEnergy(this,'low')">🪫 Baja</button>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="checkin-alert" id="checkin-alert-stop">
+      <div class="checkin-alert-title">⛔ Recomendamos que descanses hoy</div>
+      <div class="checkin-alert-text" id="checkin-alert-stop-text"></div>
+    </div>
+    <div class="checkin-warn" id="checkin-warn-modify">
+      <div class="checkin-warn-title">⚠️ Workout adaptado por tu dolor</div>
+      <div class="checkin-warn-text" id="checkin-warn-modify-text"></div>
+    </div>
+
+    <!-- Buttons -->
+    <button class="btn btn-primary" id="checkin-confirm-btn" onclick="confirmCheckin()" style="margin-bottom:10px">
+      Empezar workout adaptado →
+    </button>
+    <button class="btn btn-ghost" onclick="closeCheckin()" style="font-size:13px">
+      Cancelar
+    </button>
+  </div>
+</div>
 
 <!-- DAY PICKER MODAL -->
 <div id="day-picker-modal" class="day-picker-modal" onclick="if(event.target===this)closeDayPicker()">
@@ -1537,7 +1633,8 @@ async function generarRutina(){
         notas:state.perfil.notas||'',
         lang:state.lang||'es',
         variante:Math.floor(Math.random()*1000),
-        historial:(state.historial||[]).slice(0,5).map(h=>h.nombre).join(', ')
+        historial:(state.historial||[]).slice(0,5).map(h=>h.nombre).join(', '),
+        checkin: state.lastCheckin || null
       })
     });
     const data=await resp.json();
@@ -1973,6 +2070,122 @@ let wmState = {
   startTime:null, workoutPesos:{}, totalReps:0
 };
 
+// ── CHECK-IN SYSTEM ──────────────────────────────────────────────────────────
+let checkinState = { pain: 'none', painLevel: null, sleep: null, energy: null, pendingDayIdx: null };
+
+function openCheckin(dayIdx){
+  checkinState = { pain:'none', painLevel:null, sleep:null, energy:null, pendingDayIdx:dayIdx };
+  // Reset UI
+  document.querySelectorAll('.checkin-pain-item').forEach(b=>b.classList.remove('sel'));
+  document.querySelector('[data-pain="none"]')?.classList.add('sel');
+  document.querySelectorAll('.checkin-opt').forEach(b=>b.classList.remove('sel','sel-warn','sel-stop'));
+  document.getElementById('pain-level-section').style.display='none';
+  document.getElementById('checkin-alert-stop').classList.remove('show');
+  document.getElementById('checkin-warn-modify').classList.remove('show');
+  const btn = document.getElementById('checkin-confirm-btn');
+  btn.textContent = 'Empezar workout adaptado →';
+  btn.style.background = '';
+  btn.disabled = false;
+  document.getElementById('checkin-modal').classList.add('open');
+}
+
+function closeCheckin(){
+  document.getElementById('checkin-modal').classList.remove('open');
+}
+
+function selectPain(el, pain){
+  document.querySelectorAll('.checkin-pain-item').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  checkinState.pain = pain;
+  checkinState.painLevel = null;
+  const levelSec = document.getElementById('pain-level-section');
+  if(pain === 'none'){
+    levelSec.style.display='none';
+    document.getElementById('checkin-alert-stop').classList.remove('show');
+    document.getElementById('checkin-warn-modify').classList.remove('show');
+    const btn=document.getElementById('checkin-confirm-btn');
+    btn.textContent='Empezar workout adaptado →';
+    btn.style.background='';
+    btn.disabled=false;
+  } else {
+    levelSec.style.display='block';
+  }
+}
+
+function selectPainLevel(el, level){
+  document.querySelectorAll('[data-level]').forEach(b=>b.classList.remove('sel','sel-warn','sel-stop'));
+  checkinState.painLevel = level;
+  el.classList.add(level==='severe'?'sel-stop':level==='moderate'?'sel-warn':'sel');
+
+  const painLabels = {
+    shoulder:'hombro', back:'espalda baja', knee:'rodilla',
+    neck:'cuello', elbow:'codo', hip:'cadera', wrist:'muñeca'
+  };
+  const zona = painLabels[checkinState.pain] || checkinState.pain;
+  const stopAlert = document.getElementById('checkin-alert-stop');
+  const warnAlert = document.getElementById('checkin-warn-modify');
+  const btn = document.getElementById('checkin-confirm-btn');
+
+  if(level === 'severe'){
+    stopAlert.classList.add('show');
+    document.getElementById('checkin-alert-stop-text').textContent =
+      `Tienes dolor fuerte en el ${zona}. Entrenar hoy podría empeorar la lesión. Te recomendamos descansar, aplicar hielo y consultar a un médico si persiste.`;
+    warnAlert.classList.remove('show');
+    btn.textContent = '⛔ Descansar hoy (recomendado)';
+    btn.style.background = '#333';
+    btn.disabled = false;
+  } else if(level === 'moderate'){
+    warnAlert.classList.add('show');
+    document.getElementById('checkin-warn-modify-text').textContent =
+      `Tu rutina de hoy evitará ejercicios que carguen el ${zona}. Entrena con cuidado y para si el dolor aumenta.`;
+    stopAlert.classList.remove('show');
+    btn.textContent = '⚠️ Continuar con cuidado →';
+    btn.style.background = 'rgba(255,140,0,0.8)';
+    btn.disabled = false;
+  } else {
+    warnAlert.classList.add('show');
+    document.getElementById('checkin-warn-modify-text').textContent =
+      `Leve molestia en el ${zona}. Tu rutina evitará ejercicios de alto impacto en esa zona.`;
+    stopAlert.classList.remove('show');
+    btn.textContent = 'Empezar workout adaptado →';
+    btn.style.background = '';
+    btn.disabled = false;
+  }
+}
+
+function selectSleep(el, val){
+  document.querySelectorAll('[data-sleep]').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  checkinState.sleep = val;
+}
+
+function selectEnergy(el, val){
+  document.querySelectorAll('[data-energy]').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  checkinState.energy = val;
+}
+
+function confirmCheckin(){
+  // If severe pain — just close and don't start workout
+  if(checkinState.painLevel === 'severe'){
+    closeCheckin();
+    toast('💤 Descansa hoy. Tu cuerpo te lo agradecerá.');
+    return;
+  }
+  // Store check-in for this session
+  state.lastCheckin = {
+    ts: Date.now(),
+    pain: checkinState.pain,
+    painLevel: checkinState.painLevel,
+    sleep: checkinState.sleep,
+    energy: checkinState.energy
+  };
+  saveState();
+  closeCheckin();
+  // Start workout with the selected day
+  startWorkout(checkinState.pendingDayIdx);
+}
+
 function openDayPicker(){
   if(!state.rutinaActual||!state.rutinaActual.dias) return;
   renderDayPickerList(false);
@@ -2031,7 +2244,6 @@ function renderDayPickerList(inWorkout){
 function selectDay(diaIdx, inWorkout){
   closeDayPicker();
   if(inWorkout){
-    // Switch day within active workout
     clearWmTimer();
     wmState.diaIdx = diaIdx;
     wmState.exIdx = 0;
@@ -2041,7 +2253,8 @@ function selectDay(diaIdx, inWorkout){
     wmState.totalSets = (dia?.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
     renderWorkoutStep();
   } else {
-    startWorkout(diaIdx);
+    // Open check-in before starting
+    openCheckin(diaIdx);
   }
 }
 
