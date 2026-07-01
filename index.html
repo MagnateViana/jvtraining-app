@@ -264,6 +264,18 @@ textarea{resize:vertical;min-height:72px}
 .rest-day{padding:10px;background:rgba(184,134,11,.08);border:0.5px solid rgba(184,134,11,.3);border-radius:8px;text-align:center;margin-top:8px}
 .section-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 
+/* ── PESO MODAL ─────────────────────────────────────── */
+.peso-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
+.peso-modal.open{display:flex}
+.peso-box{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 24px 48px -12px rgba(0,0,0,.8)}
+.peso-box-icon{font-size:36px;margin-bottom:10px}
+.peso-box-title{font-size:18px;font-weight:800;margin-bottom:4px}
+.peso-box-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.4}
+.peso-box-input{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px}
+.peso-box-input button{width:44px;height:44px;border-radius:50%;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text);font-size:22px;cursor:pointer;font-family:inherit}
+.peso-box-input input{width:90px;height:52px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:24px;font-weight:700;text-align:center;font-family:inherit}
+.peso-box-last{font-size:12px;color:var(--gold);margin-bottom:16px}
+.peso-skip{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;font-family:inherit;margin-top:8px;text-decoration:underline}
 /* ── WORKOUT MODE ────────────────────────────────── */
 .wm-ex-map{display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap}
 .wm-ex-dot{width:10px;height:10px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border2);transition:all .2s;flex-shrink:0}
@@ -306,6 +318,30 @@ textarea{resize:vertical;min-height:72px}
 .wm-progress{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:16px;overflow:hidden}
 .wm-progress-fill{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
 
+/* ── PROGRESS CHARTS ─────────────────────────────── */
+.prog-screen{padding:0 16px 100px}
+.prog-filter{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
+.prog-filter::-webkit-scrollbar{display:none}
+.prog-chip{padding:6px 14px;border:0.5px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0}
+.prog-chip.active{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.prog-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:0 8px 20px -8px rgba(0,0,0,.5)}
+.prog-card-header{padding:14px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between}
+.prog-ex-name{font-size:15px;font-weight:700;margin-bottom:2px}
+.prog-ex-stats{font-size:12px;color:var(--text2)}
+.prog-chart-wrap{padding:0 16px 14px;position:relative;height:120px}
+.prog-chart{width:100%;height:100%}
+.prog-max{font-size:11px;color:var(--gold);font-weight:700}
+.prog-change-pos{font-size:12px;color:#4ade80;font-weight:600}
+.prog-change-neg{font-size:12px;color:var(--red);font-weight:600}
+.prog-change-neu{font-size:12px;color:var(--text3);font-weight:600}
+.prog-table{width:100%;border-collapse:collapse;font-size:12px}
+.prog-table th{color:var(--text3);font-weight:600;text-align:left;padding:6px 0;border-bottom:0.5px solid var(--border)}
+.prog-table td{padding:7px 0;border-bottom:0.5px solid rgba(255,255,255,.04);color:var(--text2)}
+.prog-table td:last-child{text-align:right;font-weight:700;color:var(--text)}
+.prog-empty{text-align:center;padding:40px 16px;color:var(--text3);font-size:14px}
+.prog-tabs{display:flex;gap:0;margin-bottom:16px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px}
+.prog-tab{flex:1;padding:8px;border:none;background:transparent;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;border-radius:calc(var(--radius-sm) - 2px);font-family:inherit;transition:all .2s}
+.prog-tab.active{background:var(--bg2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
 /* ── POINTS & LEADERBOARD ────────────────────────── */
 .points-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(184,134,11,.15);border:0.5px solid var(--gold);border-radius:20px;font-size:13px;font-weight:700;color:var(--gold-light);box-shadow:0 2px 8px -2px rgba(184,134,11,.3), 0 1px 0 rgba(255,255,255,.08) inset}
 .lb-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--border)}
@@ -578,8 +614,8 @@ textarea{resize:vertical;min-height:72px}
         <div class="divider"></div>
         <div class="tip-box" id="res-consejo"></div>
       </div>
-      <button class="btn btn-primary" onclick="startWorkout()" style="margin-bottom:8px">
-        <i class="ti ti-player-play"></i><span data-i18n="iniciar-workout">Iniciar Workout</span>
+      <button class="btn btn-primary" onclick="startWorkout()" style="margin-bottom:8px;font-size:16px;padding:15px">
+        ▶ <span data-i18n="iniciar-workout">Iniciar Workout</span>
       </button>
       <button class="btn btn-ghost" onclick="registrarEntrenamiento()" style="margin-bottom:14px">
         <i class="ti ti-check"></i><span data-i18n="completar">Marcar como completado</span>
@@ -600,17 +636,37 @@ textarea{resize:vertical;min-height:72px}
 
   <!-- HISTORIAL -->
   <div id="screen-historial" class="screen">
-    <div style="padding:20px 0 8px">
-      <div style="font-size:22px;font-weight:700" data-i18n="historial">Historial</div>
+    <div class="topbar">
+      <div class="topbar-left">
+        <div style="font-size:22px;font-weight:700">📊 Progreso</div>
+        <div class="topbar-sub">PESOS Y ENTRENAMIENTOS</div>
+      </div>
+      <div class="points-badge" id="hist-pts">0 pts</div>
     </div>
-    <div class="metrics-grid">
-      <div class="metric-box"><div class="metric-val" id="stat-total">0</div><div class="metric-lbl" data-i18n="entrenos">Entrenos</div></div>
-      <div class="metric-box"><div class="metric-val" id="stat-semana">0</div><div class="metric-lbl" data-i18n="esta-semana">Esta semana</div></div>
-      <div class="metric-box"><div class="metric-val" id="stat-racha">0🔥</div><div class="metric-lbl" data-i18n="racha">Racha</div></div>
+    <!-- Stats row -->
+    <div style="padding:0 16px">
+      <div class="metrics-grid" style="margin-bottom:12px">
+        <div class="metric-box"><div class="metric-val" id="stat-total">0</div><div class="metric-lbl" data-i18n="entrenos">Entrenos</div></div>
+        <div class="metric-box"><div class="metric-val" id="stat-semana">0</div><div class="metric-lbl" data-i18n="esta-semana">Esta semana</div></div>
+        <div class="metric-box"><div class="metric-val" id="stat-racha">0🔥</div><div class="metric-lbl" data-i18n="racha">Racha</div></div>
+      </div>
+      <!-- Tabs -->
+      <div class="prog-tabs">
+        <button class="prog-tab active" id="ptab-charts" onclick="switchProgTab('charts')">📈 Gráficas</button>
+        <button class="prog-tab" id="ptab-history" onclick="switchProgTab('history')">🗂 Historial</button>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-label" data-i18n="actividad">Actividad reciente</div>
-      <div id="lista-historial"><div class="empty-state"><i class="ti ti-trophy"></i><p data-i18n="no-historial">Aún no has completado ningún entrenamiento.</p></div></div>
+    <!-- Charts view -->
+    <div id="prog-charts-view" class="prog-screen">
+      <div id="prog-filter-row" class="prog-filter"></div>
+      <div id="prog-charts-content"></div>
+    </div>
+    <!-- History view -->
+    <div id="prog-history-view" style="display:none;padding:0 16px 100px">
+      <div class="card">
+        <div class="card-label" data-i18n="actividad">Actividad reciente</div>
+        <div id="lista-historial"><div class="prog-empty">Aún no has completado ningún entrenamiento.</div></div>
+      </div>
     </div>
   </div>
 
@@ -699,6 +755,24 @@ textarea{resize:vertical;min-height:72px}
 </div>
 
 
+<!-- PESO MODAL -->
+<div id="peso-modal" class="peso-modal">
+  <div class="peso-box">
+    <div class="peso-box-icon">🏋️</div>
+    <div class="peso-box-title" id="pm-ex-name">Ejercicio</div>
+    <div class="peso-box-sub">¿Qué peso usaste en este ejercicio?</div>
+    <div class="peso-box-last" id="pm-last-peso" style="display:none"></div>
+    <div class="peso-box-input">
+      <button onclick="changePesoModal(-2.5)">−</button>
+      <input type="number" id="pm-peso-val" placeholder="kg" min="0" step="0.5" inputmode="decimal">
+      <button onclick="changePesoModal(2.5)">+</button>
+    </div>
+    <button class="btn btn-primary" onclick="confirmPeso()" style="width:100%">✓ Guardar y continuar</button>
+    <br>
+    <button class="peso-skip" onclick="skipPeso()">Saltar sin registrar</button>
+  </div>
+</div>
+
 <!-- WORKOUT MODE MODAL -->
 <div id="workout-modal" class="workout-modal">
   <div class="wm-header">
@@ -732,7 +806,7 @@ textarea{resize:vertical;min-height:72px}
 <script>
 const BACKEND_URL = 'https://charismatic-youthfulness-production-b8ee.up.railway.app';
 const DB_KEY = 'jvtraining_v3';
-let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, lang:'es', points:0, lastMotivation:'', firstPlanDate:null, reminderEnabled:false, lastReminder:null, onboardingDone:false };
+let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, pesoLog:{}, lang:'es', points:0, lastMotivationIdx:-1, firstPlanDate:null, reminderEnabled:false, lastReminder:null, onboardingDone:false };
 
 const T = {
   es:{tagline:'TU ENTRENADOR CON IA',objetivo:'Objetivo',musculo:'Ganar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistencia',equipo:'Equipo disponible',sinequipo:'Sin equipo',nivel:'Nivel',principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado',generar:'Generar rutina con IA',generando:'Espera unos segundos mientras generamos la mejor rutina para ti…',guardar:'Guardar',completar:'Marcar como completado','ejercicios-label':'Ejercicios — toca para ver tutorial','mis-rutinas':'Mis rutinas',historial:'Historial',entrenos:'Entrenos','esta-semana':'Esta semana',racha:'Racha',actividad:'Actividad reciente','no-historial':'Aún no has completado ningún entrenamiento.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'En Safari: Compartir → "Añadir a pantalla de inicio". En Android: menú ⋮ → "Instalar app".','tu-nombre':'Tu nombre','completa-perfil':'Completa tu perfil',nombre:'Nombre','nombre-ph':'Tu nombre completo',edad:'Edad',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Seleccionar…',lesiones:'Lesiones o condiciones','lesiones-ph':'Ej: dolor de rodilla, hernia lumbar…','idioma-label':'Idioma de la app','mis-videos':'Mis videos','mis-videos-desc':'Agrega tus propios links de YouTube para que aparezcan en tus ejercicios.','agregar-video':'Agregar video','ejercicio-nombre':'Ejercicio','ej-nombre-ph':'Ej: Sentadilla, Curl de bíceps…','link-video':'Link YouTube',agregar:'Agregar','guardar-perfil':'Guardar perfil','nav-generar':'Generar','nav-rutinas':'Rutinas','nav-historial':'Historial','nav-perfil':'Perfil','ver-yt':'Ver en YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Guardar','peso-guardado':'✓ Guardado','descanso-dia':'Día 7 — Domingo: Descanso activo','descanso-texto':'Estiramiento, caminata ligera o reposo total','ver-tutorial':'Toca para ver tutorial','mi-video-label':'Tu video personalizado','video-tip':'Observa la técnica antes de empezar.','video-tip2':'Puedes agregar tu video en Perfil → Mis videos.','usar':'Usar','plan-guardado':'✓ Plan semanal guardado','ya-guardado':'Ya está guardado','dia-completado':'🏋️ ¡Día completado!','error-gen':'❌ Error al generar. Verifica tu API key.','video-agregado':'✓ Video agregado','completa-campos':'⚠️ Completa ambos campos','video-eliminado':'Video eliminado','perfil-guardado':'✓ Perfil guardado','genero-label':'Género','lp-title':'Selecciona tu idioma','lp-sub':'Choose your language','ob-welcome-title':'¡Bienvenido a JV Training!','ob-welcome-sub':'Tu entrenador personal con IA. Vamos a personalizar tu experiencia.','ob-start-btn':'Comenzar','ob-name-title':'¿Cómo te llamas?','ob-name-sub':'Tu nombre hará la experiencia más personal.','ob-name-ph':'Tu nombre','ob-continue':'Continuar','ob-gender-title':'¿Cuál es tu género?','ob-gender-sub':'Esto nos permite personalizar mejor tus rutinas.','ob-male':'Hombre','ob-female':'Mujer','ob-other':'Otro','ob-enter':'Entrar a JV Training','buscando-video':'Buscando video…','no-video-pexels':'Sin resultados. Busca en Pexels.','tos-title':'Términos de Uso',
@@ -934,6 +1008,7 @@ function showScreen(id){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+id).classList.add('active');
   ['generar','rutinas','historial','perfil'].forEach((n,i)=>{ if(n===id) document.querySelectorAll('.nav-btn')[i].classList.add('active'); });
+  if(id==='historial'){ renderProgreso(); }
   window.scrollTo(0,0);
 }
 function pickChip(el,gid){ document.getElementById(gid).querySelectorAll('.chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); }
@@ -1323,6 +1398,167 @@ function renderRutinas(){
 function verRutina(i){ state.rutinaActual=state.rutinas[i]; renderResultado(state.rutinaActual); showScreen('generar'); }
 function borrarRutina(i){ if(confirm('?')) { state.rutinas.splice(i,1); saveState(); renderRutinas(); } }
 
+function switchProgTab(tab){
+  document.getElementById('prog-charts-view').style.display = tab==='charts' ? 'block' : 'none';
+  document.getElementById('prog-history-view').style.display = tab==='history' ? 'block' : 'none';
+  document.getElementById('ptab-charts').classList.toggle('active', tab==='charts');
+  document.getElementById('ptab-history').classList.toggle('active', tab==='history');
+  if(tab==='charts') renderProgreso();
+}
+
+function renderProgreso(){
+  const pesoLog = state.pesoLog || {};
+  const exercises = Object.keys(pesoLog).filter(k => pesoLog[k] && pesoLog[k].length > 0);
+  
+  const filterRow = document.getElementById('prog-filter-row');
+  const content = document.getElementById('prog-charts-content');
+  if(!filterRow || !content) return;
+
+  // Update pts badge
+  const histPts = document.getElementById('hist-pts');
+  if(histPts) histPts.textContent = (state.points||0)+' pts';
+
+  if(exercises.length === 0){
+    filterRow.innerHTML = '';
+    content.innerHTML = `<div class="prog-empty">
+      <div style="font-size:48px;margin-bottom:12px">📊</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:6px;color:var(--text)">Sin datos aún</div>
+      <div style="font-size:13px;line-height:1.6">Completa un workout y registra tus pesos para ver tus gráficas de progreso aquí.</div>
+    </div>`;
+    return;
+  }
+
+  // Filter chips
+  filterRow.innerHTML = exercises.map((ex,i) =>
+    `<button class="prog-chip ${i===0?'active':''}" onclick="filterProgEx(this,'${ex.replace(/'/g,"\'")}')">${ex}</button>`
+  ).join('');
+
+  // Render all exercise cards
+  content.innerHTML = exercises.map(ex => buildExChart(ex, pesoLog[ex])).join('');
+
+  // Draw all SVG charts
+  exercises.forEach(ex => drawChart(ex, pesoLog[ex]));
+}
+
+function filterProgEx(btn, exName){
+  document.querySelectorAll('.prog-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  // Scroll to that card
+  const card = document.getElementById('prog-card-'+CSS.escape(exName));
+  if(card) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function buildExChart(exName, logs){
+  const sorted = [...logs].sort((a,b) => a.ts-b.ts);
+  const max = Math.max(...sorted.map(l=>l.kg));
+  const min = Math.min(...sorted.map(l=>l.kg));
+  const last = sorted[sorted.length-1]?.kg;
+  const prev = sorted[sorted.length-2]?.kg;
+  const change = prev ? last - prev : 0;
+  const changeHtml = change > 0
+    ? `<span class="prog-change-pos">↑ +${change.toFixed(1)}kg</span>`
+    : change < 0
+    ? `<span class="prog-change-neg">↓ ${change.toFixed(1)}kg</span>`
+    : `<span class="prog-change-neu">→ Sin cambio</span>`;
+
+  const rows = sorted.slice(-8).reverse().map(l =>
+    `<tr><td>${l.fecha}</td><td>${l.kg} kg</td></tr>`
+  ).join('');
+
+  const safeId = exName.replace(/[^a-zA-Z0-9]/g, '_');
+
+  return `<div class="prog-card" id="prog-card-${CSS.escape(exName)}">
+    <div class="prog-card-header">
+      <div>
+        <div class="prog-ex-name">${exName}</div>
+        <div class="prog-ex-stats">${logs.length} registros · Máx: <span class="prog-max">${max}kg</span></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:22px;font-weight:800;color:var(--text)">${last}kg</div>
+        ${changeHtml}
+      </div>
+    </div>
+    <div class="prog-chart-wrap">
+      <svg class="prog-chart" id="chart-${safeId}" viewBox="0 0 300 100" preserveAspectRatio="none"></svg>
+    </div>
+    <div style="padding:0 16px 14px">
+      <table class="prog-table">
+        <tr><th>Fecha</th><th style="text-align:right">Peso</th></tr>
+        ${rows}
+      </table>
+    </div>
+  </div>`;
+}
+
+function drawChart(exName, logs){
+  const safeId = exName.replace(/[^a-zA-Z0-9]/g, '_');
+  const svg = document.getElementById('chart-'+safeId);
+  if(!svg) return;
+
+  const sorted = [...logs].sort((a,b) => a.ts-b.ts).slice(-20);
+  if(sorted.length < 1){ svg.innerHTML = ''; return; }
+  if(sorted.length === 1){
+    svg.innerHTML = `<circle cx="150" cy="50" r="4" fill="#CC2200"/>`;
+    return;
+  }
+
+  const vals = sorted.map(l => l.kg);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+  const W = 300, H = 100, pad = 10;
+
+  const pts = sorted.map((l,i) => {
+    const x = pad + (i / (sorted.length-1)) * (W - pad*2);
+    const y = H - pad - ((l.kg - minV) / range) * (H - pad*2);
+    return [x, y];
+  });
+
+  // Area fill
+  const areaPath = `M${pts[0][0]},${H-pad} ` +
+    pts.map(p => `L${p[0]},${p[1]}`).join(' ') +
+    ` L${pts[pts.length-1][0]},${H-pad} Z`;
+
+  // Line
+  const linePath = `M${pts[0][0]},${pts[0][1]} ` +
+    pts.slice(1).map(p => `L${p[0]},${p[1]}`).join(' ');
+
+  // Dot labels on first, last, and max
+  const maxIdx = vals.indexOf(Math.max(...vals));
+  const dotLabels = [0, sorted.length-1, maxIdx].filter((v,i,a)=>a.indexOf(v)===i).map(i => {
+    const [x, y] = pts[i];
+    const isTop = y < 20;
+    return `<circle cx="${x}" cy="${y}" r="3.5" fill="#CC2200" stroke="#0a0a0a" stroke-width="1.5"/>
+      <text x="${x}" y="${isTop ? y+14 : y-7}" text-anchor="middle" fill="#F0C040" font-size="9" font-weight="700">${vals[i]}kg</text>`;
+  }).join('');
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="grad-${safeId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#CC2200" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#CC2200" stop-opacity="0.02"/>
+      </linearGradient>
+    </defs>
+    <!-- Grid lines -->
+    <line x1="${pad}" y1="${pad}" x2="${W-pad}" y2="${pad}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+    <line x1="${pad}" y1="${H/2}" x2="${W-pad}" y2="${H/2}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+    <line x1="${pad}" y1="${H-pad}" x2="${W-pad}" y2="${H-pad}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+    <!-- Area -->
+    <path d="${areaPath}" fill="url(#grad-${safeId})"/>
+    <!-- Line -->
+    <path d="${linePath}" stroke="#CC2200" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Dots & labels -->
+    ${dotLabels}
+    <!-- Min/max labels on axis -->
+    <text x="${pad+2}" y="${H-pad-2}" fill="rgba(255,255,255,.3)" font-size="8">${minV}kg</text>
+    <text x="${pad+2}" y="${pad+9}" fill="rgba(255,255,255,.3)" font-size="8">${maxV}kg</text>
+  `;
+}
+
+function renderProgreso_onSwitch(){
+  renderProgreso();
+}
+
 function renderHistorial(){
   const total=state.historial.length;
   const ahora=Date.now();
@@ -1574,13 +1810,6 @@ function renderWorkoutStep(){
       </div>
     </div>
 
-    <div class="wm-weight">
-      <label>🏋️ Peso:</label>
-      <input type="number" id="wm-peso-input" placeholder="kg" value="${savedPeso}" min="0" step="0.5"
-        inputmode="decimal" style="font-size:18px;text-align:center;width:80px">
-      <span style="font-size:13px;color:var(--text2)">kg</span>
-    </div>
-
     <div id="wm-timer-section" style="display:none">
       <div class="wm-timer">
         <div class="wm-timer-display" id="wm-timer-display">0:30</div>
@@ -1614,32 +1843,72 @@ function changeReps(delta){
 function jumpToSet(i){ wmState.setIdx=i; clearWmTimer(); renderWorkoutStep(); }
 
 function wmNext(){
-  // Save peso
-  const pesoEl=document.getElementById('wm-peso-input');
   const ex=wmState.dias[wmState.diaIdx]?.ejercicios[wmState.exIdx];
-  if(pesoEl&&ex){
-    wmState.workoutPesos[ex.nombre]=pesoEl.value;
-    state.pesos[ex.nombre]=pesoEl.value;
-  }
   wmState.doneSets++;
   const totalSeries=ex?.series||3;
   const ejercicios=wmState.dias[wmState.diaIdx]?.ejercicios||[];
 
-  let restSecs=0, restLabel='';
   if(wmState.setIdx < totalSeries-1){
+    // More sets to do — just go to next set with rest timer
     wmState.setIdx++;
-    restSecs=30; restLabel='DESCANSO ENTRE SERIES';
-  } else if(wmState.exIdx < ejercicios.length-1){
-    wmState.exIdx++;
-    wmState.setIdx=0;
-    restSecs=60; restLabel='DESCANSO ENTRE EJERCICIOS';
+    renderWorkoutStep();
+    startRestTimer(30,'DESCANSO ENTRE SERIES');
   } else {
-    finishWorkout();
-    return;
+    // Last set of this exercise — ask for weight before moving on
+    showPesoModal(ex, ()=>{
+      if(wmState.exIdx < ejercicios.length-1){
+        wmState.exIdx++;
+        wmState.setIdx=0;
+        renderWorkoutStep();
+        startRestTimer(60,'DESCANSO ENTRE EJERCICIOS');
+      } else {
+        finishWorkout();
+      }
+    });
   }
-  // Render first so timer section exists in DOM, then start timer
-  renderWorkoutStep();
-  if(restSecs>0) startRestTimer(restSecs, restLabel);
+}
+
+// Peso modal logic
+let pesoModalCallback = null;
+function showPesoModal(ex, callback){
+  if(!ex){ callback(); return; }
+  pesoModalCallback = callback;
+  document.getElementById('pm-ex-name').textContent = ex.nombre;
+  const last = state.pesos[ex.nombre] || wmState.workoutPesos[ex.nombre];
+  const lastEl = document.getElementById('pm-last-peso');
+  if(last){ lastEl.textContent = '↑ Última vez: '+last+' kg'; lastEl.style.display='block'; }
+  else { lastEl.style.display='none'; }
+  const input = document.getElementById('pm-peso-val');
+  input.value = last || '';
+  document.getElementById('peso-modal').classList.add('open');
+  setTimeout(()=>input.focus(),300);
+}
+function changePesoModal(delta){
+  const input = document.getElementById('pm-peso-val');
+  const val = parseFloat(input.value)||0;
+  input.value = Math.max(0, val+delta).toFixed(1);
+}
+function confirmPeso(){
+  const exName = document.getElementById('pm-ex-name').textContent;
+  const val = document.getElementById('pm-peso-val').value;
+  if(val && exName){
+    const kg = parseFloat(val);
+    wmState.workoutPesos[exName] = val;
+    state.pesos[exName] = val;
+    // Save to pesoLog for progress charts
+    if(!state.pesoLog[exName]) state.pesoLog[exName] = [];
+    state.pesoLog[exName].push({ ts: Date.now(), kg, fecha: new Date().toLocaleDateString() });
+    // Keep last 50 entries per exercise
+    if(state.pesoLog[exName].length > 50) state.pesoLog[exName].shift();
+    saveState();
+    renderProgreso(); // refresh charts if visible
+  }
+  document.getElementById('peso-modal').classList.remove('open');
+  if(pesoModalCallback){ pesoModalCallback(); pesoModalCallback=null; }
+}
+function skipPeso(){
+  document.getElementById('peso-modal').classList.remove('open');
+  if(pesoModalCallback){ pesoModalCallback(); pesoModalCallback=null; }
 }
 
 function wmPrev(){
