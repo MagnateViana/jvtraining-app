@@ -697,30 +697,98 @@ textarea{resize:vertical;min-height:72px}
 
     <div id="gen-loading" style="display:none" class="card">
       <div class="loading-box">
-        <div style="width:80px;height:80px;margin:0 auto 12px;position:relative">
-          <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-            <style>
-              .db-spin{transform-origin:50px 30px;animation:dbRotate 1.2s linear infinite}
-              .db-pulse{animation:dbPulse 1.2s ease-in-out infinite}
-              @keyframes dbRotate{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-              @keyframes dbPulse{0%,100%{opacity:0.5}50%{opacity:1}}
-            </style>
-            <g class="db-spin">
-              <!-- bar -->
-              <rect x="18" y="27" width="64" height="6" rx="3" fill="#555"/>
-              <rect x="20" y="28" width="60" height="4" rx="2" fill="#888"/>
-              <!-- left plates -->
-              <rect x="10" y="18" width="12" height="24" rx="3" fill="#CC2200"/>
-              <rect x="14" y="20" width="4" height="20" rx="2" fill="#880000"/>
-              <rect x="22" y="20" width="8" height="20" rx="2" fill="#333"/>
-              <!-- right plates -->
-              <rect x="78" y="18" width="12" height="24" rx="3" fill="#CC2200"/>
-              <rect x="78" y="20" width="4" height="20" rx="2" fill="#880000"/>
-              <rect x="70" y="20" width="8" height="20" rx="2" fill="#333"/>
-              <!-- gold collars -->
-              <rect x="30" y="21" width="5" height="18" rx="2" fill="#B8860B"/>
-              <rect x="65" y="21" width="5" height="18" rx="2" fill="#B8860B"/>
+        <div style="width:180px;height:130px;margin:0 auto 16px;position:relative">
+          <svg viewBox="0 0 180 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <defs>
+              <style>
+                .bp-arms{transform-origin:90px 55px;animation:bp-press 1.4s ease-in-out infinite}
+                .bp-bar{transform-origin:90px 38px;animation:bp-press 1.4s ease-in-out infinite}
+                .bp-chest{animation:bp-breathe 1.4s ease-in-out infinite}
+                .bp-glow{animation:bp-glow-pulse 1.4s ease-in-out infinite}
+                @keyframes bp-press{
+                  0%,100%{transform:translateY(0px)}
+                  40%{transform:translateY(-14px)}
+                  60%{transform:translateY(-14px)}
+                }
+                @keyframes bp-breathe{
+                  0%,100%{transform:scaleY(1)}
+                  40%,60%{transform:scaleY(0.93)}
+                }
+                @keyframes bp-glow-pulse{
+                  0%,100%{opacity:.3}
+                  40%,60%{opacity:.7}
+                }
+              </style>
+              <!-- Red glow filter -->
+              <filter id="red-glow">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <!-- Bench -->
+            <rect x="28" y="88" width="124" height="10" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+            <rect x="38" y="96" width="10" height="22" rx="3" fill="#222"/>
+            <rect x="132" y="96" width="10" height="22" rx="3" fill="#222"/>
+            <rect x="35" y="116" width="16" height="4" rx="2" fill="#1a1a1a"/>
+            <rect x="129" y="116" width="16" height="4" rx="2" fill="#1a1a1a"/>
+
+            <!-- Person body (lying down) -->
+            <!-- Legs -->
+            <rect x="30" y="80" width="28" height="10" rx="5" fill="#444"/>
+            <!-- Torso -->
+            <g class="bp-chest">
+              <rect x="56" y="72" width="52" height="18" rx="6" fill="#555"/>
+              <rect x="60" y="75" width="44" height="12" rx="4" fill="#666"/>
             </g>
+            <!-- Head -->
+            <circle cx="128" cy="80" r="12" fill="#c8a882"/>
+            <circle cx="128" cy="78" r="9" fill="#d4aa88"/>
+            <!-- Hair -->
+            <ellipse cx="128" cy="69" rx="9" ry="5" fill="#4a3728"/>
+
+            <!-- Arms pushing up -->
+            <g class="bp-arms">
+              <!-- Left arm -->
+              <line x1="62" y1="76" x2="60" y2="52" stroke="#c8a882" stroke-width="7" stroke-linecap="round"/>
+              <!-- Right arm -->
+              <line x1="98" y1="76" x2="120" y2="52" stroke="#c8a882" stroke-width="7" stroke-linecap="round"/>
+              <!-- Hands grip -->
+              <circle cx="60" cy="52" r="5" fill="#c8a882"/>
+              <circle cx="120" cy="52" r="5" fill="#c8a882"/>
+            </g>
+
+            <!-- Barbell (moves with arms) -->
+            <g class="bp-bar">
+              <!-- Bar -->
+              <rect x="32" y="35" width="116" height="7" rx="3.5" fill="#666"/>
+              <rect x="34" y="36" width="112" height="5" rx="2.5" fill="#888"/>
+              <!-- Left plates -->
+              <rect x="24" y="22" width="12" height="33" rx="3" fill="#CC2200"/>
+              <rect x="26" y="24" width="4" height="29" rx="2" fill="#991500"/>
+              <rect x="36" y="26" width="7" height="25" rx="2" fill="#333"/>
+              <!-- Right plates -->
+              <rect x="144" y="22" width="12" height="33" rx="3" fill="#CC2200"/>
+              <rect x="148" y="24" width="4" height="29" rx="2" fill="#991500"/>
+              <rect x="137" y="26" width="7" height="25" rx="2" fill="#333"/>
+              <!-- Gold collars -->
+              <rect x="43" y="27" width="6" height="23" rx="2" fill="#B8860B"/>
+              <rect x="131" y="27" width="6" height="23" rx="2" fill="#B8860B"/>
+            </g>
+
+            <!-- Glow under bar when pressed up -->
+            <ellipse class="bp-glow" cx="90" cy="38" rx="50" ry="6" fill="#CC2200" filter="url(#red-glow)"/>
+
+            <!-- Loading dots -->
+            <circle cx="78" cy="122" r="3" fill="#CC2200" opacity="1">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="90" cy="122" r="3" fill="#CC2200" opacity="0.5">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0.4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="102" cy="122" r="3" fill="#CC2200" opacity="0.2">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0.8s" repeatCount="indefinite"/>
+            </circle>
           </svg>
         </div>
         <span data-i18n="generando" style="font-size:14px;color:#888;line-height:1.6;display:block">Espera unos segundos mientras generamos la mejor rutina para ti…</span>
@@ -1316,7 +1384,7 @@ function toggleVideo(idx, nombre){
 }
 
 // Map Spanish exercise names to English for better Pexels results
-function traducirEjercicio(nombre){
+function traducirEjercicio(nombre, sinEquipo=false){
   // Always append 'gym' to force fitness context and avoid ambiguous results
   const GYM = ' gym weightlifting';
 
@@ -1398,16 +1466,20 @@ function traducirEjercicio(nombre){
     if(lower.includes(k)) return map[k];
   }
 
-  // Fallback: clean name + gym context
-  return lower.split(' ').slice(0,3).join(' ') + ' exercise gym weightlifting';
+  // Fallback: clean name + context
+  const ctx = sinEquipo ? 'bodyweight no equipment exercise' : 'exercise gym weightlifting';
+  return lower.split(' ').slice(0,3).join(' ') + ' ' + ctx;
 }
 
 async function loadPexelsVideo(idx, nombre){
   try{
     const genero = state.perfil?.genero || '';
     const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
-    const enQuery = traducirEjercicio(nombre);
-    const fullQuery = genderTerm ? `${enQuery} ${genderTerm}` : enQuery;
+    const equipCtx = (state.rutinaActual?.equipo||'').toLowerCase();
+    const sinEquipo = equipCtx.includes('sin equipo')||equipCtx.includes('no equipment')||equipCtx.includes('bodyweight')||equipCtx==='';
+    const enQuery = traducirEjercicio(nombre, sinEquipo);
+    const equipTerm = sinEquipo ? 'bodyweight no equipment home' : 'gym weightlifting';
+    const fullQuery = [enQuery, genderTerm, equipTerm].filter(Boolean).join(' ');
     let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
     let data = await resp.json();
 
@@ -2389,8 +2461,11 @@ async function loadWmVideo(nombre, vidId){
   try{
     const genero = state.perfil?.genero || '';
     const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
-    const enQuery = traducirEjercicio(nombre);
-    const fullQuery = genderTerm ? `${enQuery} ${genderTerm}` : enQuery;
+    const equipCtx = (state.rutinaActual?.equipo||'').toLowerCase();
+    const sinEquipo = equipCtx.includes('sin equipo')||equipCtx.includes('no equipment')||equipCtx.includes('bodyweight')||equipCtx==='';
+    const enQuery = traducirEjercicio(nombre, sinEquipo);
+    const equipTerm = sinEquipo ? 'bodyweight no equipment home' : 'gym weightlifting';
+    const fullQuery = [enQuery, genderTerm, equipTerm].filter(Boolean).join(' ');
 
     let videos = [];
 
