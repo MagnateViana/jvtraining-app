@@ -1953,6 +1953,9 @@ function startWorkout(forceDiaIdx){
   if(dia) wmState.totalSets = (dia.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
   document.getElementById('workout-modal').classList.add('open');
   document.getElementById('wm-pts-display').textContent=(state.points||0)+' pts';
+  // Clear video cache and used IDs for new workout session
+  window._wmVideoCache = {};
+  usedVideoIds.clear();
   renderWorkoutStep();
 }
 
@@ -2039,7 +2042,21 @@ function renderWorkoutStep(){
 }
 
 // Load Pexels video inside workout
+// Track used video IDs per workout session to avoid repeats
+const usedVideoIds = new Set();
+
 async function loadWmVideo(nombre, vidId){
+  // Check session cache first
+  const cacheKey = 'wvid_'+nombre.replace(/\s+/g,'_');
+  if(window._wmVideoCache && window._wmVideoCache[cacheKey]){
+    const cached = window._wmVideoCache[cacheKey];
+    const ph = document.getElementById(vidId+'-ph');
+    if(ph) ph.outerHTML = `<video src="${cached}" autoplay muted loop playsinline
+      style="width:100%;max-height:220px;object-fit:cover;display:block"
+      onclick="this.paused?this.play():this.pause()"></video>`;
+    return;
+  }
+
   const ph = document.getElementById(vidId+'-ph');
   if(!ph) return;
   ph.innerHTML = `<div class="spinner" style="width:28px;height:28px;border-width:3px"></div>`;
@@ -2048,20 +2065,46 @@ async function loadWmVideo(nombre, vidId){
     const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
     const enQuery = traducirEjercicio(nombre);
     const fullQuery = genderTerm ? `${enQuery} ${genderTerm}` : enQuery;
+
+    let videos = [];
+
+    // Try with gender first
     let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
     let data = await resp.json();
+    if(data.success && data.videos?.length) videos = data.videos;
+
     // Fallback without gender
-    if(!data.success || !data.videos || data.videos.length===0){
+    if(!videos.length){
       resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
       data = await resp.json();
+      if(data.success && data.videos?.length) videos = data.videos;
     }
-    if(data.success && data.videos && data.videos.length > 0){
-      const v = data.videos[0];
-      ph.outerHTML = `<video id="${vidId}" src="${v.url}" autoplay muted loop playsinline
+
+    // Final fallback with muscle group
+    if(!videos.length){
+      const muscleQuery = enQuery.split(' ').slice(-1)[0] + ' workout gym';
+      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(muscleQuery)}&lang=en`);
+      data = await resp.json();
+      if(data.success && data.videos?.length) videos = data.videos;
+    }
+
+    if(videos.length){
+      // Pick a video not already used this session
+      let picked = videos.find(v => !usedVideoIds.has(v.id));
+      if(!picked) picked = videos[Math.floor(Math.random()*videos.length)]; // all used, pick random
+      usedVideoIds.add(picked.id);
+
+      // Cache for this exercise
+      if(!window._wmVideoCache) window._wmVideoCache = {};
+      window._wmVideoCache[cacheKey] = picked.url;
+
+      const el = document.getElementById(vidId+'-ph') || document.querySelector(`[id="${vidId}-ph"]`);
+      if(el) el.outerHTML = `<video src="${picked.url}" autoplay muted loop playsinline
         style="width:100%;max-height:220px;object-fit:cover;display:block"
         onclick="this.paused?this.play():this.pause()"></video>`;
     } else {
-      document.getElementById(vidId+'-ph').innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Sin video disponible</div>`;
+      const el = document.getElementById(vidId+'-ph');
+      if(el) el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Sin video disponible</div>`;
     }
   } catch(e){
     const el = document.getElementById(vidId+'-ph');
