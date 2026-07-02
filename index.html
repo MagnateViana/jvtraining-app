@@ -1466,19 +1466,38 @@ function traducirEjercicio(nombre, sinEquipo=false){
     if(lower.includes(k)) return map[k];
   }
 
-  // Fallback: clean name + context
-  const ctx = sinEquipo ? 'bodyweight no equipment exercise' : 'exercise gym weightlifting';
-  return lower.split(' ').slice(0,3).join(' ') + ' ' + ctx;
+  // Bodyweight-specific mappings
+  if(sinEquipo){
+    const bwMap = {
+      'flexiones':'push ups bodyweight','flexion':'push ups bodyweight',
+      'sentadilla':'bodyweight squat','sentadillas':'bodyweight squat',
+      'zancadas':'lunges bodyweight','estocadas':'lunges bodyweight',
+      'fondos':'chair dips no equipment','fondos en silla':'chair dips no equipment',
+      'plancha':'plank bodyweight','abdominales':'crunches bodyweight',
+      'burpees':'burpees bodyweight','mountain climbers':'mountain climbers bodyweight',
+      'saltos':'jump squats bodyweight','remo':'bodyweight row table',
+      'dominadas':'pull ups bar bodyweight','superman':'superman exercise floor',
+      'puente de gluteos':'glute bridge floor','hip thrust':'glute bridge floor',
+      'elevacion de cadera':'glute bridge floor','jumping jacks':'jumping jacks',
+      'sentadilla sumo':'sumo squat bodyweight','pistol squat':'pistol squat bodyweight',
+    };
+    for(const [es, en] of Object.entries(bwMap)){
+      if(lower.includes(es)) return en;
+    }
+    return lower.split(' ').slice(0,3).join(' ') + ' bodyweight calisthenics no equipment';
+  }
+  // Fallback with gym context
+  return lower.split(' ').slice(0,3).join(' ') + ' exercise gym weightlifting';
 }
 
 async function loadPexelsVideo(idx, nombre){
   try{
     const genero = state.perfil?.genero || '';
     const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
-    const equipCtx = (state.rutinaActual?.equipo||'').toLowerCase();
-    const sinEquipo = equipCtx.includes('sin equipo')||equipCtx.includes('no equipment')||equipCtx.includes('bodyweight')||equipCtx==='';
+    const equipRaw = (state.rutinaActual?.equipo||'').toLowerCase();
+    const sinEquipo = equipRaw===''||equipRaw.includes('sin equipo')||equipRaw.includes('no equipment')||equipRaw.includes('sans équip')||equipRaw.includes('sem equip')||equipRaw.includes('bodyweight');
     const enQuery = traducirEjercicio(nombre, sinEquipo);
-    const equipTerm = sinEquipo ? 'bodyweight no equipment home' : 'gym weightlifting';
+    const equipTerm = sinEquipo ? 'bodyweight calisthenics no equipment home workout' : 'gym weightlifting barbell';
     const fullQuery = [enQuery, genderTerm, equipTerm].filter(Boolean).join(' ');
     let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
     let data = await resp.json();
@@ -2461,10 +2480,10 @@ async function loadWmVideo(nombre, vidId){
   try{
     const genero = state.perfil?.genero || '';
     const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
-    const equipCtx = (state.rutinaActual?.equipo||'').toLowerCase();
-    const sinEquipo = equipCtx.includes('sin equipo')||equipCtx.includes('no equipment')||equipCtx.includes('bodyweight')||equipCtx==='';
+    const equipRaw = (state.rutinaActual?.equipo||'').toLowerCase();
+    const sinEquipo = equipRaw===''||equipRaw.includes('sin equipo')||equipRaw.includes('no equipment')||equipRaw.includes('sans équip')||equipRaw.includes('sem equip')||equipRaw.includes('bodyweight');
     const enQuery = traducirEjercicio(nombre, sinEquipo);
-    const equipTerm = sinEquipo ? 'bodyweight no equipment home' : 'gym weightlifting';
+    const equipTerm = sinEquipo ? 'bodyweight calisthenics no equipment home workout' : 'gym weightlifting barbell';
     const fullQuery = [enQuery, genderTerm, equipTerm].filter(Boolean).join(' ');
 
     let videos = [];
