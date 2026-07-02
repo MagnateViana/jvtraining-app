@@ -399,6 +399,10 @@ textarea{resize:vertical;min-height:72px}
 .wm-progress{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:16px;overflow:hidden}
 .wm-progress-fill{height:100%;background:var(--red);border-radius:2px;transition:width .3s}
 
+/* ── UNIT TOGGLE ─────────────────────────────────── */
+.unit-toggle{display:flex;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;gap:0}
+.unit-btn{flex:1;padding:8px;border:none;background:transparent;color:var(--text3);font-size:14px;font-weight:600;cursor:pointer;border-radius:calc(var(--radius-sm) - 2px);font-family:inherit;transition:all .2s}
+.unit-btn.active{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(204,34,0,.4)}
 /* ── PROGRESS CHARTS ─────────────────────────────── */
 .prog-screen{padding:0 16px 100px}
 .prog-filter{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none}
@@ -697,81 +701,99 @@ textarea{resize:vertical;min-height:72px}
 
     <div id="gen-loading" style="display:none" class="card">
       <div class="loading-box">
-        <div style="width:200px;height:160px;margin:0 auto 16px;position:relative">
-          <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <div style="width:180px;height:180px;margin:0 auto 16px">
+          <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
             <defs>
               <style>
-                .lift{animation:lift 1.6s ease-in-out infinite}
-                @keyframes lift{0%,100%{transform:translateY(0)}35%,65%{transform:translateY(-18px)}}
+                .db-float{animation:db-float 1.6s ease-in-out infinite}
+                .db-shadow{animation:db-shadow 1.6s ease-in-out infinite}
+                @keyframes db-float{
+                  0%,100%{transform:translateY(0px)}
+                  50%{transform:translateY(-12px)}
+                }
+                @keyframes db-shadow{
+                  0%,100%{transform:scaleX(1);opacity:.25}
+                  50%{transform:scaleX(.7);opacity:.12}
+                }
               </style>
-              <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="4" result="b"/>
+              <linearGradient id="plate-g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2a2a2a"/>
+                <stop offset="40%" stop-color="#1a1a1a"/>
+                <stop offset="100%" stop-color="#111"/>
+              </linearGradient>
+              <linearGradient id="bar-g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#555"/>
+                <stop offset="50%" stop-color="#333"/>
+                <stop offset="100%" stop-color="#222"/>
+              </linearGradient>
+              <linearGradient id="ring-g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#888"/>
+                <stop offset="100%" stop-color="#444"/>
+              </linearGradient>
+              <filter id="db-glow">
+                <feGaussianBlur stdDeviation="3" result="b"/>
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
             </defs>
 
-            <!-- BENCH -->
-            <rect x="36" y="98" width="128" height="14" rx="7" fill="#2e2e2e"/>
-            <rect x="38" y="99" width="124" height="8" rx="5" fill="#3a3a3a"/>
-            <rect x="46" y="112" width="8" height="28" rx="4" fill="#252525"/>
-            <rect x="146" y="112" width="8" height="28" rx="4" fill="#252525"/>
-            <rect x="42" y="136" width="16" height="5" rx="2.5" fill="#1e1e1e"/>
-            <rect x="142" y="136" width="16" height="5" rx="2.5" fill="#1e1e1e"/>
+            <!-- Shadow on floor -->
+            <ellipse class="db-shadow" cx="90" cy="162" rx="52" ry="7" fill="#000"/>
 
-            <!-- HEAD -->
-            <circle cx="152" cy="84" r="12" fill="#2a2a2a" stroke="#555" stroke-width="1.5"/>
-            <circle cx="149" cy="82" r="1.5" fill="#777"/>
-            <circle cx="155" cy="82" r="1.5" fill="#777"/>
-            <path d="M149 87 Q152 89 155 87" stroke="#777" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <!-- Dumbbell floating -->
+            <g class="db-float">
 
-            <!-- TORSO -->
-            <rect x="80" y="80" width="62" height="20" rx="8" fill="#1e1e1e" stroke="#444" stroke-width="1.5"/>
-            <line x1="111" y1="83" x2="111" y2="97" stroke="#333" stroke-width="1"/>
+              <!-- LEFT SIDE -->
+              <!-- Outer plate -->
+              <rect x="14" y="62" width="22" height="56" rx="6" fill="url(#plate-g)" stroke="#333" stroke-width="1"/>
+              <!-- Plate shine -->
+              <rect x="16" y="65" width="6" height="50" rx="3" fill="rgba(255,255,255,.04)"/>
+              <!-- Inner plate -->
+              <rect x="36" y="68" width="14" height="44" rx="4" fill="url(#plate-g)" stroke="#2a2a2a" stroke-width="1"/>
+              <!-- Collar -->
+              <rect x="50" y="72" width="8" height="36" rx="3" fill="url(#ring-g)"/>
+              <!-- Collar shine -->
+              <rect x="51" y="73" width="3" height="34" rx="1.5" fill="rgba(255,255,255,.15)"/>
 
-            <!-- LEGS bent -->
-            <line x1="88" y1="99" x2="68" y2="114" stroke="#1e1e1e" stroke-width="10" stroke-linecap="round"/>
-            <line x1="68" y1="114" x2="54" y2="102" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
-            <line x1="96" y1="99" x2="78" y2="114" stroke="#1e1e1e" stroke-width="10" stroke-linecap="round"/>
-            <line x1="78" y1="114" x2="64" y2="102" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
-            <ellipse cx="51" cy="101" rx="6" ry="5" fill="#252525" stroke="#444" stroke-width="1"/>
-            <ellipse cx="61" cy="101" rx="6" ry="5" fill="#252525" stroke="#444" stroke-width="1"/>
+              <!-- BAR -->
+              <rect x="58" y="82" width="64" height="16" rx="8" fill="url(#bar-g)" stroke="#444" stroke-width="1"/>
+              <!-- Bar shine top -->
+              <rect x="62" y="83" width="56" height="4" rx="2" fill="rgba(255,255,255,.08)"/>
+              <!-- Bar grip texture -->
+              <line x1="70" y1="83" x2="70" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
+              <line x1="78" y1="83" x2="78" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
+              <line x1="86" y1="83" x2="86" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
+              <line x1="94" y1="83" x2="94" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
+              <line x1="102" y1="83" x2="102" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
+              <line x1="110" y1="83" x2="110" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1.5"/>
 
-            <!-- ARMS + BAR animated -->
-            <g class="lift">
-              <!-- Left arm up -->
-              <line x1="86" y1="88" x2="72" y2="66" stroke="#1e1e1e" stroke-width="9" stroke-linecap="round"/>
-              <line x1="72" y1="66" x2="70" y2="46" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
-              <!-- Right arm up -->
-              <line x1="118" y1="88" x2="128" y2="66" stroke="#1e1e1e" stroke-width="9" stroke-linecap="round"/>
-              <line x1="128" y1="66" x2="130" y2="46" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
+              <!-- RIGHT SIDE (mirror) -->
+              <!-- Collar -->
+              <rect x="122" y="72" width="8" height="36" rx="3" fill="url(#ring-g)"/>
+              <rect x="124" y="73" width="3" height="34" rx="1.5" fill="rgba(255,255,255,.15)"/>
+              <!-- Inner plate -->
+              <rect x="130" y="68" width="14" height="44" rx="4" fill="url(#plate-g)" stroke="#2a2a2a" stroke-width="1"/>
+              <!-- Outer plate -->
+              <rect x="144" y="62" width="22" height="56" rx="6" fill="url(#plate-g)" stroke="#333" stroke-width="1"/>
+              <rect x="158" y="65" width="6" height="50" rx="3" fill="rgba(255,255,255,.04)"/>
 
-              <!-- BARBELL -->
-              <!-- Left plate -->
-              <rect x="16" y="26" width="13" height="42" rx="4" fill="#CC2200"/>
-              <rect x="18" y="28" width="5" height="38" rx="2" fill="#991500"/>
-              <rect x="29" y="31" width="9" height="32" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-              <rect x="38" y="32" width="7" height="30" rx="3" fill="#B8860B"/>
-              <!-- Bar -->
-              <rect x="45" y="39" width="110" height="9" rx="4.5" fill="#555"/>
-              <rect x="47" y="40" width="106" height="6" rx="3" fill="#777"/>
-              <rect x="52" y="41" width="92" height="2" rx="1" fill="rgba(255,255,255,.08)"/>
-              <!-- Right plate -->
-              <rect x="155" y="32" width="7" height="30" rx="3" fill="#B8860B"/>
-              <rect x="162" y="31" width="9" height="32" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-              <rect x="171" y="26" width="13" height="42" rx="4" fill="#CC2200"/>
-              <rect x="177" y="28" width="5" height="38" rx="2" fill="#991500"/>
-              <!-- Glow -->
-              <rect x="45" y="39" width="110" height="9" rx="4.5" fill="#CC2200" opacity="0.18" filter="url(#glow-r)"/>
+              <!-- 50kg label on left plate -->
+              <rect x="17" y="84" width="16" height="12" rx="2" fill="rgba(0,0,0,.5)"/>
+              <text x="25" y="93" text-anchor="middle" fill="#CC2200" font-size="6.5" font-weight="800" font-family="Arial,sans-serif">50kg</text>
+
+              <!-- Red accent stripe on plates -->
+              <rect x="14" y="86" width="3" height="8" rx="1" fill="#CC2200" opacity=".8"/>
+              <rect x="163" y="86" width="3" height="8" rx="1" fill="#CC2200" opacity=".8"/>
+
             </g>
 
-            <!-- DOTS -->
-            <circle cx="88" cy="153" r="4" fill="#CC2200">
+            <!-- Loading dots -->
+            <circle cx="78" cy="172" r="3.5" fill="#CC2200">
               <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="100" cy="153" r="4" fill="#CC2200">
+            <circle cx="90" cy="172" r="3.5" fill="#CC2200">
               <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0.3s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="112" cy="153" r="4" fill="#CC2200">
+            <circle cx="102" cy="172" r="3.5" fill="#CC2200">
               <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0.6s" repeatCount="indefinite"/>
             </circle>
           </svg>
@@ -935,6 +957,17 @@ textarea{resize:vertical;min-height:72px}
         </div>
         <div class="points-badge" id="profile-pts">0 pts</div>
       </div>
+
+      <!-- Unit selector -->
+      <div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px">
+        <div style="font-size:14px;font-weight:500;margin-bottom:2px">Unidad de peso</div>
+        <div style="font-size:11px;color:var(--text2);margin-bottom:10px">Se aplica en todos los registros</div>
+        <div class="unit-toggle">
+          <button class="unit-btn" id="unit-btn-kg" onclick="setUnidad('kg')">⚖️ Kilogramos (kg)</button>
+          <button class="unit-btn" id="unit-btn-lb" onclick="setUnidad('lb')">🏋️ Libras (lb)</button>
+        </div>
+      </div>
+
       <div class="form-row">
         <label data-i18n="idioma-label">Idioma de la app</label>
         <select id="p-lang" onchange="setLang(this.value)">
@@ -1048,11 +1081,11 @@ textarea{resize:vertical;min-height:72px}
   <div class="peso-box">
     <div class="peso-box-icon">🏋️</div>
     <div class="peso-box-title" id="pm-ex-name">Ejercicio</div>
-    <div class="peso-box-sub">¿Qué peso usaste en este ejercicio?</div>
+    <div class="peso-box-sub">¿Qué peso usaste? <span id="pm-unit-label" style="color:var(--gold-light);font-weight:700">kg</span></div>
     <div class="peso-box-last" id="pm-last-peso" style="display:none"></div>
     <div class="peso-box-input">
       <button onclick="changePesoModal(-2.5)">−</button>
-      <input type="number" id="pm-peso-val" placeholder="kg" min="0" step="0.5" inputmode="decimal">
+      <input type="number" id="pm-peso-val" placeholder="0" min="0" step="0.5" inputmode="decimal">
       <button onclick="changePesoModal(2.5)">+</button>
     </div>
     <button class="btn btn-primary" onclick="confirmPeso()" style="width:100%">✓ Guardar y continuar</button>
@@ -1108,7 +1141,7 @@ textarea{resize:vertical;min-height:72px}
 <script>
 const BACKEND_URL = 'https://charismatic-youthfulness-production-b8ee.up.railway.app';
 const DB_KEY = 'jvtraining_v3';
-let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, pesoLog:{}, lang:'es', points:0, lastMotivationIdx:-1, firstPlanDate:null, reminderEnabled:false, lastReminder:null, onboardingDone:false };
+let state = { rutinas:[], historial:[], perfil:{}, misVideos:[], pesos:{}, pesoLog:{}, lang:'es', points:0, lastMotivationIdx:-1, firstPlanDate:null, reminderEnabled:false, lastReminder:null, onboardingDone:false, unidad:'kg' };
 
 const T = {
   es:{tagline:'TU ENTRENADOR CON IA',objetivo:'Objetivo',musculo:'Ganar músculo',bajar:'Perder peso',tonificar:'Tonificar',resistencia:'Resistencia',equipo:'Equipo disponible',sinequipo:'Sin equipo',nivel:'Nivel',principiante:'Principiante',intermedio:'Intermedio',avanzado:'Avanzado',generar:'Generar rutina con IA',generando:'Espera unos segundos mientras generamos la mejor rutina para ti…',guardar:'Guardar',completar:'Marcar como completado','ejercicios-label':'Ejercicios — toca para ver tutorial','mis-rutinas':'Mis rutinas',historial:'Historial',entrenos:'Entrenos','esta-semana':'Esta semana',racha:'Racha',actividad:'Actividad reciente','no-historial':'Aún no has completado ningún entrenamiento.',perfil:'Perfil','instalar-titulo':'Instalar como app','instalar-texto':'En Safari: Compartir → "Añadir a pantalla de inicio". En Android: menú ⋮ → "Instalar app".','tu-nombre':'Tu nombre','completa-perfil':'Completa tu perfil',nombre:'Nombre','nombre-ph':'Tu nombre completo',edad:'Edad',peso:'Peso (kg)','objetivo-principal':'Objetivo principal',seleccionar:'Seleccionar…',lesiones:'Lesiones o condiciones','lesiones-ph':'Ej: dolor de rodilla, hernia lumbar…','idioma-label':'Idioma de la app','mis-videos':'Mis videos','mis-videos-desc':'Agrega tus propios links de YouTube para que aparezcan en tus ejercicios.','agregar-video':'Agregar video','ejercicio-nombre':'Ejercicio','ej-nombre-ph':'Ej: Sentadilla, Curl de bíceps…','link-video':'Link YouTube',agregar:'Agregar','guardar-perfil':'Guardar perfil','nav-generar':'Generar','nav-rutinas':'Rutinas','nav-historial':'Historial','nav-perfil':'Perfil','ver-yt':'Ver en YouTube','peso-label':'Peso usado:','peso-ph':'kg','guardar-peso':'Guardar','peso-guardado':'✓ Guardado','descanso-dia':'Día 7 — Domingo: Descanso activo','descanso-texto':'Estiramiento, caminata ligera o reposo total','ver-tutorial':'Toca para ver tutorial','mi-video-label':'Tu video personalizado','video-tip':'Observa la técnica antes de empezar.','video-tip2':'Puedes agregar tu video en Perfil → Mis videos.','usar':'Usar','plan-guardado':'✓ Plan semanal guardado','ya-guardado':'Ya está guardado','dia-completado':'🏋️ ¡Día completado!','error-gen':'❌ Error al generar. Verifica tu API key.','video-agregado':'✓ Video agregado','completa-campos':'⚠️ Completa ambos campos','video-eliminado':'Video eliminado','perfil-guardado':'✓ Perfil guardado','genero-label':'Género','lp-title':'Selecciona tu idioma','lp-sub':'Choose your language','ob-welcome-title':'¡Bienvenido a JV Training!','ob-welcome-sub':'Tu entrenador personal con IA. Vamos a personalizar tu experiencia.','ob-start-btn':'Comenzar','ob-name-title':'¿Cómo te llamas?','ob-name-sub':'Tu nombre hará la experiencia más personal.','ob-name-ph':'Tu nombre','ob-continue':'Continuar','ob-gender-title':'¿Cuál es tu género?','ob-gender-sub':'Esto nos permite personalizar mejor tus rutinas.','ob-male':'Hombre','ob-female':'Mujer','ob-other':'Otro','ob-enter':'Entrar a JV Training','buscando-video':'Buscando video…','no-video-pexels':'Sin resultados. Busca en Pexels.','tos-title':'Términos de Uso',
@@ -1295,6 +1328,7 @@ function loadState(){
   try{ renderHistorial(); }catch(e){ console.error('renderHistorial error:',e); }
   try{ renderMisVideos(); }catch(e){ console.error('renderMisVideos error:',e); }
   updatePointsDisplay();
+  updateUnidadUI();
   setTimeout(()=>{
     try{ showDailyMotivation(); }catch(e){ console.error('motivation error:',e); }
     try{ checkPeriodization(); }catch(e){ console.error('periodization error:',e); }
@@ -1870,7 +1904,7 @@ function buildExChart(exName, logs){
     : `<span class="prog-change-neu">→ Sin cambio</span>`;
 
   const rows = sorted.slice(-8).reverse().map(l =>
-    `<tr><td>${l.fecha}</td><td>${l.kg} kg</td></tr>`
+    `<tr><td>${l.fecha}</td><td>${formatPeso(l.kg)}</td></tr>`
   ).join('');
 
   const safeId = exName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -1882,7 +1916,7 @@ function buildExChart(exName, logs){
         <div class="prog-ex-stats">${logs.length} registros · Máx: <span class="prog-max">${max}kg</span></div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:22px;font-weight:800;color:var(--text)">${last}kg</div>
+        <div style="font-size:22px;font-weight:800;color:var(--text)">${formatPeso(last)}</div>
         ${changeHtml}
       </div>
     </div>
@@ -2012,6 +2046,7 @@ function renderPerfil(){
   }
   const ppts=document.getElementById('profile-pts');
   if(ppts) ppts.textContent=(state.points||0)+' pts';
+  updateUnidadUI();
 }
 
 function agregarMiVideo(){
@@ -2074,6 +2109,50 @@ function closeMotivsplash(){
 }
 
 // ── POINTS SYSTEM ───────────────────────────────────────────────────────────
+// ── UNIT SYSTEM ──────────────────────────────────────────────────────────────
+function setUnidad(u){
+  state.unidad = u;
+  saveState();
+  updateUnidadUI();
+  toast(u === 'kg' ? '✅ Unidad: Kilogramos (kg)' : '✅ Unidad: Libras (lb)');
+}
+
+function updateUnidadUI(){
+  const u = state.unidad || 'kg';
+  document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('unit-btn-'+u);
+  if(btn) btn.classList.add('active');
+  // Update all peso labels in the app
+  document.querySelectorAll('.peso-unit-label').forEach(el => el.textContent = u);
+}
+
+function getUnidad(){ return state.unidad || 'kg'; }
+
+// Convert weight for display
+function formatPeso(kg){
+  if(!kg) return '';
+  if(getUnidad() === 'lb'){
+    return (parseFloat(kg) * 2.20462).toFixed(1) + ' lb';
+  }
+  return kg + ' kg';
+}
+
+// Convert input value to kg for storage (always store in kg)
+function inputToKg(val){
+  if(!val) return '';
+  const num = parseFloat(val);
+  if(isNaN(num)) return '';
+  if(getUnidad() === 'lb') return (num / 2.20462).toFixed(2);
+  return String(num);
+}
+
+// Convert kg to display unit for input fields
+function kgToInput(kg){
+  if(!kg) return '';
+  if(getUnidad() === 'lb') return (parseFloat(kg) * 2.20462).toFixed(1);
+  return kg;
+}
+
 function addPoints(pts, reason){
   state.points = (state.points||0) + pts;
   saveState();
@@ -2568,34 +2647,48 @@ function showPesoModal(ex, callback){
   if(!ex){ callback(); return; }
   pesoModalCallback = callback;
   document.getElementById('pm-ex-name').textContent = ex.nombre;
+  const u = getUnidad();
+  // Update unit label
+  const unitLbl = document.getElementById('pm-unit-label');
+  if(unitLbl) unitLbl.textContent = u;
   const last = state.pesos[ex.nombre] || wmState.workoutPesos[ex.nombre];
   const lastEl = document.getElementById('pm-last-peso');
-  if(last){ lastEl.textContent = '↑ Última vez: '+last+' kg'; lastEl.style.display='block'; }
-  else { lastEl.style.display='none'; }
+  if(last){
+    lastEl.textContent = '↑ Última vez: ' + formatPeso(last);
+    lastEl.style.display = 'block';
+  } else {
+    lastEl.style.display = 'none';
+  }
   const input = document.getElementById('pm-peso-val');
-  input.value = last || '';
+  input.value = last ? kgToInput(last) : '';
+  input.placeholder = u === 'lb' ? 'lb' : 'kg';
   document.getElementById('peso-modal').classList.add('open');
-  setTimeout(()=>input.focus(),300);
+  setTimeout(()=>input.focus(), 300);
 }
 function changePesoModal(delta){
   const input = document.getElementById('pm-peso-val');
+  const step = getUnidad() === 'lb' ? 2.5 : 1.25;
   const val = parseFloat(input.value)||0;
-  input.value = Math.max(0, val+delta).toFixed(1);
+  input.value = Math.max(0, val + delta * (step/1.25)).toFixed(1);
 }
 function confirmPeso(){
   const exName = document.getElementById('pm-ex-name').textContent;
   const val = document.getElementById('pm-peso-val').value;
   if(val && exName){
-    const kg = parseFloat(val);
-    wmState.workoutPesos[exName] = val;
-    state.pesos[exName] = val;
-    // Save to pesoLog for progress charts
+    const kgVal = inputToKg(val); // always store in kg
+    wmState.workoutPesos[exName] = kgVal;
+    state.pesos[exName] = kgVal;
     if(!state.pesoLog[exName]) state.pesoLog[exName] = [];
-    state.pesoLog[exName].push({ ts: Date.now(), kg, fecha: new Date().toLocaleDateString() });
-    // Keep last 50 entries per exercise
+    state.pesoLog[exName].push({
+      ts: Date.now(),
+      kg: parseFloat(kgVal),
+      fecha: new Date().toLocaleDateString(),
+      displayVal: val,
+      unidad: getUnidad()
+    });
     if(state.pesoLog[exName].length > 50) state.pesoLog[exName].shift();
     saveState();
-    renderProgreso(); // refresh charts if visible
+    renderProgreso();
   }
   document.getElementById('peso-modal').classList.remove('open');
   if(pesoModalCallback){ pesoModalCallback(); pesoModalCallback=null; }
