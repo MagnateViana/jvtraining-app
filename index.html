@@ -697,97 +697,82 @@ textarea{resize:vertical;min-height:72px}
 
     <div id="gen-loading" style="display:none" class="card">
       <div class="loading-box">
-        <div style="width:180px;height:130px;margin:0 auto 16px;position:relative">
-          <svg viewBox="0 0 180 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <div style="width:200px;height:160px;margin:0 auto 16px;position:relative">
+          <svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
             <defs>
               <style>
-                .bp-arms{transform-origin:90px 55px;animation:bp-press 1.4s ease-in-out infinite}
-                .bp-bar{transform-origin:90px 38px;animation:bp-press 1.4s ease-in-out infinite}
-                .bp-chest{animation:bp-breathe 1.4s ease-in-out infinite}
-                .bp-glow{animation:bp-glow-pulse 1.4s ease-in-out infinite}
-                @keyframes bp-press{
-                  0%,100%{transform:translateY(0px)}
-                  40%{transform:translateY(-14px)}
-                  60%{transform:translateY(-14px)}
-                }
-                @keyframes bp-breathe{
-                  0%,100%{transform:scaleY(1)}
-                  40%,60%{transform:scaleY(0.93)}
-                }
-                @keyframes bp-glow-pulse{
-                  0%,100%{opacity:.3}
-                  40%,60%{opacity:.7}
-                }
+                .lift{animation:lift 1.6s ease-in-out infinite}
+                @keyframes lift{0%,100%{transform:translateY(0)}35%,65%{transform:translateY(-18px)}}
               </style>
-              <!-- Red glow filter -->
-              <filter id="red-glow">
-                <feGaussianBlur stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
             </defs>
 
-            <!-- Bench -->
-            <rect x="28" y="88" width="124" height="10" rx="5" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
-            <rect x="38" y="96" width="10" height="22" rx="3" fill="#222"/>
-            <rect x="132" y="96" width="10" height="22" rx="3" fill="#222"/>
-            <rect x="35" y="116" width="16" height="4" rx="2" fill="#1a1a1a"/>
-            <rect x="129" y="116" width="16" height="4" rx="2" fill="#1a1a1a"/>
+            <!-- BENCH -->
+            <rect x="36" y="98" width="128" height="14" rx="7" fill="#2e2e2e"/>
+            <rect x="38" y="99" width="124" height="8" rx="5" fill="#3a3a3a"/>
+            <rect x="46" y="112" width="8" height="28" rx="4" fill="#252525"/>
+            <rect x="146" y="112" width="8" height="28" rx="4" fill="#252525"/>
+            <rect x="42" y="136" width="16" height="5" rx="2.5" fill="#1e1e1e"/>
+            <rect x="142" y="136" width="16" height="5" rx="2.5" fill="#1e1e1e"/>
 
-            <!-- Person body (lying down) -->
-            <!-- Legs -->
-            <rect x="30" y="80" width="28" height="10" rx="5" fill="#444"/>
-            <!-- Torso -->
-            <g class="bp-chest">
-              <rect x="56" y="72" width="52" height="18" rx="6" fill="#555"/>
-              <rect x="60" y="75" width="44" height="12" rx="4" fill="#666"/>
-            </g>
-            <!-- Head -->
-            <circle cx="128" cy="80" r="12" fill="#c8a882"/>
-            <circle cx="128" cy="78" r="9" fill="#d4aa88"/>
-            <!-- Hair -->
-            <ellipse cx="128" cy="69" rx="9" ry="5" fill="#4a3728"/>
+            <!-- HEAD -->
+            <circle cx="152" cy="84" r="12" fill="#2a2a2a" stroke="#555" stroke-width="1.5"/>
+            <circle cx="149" cy="82" r="1.5" fill="#777"/>
+            <circle cx="155" cy="82" r="1.5" fill="#777"/>
+            <path d="M149 87 Q152 89 155 87" stroke="#777" stroke-width="1.2" fill="none" stroke-linecap="round"/>
 
-            <!-- Arms pushing up -->
-            <g class="bp-arms">
-              <!-- Left arm -->
-              <line x1="62" y1="76" x2="60" y2="52" stroke="#c8a882" stroke-width="7" stroke-linecap="round"/>
-              <!-- Right arm -->
-              <line x1="98" y1="76" x2="120" y2="52" stroke="#c8a882" stroke-width="7" stroke-linecap="round"/>
-              <!-- Hands grip -->
-              <circle cx="60" cy="52" r="5" fill="#c8a882"/>
-              <circle cx="120" cy="52" r="5" fill="#c8a882"/>
-            </g>
+            <!-- TORSO -->
+            <rect x="80" y="80" width="62" height="20" rx="8" fill="#1e1e1e" stroke="#444" stroke-width="1.5"/>
+            <line x1="111" y1="83" x2="111" y2="97" stroke="#333" stroke-width="1"/>
 
-            <!-- Barbell (moves with arms) -->
-            <g class="bp-bar">
+            <!-- LEGS bent -->
+            <line x1="88" y1="99" x2="68" y2="114" stroke="#1e1e1e" stroke-width="10" stroke-linecap="round"/>
+            <line x1="68" y1="114" x2="54" y2="102" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
+            <line x1="96" y1="99" x2="78" y2="114" stroke="#1e1e1e" stroke-width="10" stroke-linecap="round"/>
+            <line x1="78" y1="114" x2="64" y2="102" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
+            <ellipse cx="51" cy="101" rx="6" ry="5" fill="#252525" stroke="#444" stroke-width="1"/>
+            <ellipse cx="61" cy="101" rx="6" ry="5" fill="#252525" stroke="#444" stroke-width="1"/>
+
+            <!-- ARMS + BAR animated -->
+            <g class="lift">
+              <!-- Left arm up -->
+              <line x1="86" y1="88" x2="72" y2="66" stroke="#1e1e1e" stroke-width="9" stroke-linecap="round"/>
+              <line x1="72" y1="66" x2="70" y2="46" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
+              <!-- Right arm up -->
+              <line x1="118" y1="88" x2="128" y2="66" stroke="#1e1e1e" stroke-width="9" stroke-linecap="round"/>
+              <line x1="128" y1="66" x2="130" y2="46" stroke="#1e1e1e" stroke-width="8" stroke-linecap="round"/>
+
+              <!-- BARBELL -->
+              <!-- Left plate -->
+              <rect x="16" y="26" width="13" height="42" rx="4" fill="#CC2200"/>
+              <rect x="18" y="28" width="5" height="38" rx="2" fill="#991500"/>
+              <rect x="29" y="31" width="9" height="32" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+              <rect x="38" y="32" width="7" height="30" rx="3" fill="#B8860B"/>
               <!-- Bar -->
-              <rect x="32" y="35" width="116" height="7" rx="3.5" fill="#666"/>
-              <rect x="34" y="36" width="112" height="5" rx="2.5" fill="#888"/>
-              <!-- Left plates -->
-              <rect x="24" y="22" width="12" height="33" rx="3" fill="#CC2200"/>
-              <rect x="26" y="24" width="4" height="29" rx="2" fill="#991500"/>
-              <rect x="36" y="26" width="7" height="25" rx="2" fill="#333"/>
-              <!-- Right plates -->
-              <rect x="144" y="22" width="12" height="33" rx="3" fill="#CC2200"/>
-              <rect x="148" y="24" width="4" height="29" rx="2" fill="#991500"/>
-              <rect x="137" y="26" width="7" height="25" rx="2" fill="#333"/>
-              <!-- Gold collars -->
-              <rect x="43" y="27" width="6" height="23" rx="2" fill="#B8860B"/>
-              <rect x="131" y="27" width="6" height="23" rx="2" fill="#B8860B"/>
+              <rect x="45" y="39" width="110" height="9" rx="4.5" fill="#555"/>
+              <rect x="47" y="40" width="106" height="6" rx="3" fill="#777"/>
+              <rect x="52" y="41" width="92" height="2" rx="1" fill="rgba(255,255,255,.08)"/>
+              <!-- Right plate -->
+              <rect x="155" y="32" width="7" height="30" rx="3" fill="#B8860B"/>
+              <rect x="162" y="31" width="9" height="32" rx="2" fill="#2a2a2a" stroke="#444" stroke-width="1"/>
+              <rect x="171" y="26" width="13" height="42" rx="4" fill="#CC2200"/>
+              <rect x="177" y="28" width="5" height="38" rx="2" fill="#991500"/>
+              <!-- Glow -->
+              <rect x="45" y="39" width="110" height="9" rx="4.5" fill="#CC2200" opacity="0.18" filter="url(#glow-r)"/>
             </g>
 
-            <!-- Glow under bar when pressed up -->
-            <ellipse class="bp-glow" cx="90" cy="38" rx="50" ry="6" fill="#CC2200" filter="url(#red-glow)"/>
-
-            <!-- Loading dots -->
-            <circle cx="78" cy="122" r="3" fill="#CC2200" opacity="1">
-              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0s" repeatCount="indefinite"/>
+            <!-- DOTS -->
+            <circle cx="88" cy="153" r="4" fill="#CC2200">
+              <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="90" cy="122" r="3" fill="#CC2200" opacity="0.5">
-              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0.4s" repeatCount="indefinite"/>
+            <circle cx="100" cy="153" r="4" fill="#CC2200">
+              <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0.3s" repeatCount="indefinite"/>
             </circle>
-            <circle cx="102" cy="122" r="3" fill="#CC2200" opacity="0.2">
-              <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" begin="0.8s" repeatCount="indefinite"/>
+            <circle cx="112" cy="153" r="4" fill="#CC2200">
+              <animate attributeName="opacity" values="1;0.15;1" dur="1.2s" begin="0.6s" repeatCount="indefinite"/>
             </circle>
           </svg>
         </div>
@@ -1385,75 +1370,119 @@ function toggleVideo(idx, nombre){
 
 // Map Spanish exercise names to English for better Pexels results
 function traducirEjercicio(nombre, sinEquipo=false){
-  // Always append 'gym' to force fitness context and avoid ambiguous results
-  const GYM = ' gym weightlifting';
+  const lower = nombre.toLowerCase().trim();
 
-  const map = {
-    // Pecho
-    'press banca':'bench press chest'+GYM,
-    'press de banca':'bench press chest'+GYM,
-    'press inclinado':'incline bench press chest'+GYM,
-    'press plano':'flat bench press chest'+GYM,
-    'press declinado':'decline bench press chest'+GYM,
-    'aperturas':'chest fly dumbbell'+GYM,
-    'cruces en polea':'cable chest fly'+GYM,
-    'press en polea':'cable chest press'+GYM,
-    'flexiones':'push ups chest exercise'+GYM,
-    'flexiones con pies elevados':'elevated push ups chest'+GYM,
-    // Espalda — CRÍTICO: remo es barco, hay que ser específico
-    'remo con barra':'barbell bent over row back muscle'+GYM,
-    'remo con mancuerna':'dumbbell row back muscle'+GYM,
-    'remo en polea':'cable row back muscle'+GYM,
-    'remo sentado':'seated cable row back'+GYM,
-    'remo':'bent over row back muscle'+GYM,
-    'jalón al pecho':'lat pulldown back'+GYM,
-    'jalón':'lat pulldown back'+GYM,
-    'dominadas':'pull ups back'+GYM,
-    'peso muerto':'deadlift barbell'+GYM,
-    'peso muerto rumano':'romanian deadlift'+GYM,
-    'pull over':'dumbbell pullover back'+GYM,
-    // Hombros
-    'press militar':'overhead press shoulders'+GYM,
-    'press hombros':'shoulder press dumbbell'+GYM,
-    'elevaciones laterales':'lateral raises shoulders'+GYM,
-    'elevaciones frontales':'front raises shoulders'+GYM,
-    'pajaros':'rear delt fly shoulders'+GYM,
-    'face pull':'face pull cable rear delt'+GYM,
-    // Bíceps
-    'curl de bíceps':'bicep curl dumbbell'+GYM,
-    'curl bíceps':'bicep curl dumbbell'+GYM,
-    'curl alternado':'alternating dumbbell curl bicep'+GYM,
-    'curl martillo':'hammer curl bicep'+GYM,
-    'curl en polea':'cable bicep curl'+GYM,
-    // Tríceps
-    'fondos':'tricep dips'+GYM,
-    'extensión de tríceps':'tricep extension'+GYM,
-    'press francés':'skull crusher tricep'+GYM,
-    'patada de tríceps':'tricep kickback'+GYM,
-    'tríceps en polea':'tricep pushdown cable'+GYM,
-    // Piernas
-    'sentadilla':'squat legs'+GYM,
-    'sentadillas':'squat legs'+GYM,
-    'sentadilla búlgara':'bulgarian split squat legs'+GYM,
-    'prensa':'leg press machine'+GYM,
-    'extensión de cuádriceps':'leg extension machine'+GYM,
-    'curl de isquiotibiales':'leg curl machine'+GYM,
-    'zancadas':'lunges legs'+GYM,
-    'estocadas':'lunges legs'+GYM,
-    'hip thrust':'hip thrust glutes barbell'+GYM,
-    'peso muerto piernas':'romanian deadlift legs'+GYM,
-    'pantorrillas':'calf raises legs'+GYM,
-    'abductores':'abductor machine legs'+GYM,
-    'aductores':'adductor machine legs'+GYM,
-    // Core
-    'plancha':'plank core abs'+GYM,
-    'abdominales':'crunches abs'+GYM,
-    'crunch':'crunch abs'+GYM,
-    'crunch en polea':'cable crunch abs'+GYM,
-    'elevación de piernas':'leg raise abs'+GYM,
-    'burpees':'burpees fitness workout',
-    'mountain climbers':'mountain climbers abs fitness',
-  };
+  // ── BODYWEIGHT / NO EQUIPMENT ──────────────────────────────────────────────
+  if(sinEquipo){
+    const bwMap = [
+      // Pecho / Push
+      [['flexion','push up','flexiones'],'push ups home floor exercise'],
+      [['flexiones con pies elevados','decline push'],'decline push ups feet elevated chair'],
+      [['flexiones inclinadas','incline push'],'incline push ups hands elevated'],
+      [['flexiones diamante','diamond push','tricep push'],'diamond push ups triceps home'],
+      [['fondos','dips','tricep dip'],'chair dips triceps no equipment home'],
+      // Espalda / Pull
+      [['dominadas','pull up','chin up'],'pull ups bar bodyweight'],
+      [['remo con mesa','table row','bodyweight row'],'bodyweight row under table home'],
+      [['remo','row'],'bodyweight row under table home'],
+      [['superman','back extension'],'superman exercise floor back home'],
+      [['pull over'],'pullover floor no equipment'],
+      // Hombros
+      [['flexiones pike','pike push','press pike'],'pike push ups shoulders bodyweight'],
+      [['elevaciones laterales','lateral raise'],'lateral raises no weights home'],
+      [['plancha lateral','side plank shoulder'],'side plank shoulder home'],
+      // Bíceps
+      [['curl','bicep','bíceps'],'towel bicep curl home no equipment'],
+      // Tríceps
+      [['extensión de tríceps','tricep extension'],'tricep dips chair home no equipment'],
+      // Piernas
+      [['sentadilla búlgara','bulgarian','split squat'],'bulgarian split squat bodyweight home'],
+      [['sentadilla sumo','sumo squat'],'sumo squat bodyweight home'],
+      [['sentadilla','squat'],'bodyweight squat home no equipment'],
+      [['zancada','lunge','estocada'],'lunges bodyweight home no equipment'],
+      [['pistol squat','sentadilla pistol'],'pistol squat bodyweight home'],
+      [['saltos de squat','jump squat'],'jump squats plyometric home'],
+      [['step up','subida al banco'],'step ups chair home bodyweight'],
+      [['peso muerto rumano','romanian deadlift'],'single leg deadlift bodyweight home'],
+      [['peso muerto','deadlift'],'single leg deadlift bodyweight home'],
+      [['hip thrust','empuje de cadera','glute bridge'],'glute bridge floor home bodyweight'],
+      [['elevacion de pierna','leg raise'],'leg raises floor abs home'],
+      [['curl de femoral','leg curl'],'lying leg curl floor home'],
+      [['pantorrilla','calf raise'],'calf raises wall home no equipment'],
+      // Core
+      [['plancha','plank'],'plank core abs home floor'],
+      [['plancha lateral','side plank'],'side plank obliques home floor'],
+      [['crunch','abdominal','abdominales'],'crunches abs home floor'],
+      [['russian twist'],'russian twist abs home floor'],
+      [['mountain climber'],'mountain climbers home cardio floor'],
+      [['burpee'],'burpees home bodyweight cardio'],
+      [['jumping jack'],'jumping jacks home cardio'],
+      [['elevación de piernas','leg raise'],'hanging leg raise abs home'],
+      [['v-up','v up'],'v ups abs home floor'],
+      [['bicicleta','bicycle crunch'],'bicycle crunches abs home floor'],
+    ];
+
+    for(const [keys, query] of bwMap){
+      if(keys.some(k => lower.includes(k))) return query;
+    }
+    return lower.split(' ').slice(0,2).join(' ') + ' bodyweight home no equipment calisthenics';
+  }
+
+  // ── WITH EQUIPMENT (GYM) ───────────────────────────────────────────────────
+  const gymMap = [
+    [['press banca plano','flat bench press','bench press'],'bench press barbell gym chest'],
+    [['press banca inclinado','incline bench','press inclinado'],'incline bench press gym chest'],
+    [['press declinado','decline bench'],'decline bench press gym chest'],
+    [['aperturas','chest fly','pec deck'],'dumbbell chest fly gym'],
+    [['cruces en polea','cable fly','cable cross'],'cable crossover chest gym'],
+    [['press en polea','cable press'],'cable chest press gym'],
+    [['press con mancuernas','dumbbell press'],'dumbbell bench press gym chest'],
+    [['remo con barra','barbell row'],'barbell bent over row back gym'],
+    [['remo con mancuerna','dumbbell row'],'dumbbell row back gym'],
+    [['remo en polea baja','seated cable row'],'seated cable row back gym'],
+    [['remo en polea alta','cable row'],'cable row back gym'],
+    [['jalón al pecho','lat pulldown','jalon'],'lat pulldown machine gym back'],
+    [['dominadas','pull up','chin up'],'pull ups gym back'],
+    [['peso muerto rumano','romanian deadlift'],'romanian deadlift barbell gym'],
+    [['peso muerto','deadlift'],'deadlift barbell gym'],
+    [['pull over','pullover'],'dumbbell pullover gym back'],
+    [['press militar','overhead press'],'overhead press barbell gym shoulders'],
+    [['press hombros','shoulder press'],'dumbbell shoulder press gym'],
+    [['elevaciones laterales','lateral raise'],'lateral raises dumbbell gym shoulders'],
+    [['elevaciones frontales','front raise'],'front raises dumbbell gym shoulders'],
+    [['pajaros','rear delt fly'],'rear delt fly dumbbell gym'],
+    [['face pull'],'face pull cable gym rear delt'],
+    [['curl con barra','barbell curl'],'barbell bicep curl gym'],
+    [['curl de bíceps','bicep curl','curl mancuerna'],'dumbbell bicep curl gym'],
+    [['curl alternado','alternating curl'],'alternating dumbbell curl gym'],
+    [['curl martillo','hammer curl'],'hammer curl dumbbell gym'],
+    [['curl en polea','cable curl'],'cable bicep curl gym'],
+    [['fondos','tricep dip','dips'],'tricep dips parallel bars gym'],
+    [['press francés','skull crusher'],'skull crusher barbell gym triceps'],
+    [['extensión tríceps','tricep extension'],'tricep extension cable gym'],
+    [['patada tríceps','kickback'],'tricep kickback dumbbell gym'],
+    [['polea tríceps','pushdown'],'tricep pushdown cable gym'],
+    [['sentadilla','squat'],'barbell squat gym legs'],
+    [['prensa','leg press'],'leg press machine gym'],
+    [['extensión cuádriceps','leg extension'],'leg extension machine gym'],
+    [['curl femoral','leg curl'],'leg curl machine gym'],
+    [['zancada','lunge'],'dumbbell lunges gym legs'],
+    [['hip thrust','empuje cadera'],'barbell hip thrust gym glutes'],
+    [['peso muerto pierna','single leg'],'single leg deadlift dumbbell gym'],
+    [['pantorrilla','calf raise'],'calf raises machine gym'],
+    [['abductor'],'hip abductor machine gym'],
+    [['aductor'],'hip adductor machine gym'],
+    [['plancha','plank'],'plank core gym floor'],
+    [['crunch','abdominales'],'crunches abs gym'],
+    [['crunch polea','cable crunch'],'cable crunch abs gym'],
+    [['elevación piernas','leg raise'],'hanging leg raise gym abs'],
+  ];
+
+  for(const [keys, query] of gymMap){
+    if(keys.some(k => lower.includes(k))) return query;
+  }
+  return lower.split(' ').slice(0,3).join(' ') + ' exercise gym';
+};
 
   const lower = nombre.toLowerCase().trim();
 
@@ -1466,29 +1495,7 @@ function traducirEjercicio(nombre, sinEquipo=false){
     if(lower.includes(k)) return map[k];
   }
 
-  // Bodyweight-specific mappings
-  if(sinEquipo){
-    const bwMap = {
-      'flexiones':'push ups bodyweight','flexion':'push ups bodyweight',
-      'sentadilla':'bodyweight squat','sentadillas':'bodyweight squat',
-      'zancadas':'lunges bodyweight','estocadas':'lunges bodyweight',
-      'fondos':'chair dips no equipment','fondos en silla':'chair dips no equipment',
-      'plancha':'plank bodyweight','abdominales':'crunches bodyweight',
-      'burpees':'burpees bodyweight','mountain climbers':'mountain climbers bodyweight',
-      'saltos':'jump squats bodyweight','remo':'bodyweight row table',
-      'dominadas':'pull ups bar bodyweight','superman':'superman exercise floor',
-      'puente de gluteos':'glute bridge floor','hip thrust':'glute bridge floor',
-      'elevacion de cadera':'glute bridge floor','jumping jacks':'jumping jacks',
-      'sentadilla sumo':'sumo squat bodyweight','pistol squat':'pistol squat bodyweight',
-    };
-    for(const [es, en] of Object.entries(bwMap)){
-      if(lower.includes(es)) return en;
-    }
-    return lower.split(' ').slice(0,3).join(' ') + ' bodyweight calisthenics no equipment';
-  }
-  // Fallback with gym context
-  return lower.split(' ').slice(0,3).join(' ') + ' exercise gym weightlifting';
-}
+
 
 async function loadPexelsVideo(idx, nombre){
   try{
