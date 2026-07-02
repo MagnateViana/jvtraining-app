@@ -1482,21 +1482,7 @@ function traducirEjercicio(nombre, sinEquipo=false){
     if(keys.some(k => lower.includes(k))) return query;
   }
   return lower.split(' ').slice(0,3).join(' ') + ' exercise gym';
-};
-
-  const lower = nombre.toLowerCase().trim();
-
-  // Exact match
-  if(map[lower]) return map[lower];
-
-  // Partial match — longer keys first for accuracy
-  const keys = Object.keys(map).sort((a,b) => b.length - a.length);
-  for(const k of keys){
-    if(lower.includes(k)) return map[k];
-  }
-
-
-
+}
 async function loadPexelsVideo(idx, nombre){
   try{
     const genero = state.perfil?.genero || '';
