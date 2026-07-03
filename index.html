@@ -523,24 +523,7 @@ textarea{resize:vertical;min-height:72px}
 .tos-checkbox-row input[type=checkbox]{width:20px;height:20px;accent-color:var(--red);flex-shrink:0;cursor:pointer}
 .tos-checkbox-row label{font-size:13px;color:var(--text2);cursor:pointer;line-height:1.4}
 
-/* ── PEXELS VIDEO PLAYER ─────────────────────────────── */
-.pexels-player{background:#000;border-radius:var(--radius);overflow:hidden;margin-bottom:10px;position:relative}
-.pexels-player video{width:100%;display:block;max-height:240px;object-fit:cover}
-.pexels-controls{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg2);border-radius:0 0 var(--radius) var(--radius)}
-.pexels-play-btn{width:36px;height:36px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
-.pexels-progress{flex:1;height:4px;background:var(--bg3);border-radius:2px;cursor:pointer;position:relative}
-.pexels-progress-fill{height:100%;background:var(--red);border-radius:2px;width:0%;transition:width .1s}
-.pexels-time{font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap}
-.pexels-attribution{font-size:10px;color:var(--text3);padding:4px 12px 8px;text-align:right}
-.pexels-attribution a{color:var(--text3);text-decoration:none}
-.pexels-thumbs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
-.pexels-thumbs::-webkit-scrollbar{display:none}
-.pexels-thumb{width:64px;height:40px;border-radius:4px;object-fit:cover;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:border-color .15s}
-.pexels-thumb.active{border-color:var(--red)}
-.pexels-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;gap:10px;color:var(--text2);font-size:13px}
-.pexels-logo{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--text3)}
-.pexels-logo span{background:#05A081;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px}
-.pexels-badge{display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px}
+/* Pexels removed */
 </style>
 </head>
 <body>
@@ -1357,10 +1340,12 @@ function ytUrlToEmbed(url){
   return url;
 }
 function ytSearchEmbed(name){
-  const g=state.perfil.genero;
-  const gTerm=g==='female'?'mujer para mujeres':g==='male'?'hombre para hombres':'persona';
-  const q=encodeURIComponent(name+' ejercicio tutorial correcto '+gTerm);
-  return 'https://www.youtube.com/embed?listType=search&list='+q+'&index=0';
+  const g = state.perfil?.genero || '';
+  const lang = state.lang || 'es';
+  const gTerm = g==='female' ? (lang==='en'?'for women':'para mujeres') : g==='male' ? (lang==='en'?'for men':'para hombres') : '';
+  const langTerm = lang==='en' ? 'exercise tutorial how to gym' : lang==='pt' ? 'exercício tutorial como fazer' : 'ejercicio tutorial como hacer correctamente';
+  const q = encodeURIComponent(name + ' ' + langTerm + ' ' + gTerm);
+  return 'https://www.youtube-nocookie.com/embed?listType=search&list=' + q + '&index=0&rel=0&modestbranding=1&playsinline=1';
 }
 function ytSearchUrl(name){
   const g=state.perfil.genero;
@@ -1605,8 +1590,22 @@ function exCarouselPrev(uid,total,offset){ exCarouselGo(uid,total,offset,Math.ma
 function loadVideoCard(idx, nombre){
   const sec = document.getElementById('vs-'+idx);
   if(!sec) return;
-  sec.innerHTML=`<div class="pexels-loading"><div class="spinner"></div><span>Buscando video…</span></div>`;
-  loadPexelsVideo(idx, nombre);
+  const mv = getMiVideo(nombre);
+  if(mv){
+    const embed = ytUrlToEmbed(mv.url);
+    sec.innerHTML=`<div style="position:relative;padding-top:56.25%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px">
+      <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+        src="${embed}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+        allowfullscreen playsinline></iframe>
+    </div><div style="font-size:11px;color:var(--text3);padding:4px 0 8px">⭐ Tu video personalizado</div>`;
+    return;
+  }
+  const ytEmbed = ytSearchEmbed(nombre);
+  sec.innerHTML=`<div style="position:relative;padding-top:56.25%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px">
+    <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+      src="${ytEmbed}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+      allowfullscreen playsinline></iframe>
+  </div><div style="font-size:11px;color:var(--text3);padding:4px 0 8px">📹 YouTube — dentro de la app</div>`;
 }
 
 async function generarRutina(){
@@ -2358,7 +2357,7 @@ function renderWorkoutStep(){
     <div class="wm-ex-dot ${i===wmState.exIdx?'active':i<wmState.exIdx?'done':''}"></div>
   `).join('');
 
-  // Video section — load Pexels video
+  // Video section — load YouTube video
   const vidId = 'wm-vid-'+wmState.exIdx;
 
   document.getElementById('wm-content').innerHTML = `
@@ -2410,78 +2409,25 @@ function renderWorkoutStep(){
   setTimeout(()=>loadWmVideo(ex.nombre, vidId), 300);
 }
 
-// Load Pexels video inside workout
+// Load YouTube video inside workout
 // Track used video IDs per workout session to avoid repeats
 const usedVideoIds = new Set();
 
 async function loadWmVideo(nombre, vidId){
-  // Check session cache first
-  const cacheKey = 'wvid_'+nombre.replace(/\s+/g,'_');
-  if(window._wmVideoCache && window._wmVideoCache[cacheKey]){
-    const cached = window._wmVideoCache[cacheKey];
-    const ph = document.getElementById(vidId+'-ph');
-    if(ph) ph.outerHTML = `<video src="${cached}" autoplay muted loop playsinline
-      style="width:100%;max-height:220px;object-fit:cover;display:block"
-      onclick="this.paused?this.play():this.pause()"></video>`;
-    return;
-  }
-
   const ph = document.getElementById(vidId+'-ph');
   if(!ph) return;
-  ph.innerHTML = `<div class="spinner" style="width:28px;height:28px;border-width:3px"></div>`;
-  try{
-    const genero = state.perfil?.genero || '';
-    const genderTerm = genero === 'female' ? 'woman female' : genero === 'male' ? 'man male' : '';
-    const equipRaw = (state.rutinaActual?.equipo||'').toLowerCase();
-    const sinEquipo = equipRaw===''||equipRaw.includes('sin equipo')||equipRaw.includes('no equipment')||equipRaw.includes('sans équip')||equipRaw.includes('sem equip')||equipRaw.includes('bodyweight');
-    const enQuery = traducirEjercicio(nombre, sinEquipo);
-    const equipTerm = sinEquipo ? 'bodyweight calisthenics no equipment home workout' : 'gym weightlifting barbell';
-    const fullQuery = [enQuery, genderTerm, equipTerm].filter(Boolean).join(' ');
-
-    let videos = [];
-
-    // Try with gender first
-    let resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(fullQuery)}&lang=en`);
-    let data = await resp.json();
-    if(data.success && data.videos?.length) videos = data.videos;
-
-    // Fallback without gender
-    if(!videos.length){
-      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(enQuery)}&lang=en`);
-      data = await resp.json();
-      if(data.success && data.videos?.length) videos = data.videos;
-    }
-
-    // Final fallback with muscle group
-    if(!videos.length){
-      const muscleQuery = enQuery.split(' ').slice(-1)[0] + ' workout gym';
-      resp = await fetch(`${BACKEND_URL}/video?q=${encodeURIComponent(muscleQuery)}&lang=en`);
-      data = await resp.json();
-      if(data.success && data.videos?.length) videos = data.videos;
-    }
-
-    if(videos.length){
-      // Pick a video not already used this session
-      let picked = videos.find(v => !usedVideoIds.has(v.id));
-      if(!picked) picked = videos[Math.floor(Math.random()*videos.length)]; // all used, pick random
-      usedVideoIds.add(picked.id);
-
-      // Cache for this exercise
-      if(!window._wmVideoCache) window._wmVideoCache = {};
-      window._wmVideoCache[cacheKey] = picked.url;
-
-      const el = document.getElementById(vidId+'-ph') || document.querySelector(`[id="${vidId}-ph"]`);
-      if(el) el.outerHTML = `<video src="${picked.url}" autoplay muted loop playsinline
-        style="width:100%;max-height:220px;object-fit:cover;display:block"
-        onclick="this.paused?this.play():this.pause()"></video>`;
-    } else {
-      const el = document.getElementById(vidId+'-ph');
-      if(el) el.innerHTML = `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">Sin video disponible</div>`;
-    }
-  } catch(e){
-    const el = document.getElementById(vidId+'-ph');
-    if(el) el.innerHTML = `<div style="font-size:12px;color:var(--text3);padding:20px;text-align:center">Sin video disponible</div>`;
-  }
+  const mv = getMiVideo(nombre);
+  const embed = mv ? ytUrlToEmbed(mv.url) : ytSearchEmbed(nombre);
+  const label = mv ? '⭐ Tu video personalizado' : '📹 YouTube';
+  ph.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
+    <div style="position:relative;padding-top:56.25%">
+      <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+        src="${embed}"
+        allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+        allowfullscreen playsinline></iframe>
+    </div>
+    <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>
+  </div>`;
 }
 
 function changeReps(delta){
