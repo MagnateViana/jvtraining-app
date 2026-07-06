@@ -1340,237 +1340,184 @@ function ytUrlToEmbed(url){
   return url;
 }
 // ── YOUTUBE VIDEO SYSTEM ─────────────────────────────────────────────────────
-// Videos from trusted fitness channels (Jeremy Ethier, Scott Herman Fitness, etc.)
-// Format: keyword → [videoId, channelHint]
-const EXERCISE_VIDEOS = {
-  // ── PECHO / CHEST ──────────────────────────────────────────────
-  'press banca plano':      'rT7DgCr-3pg',
-  'press banca':            'rT7DgCr-3pg',
-  'bench press':            'rT7DgCr-3pg',
-  'press inclinado':        'DbFgADa2PL8',
-  'incline press':          'DbFgADa2PL8',
-  'incline bench':          'DbFgADa2PL8',
-  'press declinado':        'LfyQTgSqYiU',
-  'aperturas con mancuerna':'eozdVDA78K0',
-  'aperturas':              'eozdVDA78K0',
-  'chest fly':              'eozdVDA78K0',
-  'cruces en polea':        'taI4XduLpTk',
-  'cable crossover':        'taI4XduLpTk',
-  'press con mancuernas':   'QsYre__-aro',
-  'dumbbell press':         'QsYre__-aro',
-  'flexiones diamante':     'J0DXl9oSJEY',
-  'diamond push':           'J0DXl9oSJEY',
-  'flexiones con pies':     'PKnMsUwYRac',
-  'pike push':              'x7_I5SUAn_8',
-  'flexiones':              'IODxDxX7oi4',
-  'push ups':               'IODxDxX7oi4',
-  'push up':                'IODxDxX7oi4',
-  // ── ESPALDA / BACK ─────────────────────────────────────────────
-  'peso muerto rumano':     'JCXUYuzwNrM',
-  'romanian deadlift':      'JCXUYuzwNrM',
-  'peso muerto':            'op9kVnSso6Q',
-  'deadlift':               'op9kVnSso6Q',
-  'remo con barra':         'kBWAon7ItDw',
-  'barbell row':            'kBWAon7ItDw',
-  'remo con mancuerna':     'roCP2zo-LEo',
-  'dumbbell row':           'roCP2zo-LEo',
-  'remo en polea':          'GZbfZ033f74',
-  'seated cable row':       'GZbfZ033f74',
-  'remo sentado':           'GZbfZ033f74',
-  'jalón al pecho':         'CAwf7n6Luuc',
-  'lat pulldown':           'CAwf7n6Luuc',
-  'jalón':                  'CAwf7n6Luuc',
-  'jalon':                  'CAwf7n6Luuc',
-  'dominadas':              'eGo4IYlbE5g',
-  'pull ups':               'eGo4IYlbE5g',
-  'pull-ups':               'eGo4IYlbE5g',
-  'chin ups':               'eGo4IYlbE5g',
-  'pullover':               'FK4rOqlFZuA',
-  'pull over':              'FK4rOqlFZuA',
-  'hiperextensiones':       'ph3pddpKzzw',
-  'superman':               'z6PJMT2y8GQ',
-  'remo en t':              'kBWAon7ItDw',
-  // ── HOMBROS / SHOULDERS ────────────────────────────────────────
-  'press militar':          'qEwKCR5JCog',
-  'overhead press':         'qEwKCR5JCog',
-  'press arnold':           'r1NGF2OoMao',
-  'arnold press':           'r1NGF2OoMao',
-  'press hombros':          'qEwKCR5JCog',
-  'shoulder press':         'qEwKCR5JCog',
-  'elevaciones laterales':  'ygY0jqpSTFU',
-  'lateral raises':         'ygY0jqpSTFU',
-  'lateral raise':          'ygY0jqpSTFU',
-  'elevaciones frontales':  'sOoBOHGSRiY',
-  'front raises':           'sOoBOHGSRiY',
-  'pajaros':                'ttvANaUBEiY',
-  'rear delt':              'ttvANaUBEiY',
-  'face pull':              'hsHTcMDhgxo',
-  // ── BÍCEPS / BICEPS ────────────────────────────────────────────
-  'curl con barra':         'kwG2ipFRgfo',
-  'barbell curl':           'kwG2ipFRgfo',
-  'curl de bíceps':         'ykJmrZ5v0Oo',
-  'curl bíceps':            'ykJmrZ5v0Oo',
-  'bicep curl':             'ykJmrZ5v0Oo',
-  'curl alternado':         'sAq_ocpS3Ig',
-  'alternating curl':       'sAq_ocpS3Ig',
-  'curl martillo':          'TwD-YGVP4Bk',
-  'hammer curl':            'TwD-YGVP4Bk',
-  'curl en polea':          'NFzTWp2qpiE',
-  'cable curl':             'NFzTWp2qpiE',
-  'curl con toalla':        'ykJmrZ5v0Oo',
-  // ── TRÍCEPS / TRICEPS ──────────────────────────────────────────
-  'fondos en silla':        '2z8JmcrW-As',
-  'chair dips':             '2z8JmcrW-As',
-  'fondos':                 'wjUmnZH528Y',
-  'dips':                   'wjUmnZH528Y',
-  'press francés':          'd_KZxkY_0cM',
-  'skull crusher':          'd_KZxkY_0cM',
-  'extensión de tríceps':   'nRiJVZDpdL0',
-  'tricep extension':       'nRiJVZDpdL0',
-  'patada de tríceps':      '6SS6K3lAwZ8',
-  'kickback':               '6SS6K3lAwZ8',
-  'polea tríceps':          'vB5OHsJ3EME',
-  'pushdown':               'vB5OHsJ3EME',
-  'tríceps en polea':       'vB5OHsJ3EME',
-  // ── PIERNAS / LEGS ─────────────────────────────────────────────
-  'sentadilla búlgara':     'vDFg9CWMJKE',
-  'bulgarian split squat':  'vDFg9CWMJKE',
-  'sentadilla sumo':        'Zb5pYWkUMqM',
-  'sumo squat':             'Zb5pYWkUMqM',
-  'sentadilla':             'ultWZbUMPL8',
-  'squat':                  'ultWZbUMPL8',
-  'prensa de piernas':      'IZxyjW7MPJQ',
-  'leg press':              'IZxyjW7MPJQ',
-  'extensión de cuádriceps':'YyvSfVjQeL0',
-  'leg extension':          'YyvSfVjQeL0',
-  'curl de isquiotibiales': '1Tq3QdYUuHs',
-  'leg curl':               '1Tq3QdYUuHs',
-  'curl femoral':           '1Tq3QdYUuHs',
-  'zancadas':               'QOVaHwm-Q6U',
-  'lunges':                 'QOVaHwm-Q6U',
-  'estocadas':              'QOVaHwm-Q6U',
-  'hip thrust':             'xDmFkJxPzeM',
-  'empuje de cadera':       'xDmFkJxPzeM',
-  'puente de glúteos':      'OSkMCa7BWKA',
-  'glute bridge':           'OSkMCa7BWKA',
-  'paso al cajón':          '4GJ8PYYcUtE',
-  'step up':                '4GJ8PYYcUtE',
-  'sentadilla pistol':      'vq5-vdgJc0I',
-  'pistol squat':           'vq5-vdgJc0I',
-  'saltos de sentadilla':   'A-cFYWvaHr0',
-  'jump squat':             'A-cFYWvaHr0',
-  'pantorrillas de pie':    'gwLzBMcNkl4',
-  'pantorrillas':           'gwLzBMcNkl4',
-  'calf raises':            'gwLzBMcNkl4',
-  'abductores':             'kDqklk1ZESo',
-  'peso muerto a una pierna':'B4HUaitHom4',
-  // ── CORE / ABS ─────────────────────────────────────────────────
-  'plancha lateral':        'K2VljzCC16g',
-  'side plank':             'K2VljzCC16g',
-  'plancha':                'ASdvN_XEl_c',
-  'plank':                  'ASdvN_XEl_c',
-  'crunch':                 'Xyd_fa5zoEU',
-  'abdominales':            'Xyd_fa5zoEU',
-  'crunches':               'Xyd_fa5zoEU',
-  'russian twist':          'wkD8rjkodUI',
-  'mountain climbers':      'nmwgirgXLYM',
-  'mountain climber':       'nmwgirgXLYM',
-  'burpees':                'dZgVxmf6jkA',
-  'burpee':                 'dZgVxmf6jkA',
-  'jumping jacks':          'c4DAnQ6DtF8',
-  'elevación de piernas':   'JB2oyawG9KI',
-  'leg raise':              'JB2oyawG9KI',
-  'v-up':                   'iP2fjAlTtdA',
-  'bicicleta':              'AOVS7GzBGxI',
-  'bicycle crunch':         'AOVS7GzBGxI',
-  'crunch en polea':        'AV5PmePzDk0',
-  'dragon flag':            'pvIjChsTqEs',
-  // ── MANCUERNAS ESPECÍFICAS ─────────────────────────────────────
-  'press de hombros con mancuernas': 'qEwKCR5JCog',
-  'press de pecho con mancuernas':   'QsYre__-aro',
-  'remo con mancuernas':             'roCP2zo-LEo',
-  'curl de biceps con mancuernas':   'ykJmrZ5v0Oo',
-  'extensión de triceps con mancuerna': 'nRiJVZDpdL0',
-  'zancadas con mancuernas':         'QOVaHwm-Q6U',
-  'sentadilla con mancuernas':       'ultWZbUMPL8',
-  'peso muerto con mancuernas':      'op9kVnSso6Q',
-  'swing con mancuerna':             'YZm85bTH_RU',
-  'goblet squat':                    'MxsFDiLDAUE',
-  'sentadilla goblet':               'MxsFDiLDAUE',
-  'press de suelo':                  'QsYre__-aro',
-  'floor press':                     'QsYre__-aro',
-  'renegade row':                    'Hy4T3QSFqgY',
-  'remo renegado':                   'Hy4T3QSFqgY',
-  'curl de concentración':           'Xs2cBmFCXrM',
-  'concentration curl':              'Xs2cBmFCXrM',
-  'extensión por encima':            'nRiJVZDpdL0',
-  'overhead extension':              'nRiJVZDpdL0',
-  'paso del granjero':               'Fkzk_RqlYig',
-  'farmers walk':                    'Fkzk_RqlYig',
-  'press inclinado mancuernas':      'DbFgADa2PL8',
-  'curl de muñeca':                  'NFzTWp2qpiE',
-  'wrist curl':                      'NFzTWp2qpiE',
-  'rotación de hombro':              'ttvANaUBEiY',
-  'hip hinge':                       'JCXUYuzwNrM',
-  'bisagra de cadera':               'JCXUYuzwNrM',
-  'buenos dias':                     'JCXUYuzwNrM',
-  'good mornings':                   'JCXUYuzwNrM',
-  'sentadilla lateral':              'Zb5pYWkUMqM',
-  'lateral squat':                   'Zb5pYWkUMqM',
-  'press de triceps':                'vB5OHsJ3EME',
-  'curl inverso':                    'kwG2ipFRgfo',
-  'reverse curl':                    'kwG2ipFRgfo',
+// Male videos — from channels like Jeremy Ethier, ScottHermanFitness, AthleanX
+const VIDEOS_MALE = {
+  'press banca plano':'rT7DgCr-3pg','press banca':'rT7DgCr-3pg','bench press':'rT7DgCr-3pg',
+  'press inclinado':'DbFgADa2PL8','incline press':'DbFgADa2PL8','incline bench':'DbFgADa2PL8',
+  'press declinado':'LfyQTgSqYiU',
+  'aperturas':'eozdVDA78K0','chest fly':'eozdVDA78K0','cruces en polea':'taI4XduLpTk',
+  'press con mancuernas':'QsYre__-aro','dumbbell press':'QsYre__-aro',
+  'flexiones diamante':'J0DXl9oSJEY','flexiones con pies':'PKnMsUwYRac',
+  'flexiones':'IODxDxX7oi4','push ups':'IODxDxX7oi4','push up':'IODxDxX7oi4',
+  'peso muerto rumano':'JCXUYuzwNrM','romanian deadlift':'JCXUYuzwNrM',
+  'peso muerto':'op9kVnSso6Q','deadlift':'op9kVnSso6Q',
+  'remo con barra':'kBWAon7ItDw','barbell row':'kBWAon7ItDw',
+  'remo con mancuerna':'roCP2zo-LEo','dumbbell row':'roCP2zo-LEo',
+  'remo en polea':'GZbfZ033f74','seated cable row':'GZbfZ033f74','remo sentado':'GZbfZ033f74',
+  'jalon al pecho':'CAwf7n6Luuc','lat pulldown':'CAwf7n6Luuc','jalon':'CAwf7n6Luuc',
+  'dominadas':'eGo4IYlbE5g','pull ups':'eGo4IYlbE5g','chin ups':'eGo4IYlbE5g',
+  'pullover':'FK4rOqlFZuA','pull over':'FK4rOqlFZuA',
+  'superman':'z6PJMT2y8GQ','hiperextensiones':'ph3pddpKzzw',
+  'press militar':'qEwKCR5JCog','overhead press':'qEwKCR5JCog','press arnold':'r1NGF2OoMao',
+  'press hombros':'qEwKCR5JCog','shoulder press':'qEwKCR5JCog',
+  'elevaciones laterales':'ygY0jqpSTFU','lateral raises':'ygY0jqpSTFU',
+  'elevaciones frontales':'sOoBOHGSRiY','front raises':'sOoBOHGSRiY',
+  'pajaros':'ttvANaUBEiY','rear delt':'ttvANaUBEiY','face pull':'hsHTcMDhgxo',
+  'curl con barra':'kwG2ipFRgfo','barbell curl':'kwG2ipFRgfo',
+  'curl de biceps':'ykJmrZ5v0Oo','bicep curl':'ykJmrZ5v0Oo','curl mancuerna':'ykJmrZ5v0Oo',
+  'curl alternado':'sAq_ocpS3Ig','alternating curl':'sAq_ocpS3Ig',
+  'curl martillo':'TwD-YGVP4Bk','hammer curl':'TwD-YGVP4Bk',
+  'curl en polea':'NFzTWp2qpiE','cable curl':'NFzTWp2qpiE',
+  'fondos en silla':'2z8JmcrW-As','chair dips':'2z8JmcrW-As',
+  'fondos':'wjUmnZH528Y','dips':'wjUmnZH528Y',
+  'press frances':'d_KZxkY_0cM','skull crusher':'d_KZxkY_0cM',
+  'extension de triceps':'nRiJVZDpdL0','tricep extension':'nRiJVZDpdL0',
+  'patada de triceps':'6SS6K3lAwZ8','kickback':'6SS6K3lAwZ8',
+  'polea triceps':'vB5OHsJ3EME','pushdown':'vB5OHsJ3EME',
+  'sentadilla bulgara':'vDFg9CWMJKE','bulgarian split squat':'vDFg9CWMJKE',
+  'sentadilla sumo':'Zb5pYWkUMqM','sumo squat':'Zb5pYWkUMqM',
+  'sentadilla':'ultWZbUMPL8','squat':'ultWZbUMPL8',
+  'prensa de piernas':'IZxyjW7MPJQ','leg press':'IZxyjW7MPJQ',
+  'extension de cuadriceps':'YyvSfVjQeL0','leg extension':'YyvSfVjQeL0',
+  'curl de isquiotibiales':'1Tq3QdYUuHs','leg curl':'1Tq3QdYUuHs','curl femoral':'1Tq3QdYUuHs',
+  'zancadas':'QOVaHwm-Q6U','lunges':'QOVaHwm-Q6U','estocadas':'QOVaHwm-Q6U',
+  'hip thrust':'xDmFkJxPzeM','empuje de cadera':'xDmFkJxPzeM',
+  'puente de gluteos':'OSkMCa7BWKA','glute bridge':'OSkMCa7BWKA',
+  'pantorrillas':'gwLzBMcNkl4','calf raises':'gwLzBMcNkl4',
+  'step up':'4GJ8PYYcUtE','sentadilla goblet':'MxsFDiLDAUE','goblet squat':'MxsFDiLDAUE',
+  'sentadilla pistol':'vq5-vdgJc0I','pistol squat':'vq5-vdgJc0I',
+  'jump squat':'A-cFYWvaHr0','saltos de sentadilla':'A-cFYWvaHr0',
+  'renegade row':'Hy4T3QSFqgY','remo renegado':'Hy4T3QSFqgY',
+  'buenos dias':'JCXUYuzwNrM','good mornings':'JCXUYuzwNrM',
+  'plancha lateral':'K2VljzCC16g','side plank':'K2VljzCC16g',
+  'plancha':'ASdvN_XEl_c','plank':'ASdvN_XEl_c',
+  'crunch':'Xyd_fa5zoEU','abdominales':'Xyd_fa5zoEU',
+  'russian twist':'wkD8rjkodUI',
+  'mountain climbers':'nmwgirgXLYM','mountain climber':'nmwgirgXLYM',
+  'burpees':'dZgVxmf6jkA','burpee':'dZgVxmf6jkA',
+  'jumping jacks':'c4DAnQ6DtF8',
+  'elevacion de piernas':'JB2oyawG9KI','leg raise':'JB2oyawG9KI',
+  'v-up':'iP2fjAlTtdA','bicycle crunch':'AOVS7GzBGxI','bicicleta':'AOVS7GzBGxI',
+  'dragon flag':'pvIjChsTqEs','crunch en polea':'AV5PmePzDk0',
+  'farmers walk':'Fkzk_RqlYig','paso del granjero':'Fkzk_RqlYig',
 };
 
-function getYouTubeVideoId(name){
-  const lower = name.toLowerCase().trim()
-    // Normalize accents and special chars
+// Female videos — same exercises, channels focused on women (Heather Robertson, Caroline Girvan, etc.)
+const VIDEOS_FEMALE = {
+  'press banca plano':'2tM1LFFxeKg','press banca':'2tM1LFFxeKg','bench press':'2tM1LFFxeKg',
+  'press inclinado':'wZBTY7OEeWQ','incline press':'wZBTY7OEeWQ',
+  'aperturas':'O-ELrGHXcWQ','chest fly':'O-ELrGHXcWQ',
+  'press con mancuernas':'OD9GEFfEroo','dumbbell press':'OD9GEFfEroo',
+  'flexiones':'RZkWoB3BBJQ','push ups':'RZkWoB3BBJQ','push up':'RZkWoB3BBJQ',
+  'flexiones con rodillas':'RZkWoB3BBJQ','modified push up':'RZkWoB3BBJQ',
+  'peso muerto rumano':'FqKSGQ7bFO8','romanian deadlift':'FqKSGQ7bFO8',
+  'peso muerto':'FqKSGQ7bFO8','deadlift':'FqKSGQ7bFO8',
+  'remo con mancuerna':'KWPNGrJE_Kw','dumbbell row':'KWPNGrJE_Kw',
+  'remo con barra':'kBWAon7ItDw','barbell row':'kBWAon7ItDw',
+  'remo en polea':'Bsy7TLSK67Y','seated cable row':'Bsy7TLSK67Y',
+  'jalon al pecho':'XB-8JlBFsn8','lat pulldown':'XB-8JlBFsn8','jalon':'XB-8JlBFsn8',
+  'dominadas':'0wGjSWCOTr8','pull ups':'0wGjSWCOTr8','chin ups':'0wGjSWCOTr8',
+  'superman':'QyFBNAEiCtI','hiperextensiones':'QyFBNAEiCtI',
+  'press militar':'YBl40TL_eXQ','overhead press':'YBl40TL_eXQ',
+  'press hombros':'YBl40TL_eXQ','shoulder press':'YBl40TL_eXQ',
+  'elevaciones laterales':'PqEVvXImxWo','lateral raises':'PqEVvXImxWo',
+  'elevaciones frontales':'sOoBOHGSRiY','front raises':'sOoBOHGSRiY',
+  'pajaros':'8DxbIBAqBWI','rear delt':'8DxbIBAqBWI','face pull':'hsHTcMDhgxo',
+  'curl de biceps':'7D8wpRR_QyA','bicep curl':'7D8wpRR_QyA','curl mancuerna':'7D8wpRR_QyA',
+  'curl alternado':'sAq_ocpS3Ig','curl martillo':'TwD-YGVP4Bk','hammer curl':'TwD-YGVP4Bk',
+  'fondos en silla':'IeqCpQF5-EU','chair dips':'IeqCpQF5-EU','fondos':'IeqCpQF5-EU',
+  'extension de triceps':'kgRSF-r3Fqs','tricep extension':'kgRSF-r3Fqs',
+  'patada de triceps':'GVKIhFg_TW0','kickback':'GVKIhFg_TW0',
+  'sentadilla bulgara':'1Hm_Z7qNnEU','bulgarian split squat':'1Hm_Z7qNnEU',
+  'sentadilla sumo':'3IXaZHkWnZI','sumo squat':'3IXaZHkWnZI',
+  'sentadilla':'1sDVEJPfMo8','squat':'1sDVEJPfMo8',
+  'prensa de piernas':'IZxyjW7MPJQ','leg press':'IZxyjW7MPJQ',
+  'extension de cuadriceps':'YyvSfVjQeL0','leg extension':'YyvSfVjQeL0',
+  'curl de isquiotibiales':'RxRkWs1vMYU','leg curl':'RxRkWs1vMYU','curl femoral':'RxRkWs1vMYU',
+  'zancadas':'eFWCn5iEbTU','lunges':'eFWCn5iEbTU','estocadas':'eFWCn5iEbTU',
+  'hip thrust':'SEdqd6kQeA4','empuje de cadera':'SEdqd6kQeA4',
+  'puente de gluteos':'BNIkCF-kY6Y','glute bridge':'BNIkCF-kY6Y',
+  'abductores':'gCKNjNAkb2A','patada de gluteo':'jHiGKkW_OHY','donkey kick':'jHiGKkW_OHY',
+  'elevacion de pierna lateral':'LuVCTsNrCMo','fire hydrant':'LuVCTsNrCMo',
+  'pantorrillas':'gwLzBMcNkl4','calf raises':'gwLzBMcNkl4',
+  'sentadilla goblet':'1sDVEJPfMo8','goblet squat':'1sDVEJPfMo8',
+  'step up':'_2EtSCbHRxo','jump squat':'B5GZMokjGsQ','saltos de sentadilla':'B5GZMokjGsQ',
+  'plancha lateral':'K2VljzCC16g','side plank':'K2VljzCC16g',
+  'plancha':'kM_H8nJFfUs','plank':'kM_H8nJFfUs',
+  'crunch':'WflkZoZFSfA','abdominales':'WflkZoZFSfA',
+  'russian twist':'G_7x_3r_qXk',
+  'mountain climbers':'mYDKH3FtVGI','mountain climber':'mYDKH3FtVGI',
+  'burpees':'5fHgAorHNFM','burpee':'5fHgAorHNFM',
+  'jumping jacks':'iSSAk4XCsRA',
+  'elevacion de piernas':'TbFkXOLXSWU','leg raise':'TbFkXOLXSWU',
+  'bicycle crunch':'9FGilxCbdz8','bicicleta':'9FGilxCbdz8',
+  'superman':' QyFBNAEiCtI','buenos dias':'FqKSGQ7bFO8',
+  'farmers walk':'Fkzk_RqlYig',
+};
+
+function normalizeEx(s){
+  return s.toLowerCase()
     .replace(/[áà]/g,'a').replace(/[éè]/g,'e').replace(/[íì]/g,'i')
-    .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/ñ/g,'n')
+    .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/[ñ]/g,'n')
     .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+}
 
-  // Build normalized key map once
-  const normalized = {};
-  for(const [k,v] of Object.entries(EXERCISE_VIDEOS)){
-    const nk = k.toLowerCase()
-      .replace(/[áà]/g,'a').replace(/[éè]/g,'e').replace(/[íì]/g,'i')
-      .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/ñ/g,'n')
-      .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
-    normalized[nk] = v;
+function getYouTubeVideoId(name){
+  const genero = state.perfil?.genero || '';
+  const lower = normalizeEx(name);
+
+  // Pick the right map based on gender
+  // For 'other' — randomly mix male and female
+  let primaryMap, fallbackMap;
+  if(genero === 'female'){
+    primaryMap = VIDEOS_FEMALE;
+    fallbackMap = VIDEOS_MALE;
+  } else if(genero === 'male'){
+    primaryMap = VIDEOS_MALE;
+    fallbackMap = VIDEOS_FEMALE;
+  } else {
+    // Mix: alternate randomly
+    primaryMap = Math.random() > 0.5 ? VIDEOS_MALE : VIDEOS_FEMALE;
+    fallbackMap = primaryMap === VIDEOS_MALE ? VIDEOS_FEMALE : VIDEOS_MALE;
   }
 
-  // Exact match
-  if(normalized[lower]) return normalized[lower];
-
-  // Partial match — longer keys first
-  const keys = Object.keys(normalized).sort((a,b) => b.length - a.length);
-  for(const k of keys){
-    if(lower.includes(k) || k.includes(lower)) return normalized[k];
-  }
-
-  // Word-based match — find key that shares most words with exercise name
-  const nameWords = lower.split(' ').filter(w => w.length > 3);
-  let bestMatch = null, bestScore = 0;
-  for(const [k,v] of Object.entries(normalized)){
-    const keyWords = k.split(' ').filter(w => w.length > 3);
-    const shared = nameWords.filter(w => keyWords.some(kw => kw.includes(w) || w.includes(kw)));
-    if(shared.length > bestScore){
-      bestScore = shared.length;
-      bestMatch = v;
+  function findInMap(map){
+    // Build normalized map
+    const nm = {};
+    for(const [k,v] of Object.entries(map)){
+      nm[normalizeEx(k)] = v;
     }
+    // Exact
+    if(nm[lower]) return nm[lower];
+    // Partial — longer first
+    const keys = Object.keys(nm).sort((a,b)=>b.length-a.length);
+    for(const k of keys){
+      if(lower.includes(k)||k.includes(lower)) return nm[k];
+    }
+    // Word match
+    const nameWords = lower.split(' ').filter(w=>w.length>3);
+    let best=null,bestScore=0;
+    for(const [k,v] of Object.entries(nm)){
+      const kw=k.split(' ').filter(w=>w.length>3);
+      const shared=nameWords.filter(w=>kw.some(x=>x.includes(w)||w.includes(x)));
+      if(shared.length>bestScore){bestScore=shared.length;best=v;}
+    }
+    if(bestScore>=1) return best;
+    return null;
   }
-  if(bestScore >= 1) return bestMatch;
 
-  return null;
+  return findInMap(primaryMap) || findInMap(fallbackMap) || null;
 }
 
 function ytSearchEmbed(name){
   const videoId = getYouTubeVideoId(name);
   if(videoId){
-    return `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1&fs=1`;
+    return `https://www.youtube-nocookie.com/embed/${videoId.trim()}?rel=0&modestbranding=1&playsinline=1&fs=1`;
   }
-  // Fallback: general exercise tutorial
-  return `https://www.youtube-nocookie.com/embed/IODxDxX7oi4?rel=0&modestbranding=1&playsinline=1`;
+  // Fallback by gender
+  const g = state.perfil?.genero || '';
+  const fallback = g==='female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
+  return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
 }
 function ytSearchUrl(name){
   const g=state.perfil.genero;
