@@ -1485,17 +1485,82 @@ const EXERCISE_VIDEOS = {
   'bicycle crunch':         'AOVS7GzBGxI',
   'crunch en polea':        'AV5PmePzDk0',
   'dragon flag':            'pvIjChsTqEs',
+  // ── MANCUERNAS ESPECÍFICAS ─────────────────────────────────────
+  'press de hombros con mancuernas': 'qEwKCR5JCog',
+  'press de pecho con mancuernas':   'QsYre__-aro',
+  'remo con mancuernas':             'roCP2zo-LEo',
+  'curl de biceps con mancuernas':   'ykJmrZ5v0Oo',
+  'extensión de triceps con mancuerna': 'nRiJVZDpdL0',
+  'zancadas con mancuernas':         'QOVaHwm-Q6U',
+  'sentadilla con mancuernas':       'ultWZbUMPL8',
+  'peso muerto con mancuernas':      'op9kVnSso6Q',
+  'swing con mancuerna':             'YZm85bTH_RU',
+  'goblet squat':                    'MxsFDiLDAUE',
+  'sentadilla goblet':               'MxsFDiLDAUE',
+  'press de suelo':                  'QsYre__-aro',
+  'floor press':                     'QsYre__-aro',
+  'renegade row':                    'Hy4T3QSFqgY',
+  'remo renegado':                   'Hy4T3QSFqgY',
+  'curl de concentración':           'Xs2cBmFCXrM',
+  'concentration curl':              'Xs2cBmFCXrM',
+  'extensión por encima':            'nRiJVZDpdL0',
+  'overhead extension':              'nRiJVZDpdL0',
+  'paso del granjero':               'Fkzk_RqlYig',
+  'farmers walk':                    'Fkzk_RqlYig',
+  'press inclinado mancuernas':      'DbFgADa2PL8',
+  'curl de muñeca':                  'NFzTWp2qpiE',
+  'wrist curl':                      'NFzTWp2qpiE',
+  'rotación de hombro':              'ttvANaUBEiY',
+  'hip hinge':                       'JCXUYuzwNrM',
+  'bisagra de cadera':               'JCXUYuzwNrM',
+  'buenos dias':                     'JCXUYuzwNrM',
+  'good mornings':                   'JCXUYuzwNrM',
+  'sentadilla lateral':              'Zb5pYWkUMqM',
+  'lateral squat':                   'Zb5pYWkUMqM',
+  'press de triceps':                'vB5OHsJ3EME',
+  'curl inverso':                    'kwG2ipFRgfo',
+  'reverse curl':                    'kwG2ipFRgfo',
 };
 
 function getYouTubeVideoId(name){
-  const lower = name.toLowerCase().trim();
-  // Exact match
-  if(EXERCISE_VIDEOS[lower]) return EXERCISE_VIDEOS[lower];
-  // Partial match — longer keys first for accuracy
-  const keys = Object.keys(EXERCISE_VIDEOS).sort((a,b) => b.length - a.length);
-  for(const k of keys){
-    if(lower.includes(k)) return EXERCISE_VIDEOS[k];
+  const lower = name.toLowerCase().trim()
+    // Normalize accents and special chars
+    .replace(/[áà]/g,'a').replace(/[éè]/g,'e').replace(/[íì]/g,'i')
+    .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/ñ/g,'n')
+    .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+
+  // Build normalized key map once
+  const normalized = {};
+  for(const [k,v] of Object.entries(EXERCISE_VIDEOS)){
+    const nk = k.toLowerCase()
+      .replace(/[áà]/g,'a').replace(/[éè]/g,'e').replace(/[íì]/g,'i')
+      .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/ñ/g,'n')
+      .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+    normalized[nk] = v;
   }
+
+  // Exact match
+  if(normalized[lower]) return normalized[lower];
+
+  // Partial match — longer keys first
+  const keys = Object.keys(normalized).sort((a,b) => b.length - a.length);
+  for(const k of keys){
+    if(lower.includes(k) || k.includes(lower)) return normalized[k];
+  }
+
+  // Word-based match — find key that shares most words with exercise name
+  const nameWords = lower.split(' ').filter(w => w.length > 3);
+  let bestMatch = null, bestScore = 0;
+  for(const [k,v] of Object.entries(normalized)){
+    const keyWords = k.split(' ').filter(w => w.length > 3);
+    const shared = nameWords.filter(w => keyWords.some(kw => kw.includes(w) || w.includes(kw)));
+    if(shared.length > bestScore){
+      bestScore = shared.length;
+      bestMatch = v;
+    }
+  }
+  if(bestScore >= 1) return bestMatch;
+
   return null;
 }
 
