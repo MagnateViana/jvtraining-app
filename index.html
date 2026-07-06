@@ -1340,191 +1340,62 @@ function ytUrlToEmbed(url){
   return url;
 }
 // ── YOUTUBE VIDEO SYSTEM ─────────────────────────────────────────────────────
-// Male videos — from channels like Jeremy Ethier, ScottHermanFitness, AthleanX
-const VIDEOS_MALE = {
-  'press banca plano':'rT7DgCr-3pg','press banca':'rT7DgCr-3pg','bench press':'rT7DgCr-3pg',
-  'press inclinado':'DbFgADa2PL8','incline press':'DbFgADa2PL8','incline bench':'DbFgADa2PL8',
-  'press declinado':'HG-JlaF-RHE',
-  'aperturas':'eozdVDA78K0','chest fly':'eozdVDA78K0','cruces en polea':'taI4XduLpTk',
-  'press con mancuernas':'QsYre__-aro','dumbbell press':'QsYre__-aro',
-  'flexiones diamante':'J0DXl9oSJEY','flexiones con pies':'PKnMsUwYRac',
-  'flexiones':'IODxDxX7oi4','push ups':'IODxDxX7oi4','push up':'IODxDxX7oi4',
-  'peso muerto rumano':'JCXUYuzwNrM','romanian deadlift':'JCXUYuzwNrM',
-  'peso muerto':'op9kVnSso6Q','deadlift':'op9kVnSso6Q',
-  'remo con barra':'kBWAon7ItDw','barbell row':'kBWAon7ItDw',
-  'remo con mancuerna':'roCP2zo-LEo','dumbbell row':'roCP2zo-LEo',
-  'remo en polea':'GZbfZ033f74','seated cable row':'GZbfZ033f74','remo sentado':'GZbfZ033f74',
-  'jalon al pecho':'CAwf7n6Luuc','lat pulldown':'CAwf7n6Luuc','jalon':'CAwf7n6Luuc',
-  'dominadas':'eGo4IYlbE5g','pull ups':'eGo4IYlbE5g','chin ups':'eGo4IYlbE5g',
-  'pullover':'sXYRqwnVHyg','pull over':'sXYRqwnVHyg',
-  'superman':'z6PJMT2y8GQ','hiperextensiones':'ph3pddpKzzw',
-  'press militar':'qEwKCR5JCog','overhead press':'qEwKCR5JCog','press arnold':'r1NGF2OoMao',
-  'press hombros':'qEwKCR5JCog','shoulder press':'qEwKCR5JCog',
-  'elevaciones laterales':'ygY0jqpSTFU','lateral raises':'ygY0jqpSTFU',
-  'elevaciones frontales':'sOoBOHGSRiY','front raises':'sOoBOHGSRiY',
-  'pajaros':'ttvANaUBEiY','rear delt':'ttvANaUBEiY','face pull':'hsHTcMDhgxo',
-  'curl con barra':'kwG2ipFRgfo','barbell curl':'kwG2ipFRgfo',
-  'curl de biceps':'ykJmrZ5v0Oo','bicep curl':'ykJmrZ5v0Oo','curl mancuerna':'ykJmrZ5v0Oo',
-  'curl alternado':'sAq_ocpS3Ig','alternating curl':'sAq_ocpS3Ig',
-  'curl martillo':'TwD-YGVP4Bk','hammer curl':'TwD-YGVP4Bk',
-  'curl en polea':'NFzTWp2qpiE','cable curl':'NFzTWp2qpiE',
-  'fondos en silla':'2z8JmcrW-As','chair dips':'2z8JmcrW-As',
-  'fondos':'wjUmnZH528Y','dips':'wjUmnZH528Y',
-  'press frances':'d_KZxkY_0cM','skull crusher':'d_KZxkY_0cM',
-  'extension de triceps':'nRiJVZDpdL0','tricep extension':'nRiJVZDpdL0',
-  'patada de triceps':'6SS6K3lAwZ8','kickback':'6SS6K3lAwZ8',
-  'polea triceps':'vB5OHsJ3EME','pushdown':'vB5OHsJ3EME',
-  'sentadilla bulgara':'vDFg9CWMJKE','bulgarian split squat':'vDFg9CWMJKE',
-  'sentadilla sumo':'Zb5pYWkUMqM','sumo squat':'Zb5pYWkUMqM',
-  'sentadilla':'ultWZbUMPL8','squat':'ultWZbUMPL8',
-  'prensa de piernas':'IZxyjW7MPJQ','leg press':'IZxyjW7MPJQ',
-  'extension de cuadriceps':'YyvSfVjQeL0','leg extension':'YyvSfVjQeL0',
-  'curl de isquiotibiales':'1Tq3QdYUuHs','leg curl':'1Tq3QdYUuHs','curl femoral':'1Tq3QdYUuHs',
-  'zancadas':'QOVaHwm-Q6U','lunges':'QOVaHwm-Q6U','estocadas':'QOVaHwm-Q6U',
-  'hip thrust':'xDmFkJxPzeM','empuje de cadera':'xDmFkJxPzeM',
-  'puente de gluteos':'OSkMCa7BWKA','glute bridge':'OSkMCa7BWKA',
-  'pantorrillas':'gwLzBMcNkl4','calf raises':'gwLzBMcNkl4',
-  'step up':'4GJ8PYYcUtE','sentadilla goblet':'MxsFDiLDAUE','goblet squat':'MxsFDiLDAUE',
-  'sentadilla pistol':'vq5-vdgJc0I','pistol squat':'vq5-vdgJc0I',
-  'jump squat':'A-cFYWvaHr0','saltos de sentadilla':'A-cFYWvaHr0',
-  'renegade row':'Hy4T3QSFqgY','remo renegado':'Hy4T3QSFqgY',
-  'buenos dias':'JCXUYuzwNrM','good mornings':'JCXUYuzwNrM',
-  'plancha lateral':'K2VljzCC16g','side plank':'K2VljzCC16g',
-  'plancha':'ASdvN_XEl_c','plank':'ASdvN_XEl_c',
-  'crunch':'Xyd_fa5zoEU','abdominales':'Xyd_fa5zoEU',
-  'russian twist':'wkD8rjkodUI',
-  'mountain climbers':'nmwgirgXLYM','mountain climber':'nmwgirgXLYM',
-  'burpees':'dZgVxmf6jkA','burpee':'dZgVxmf6jkA',
-  'jumping jacks':'c4DAnQ6DtF8',
-  'elevacion de piernas':'JB2oyawG9KI','leg raise':'JB2oyawG9KI',
-  'v-up':'iP2fjAlTtdA','bicycle crunch':'AOVS7GzBGxI','bicicleta':'AOVS7GzBGxI',
-  'dragon flag':'pvIjChsTqEs','crunch en polea':'AV5PmePzDk0',
-  'farmers walk':'Fkzk_RqlYig',
-  'press declinado':'HG-JlaF-RHE','press de barra declinado':'HG-JlaF-RHE',
-  'pullover':'sXYRqwnVHyg','pull over':'sXYRqwnVHyg',
-  'pullover con barra':'sXYRqwnVHyg','pullover en banco':'sXYRqwnVHyg','paso del granjero':'Fkzk_RqlYig',
-  'press declinado con barra':'HG-JlaF-RHE',
-  'press de barra declinado':'HG-JlaF-RHE',
-  'pullover con barra':'sXYRqwnVHyg',
-  'pullover con mancuerna':'sXYRqwnVHyg',
-  'pullover en banco':'sXYRqwnVHyg',
-};
-
-// Female videos — same exercises, channels focused on women (Heather Robertson, Caroline Girvan, etc.)
-const VIDEOS_FEMALE = {
-  'press banca plano':'2tM1LFFxeKg','press banca':'2tM1LFFxeKg','bench press':'2tM1LFFxeKg',
-  'press inclinado':'wZBTY7OEeWQ','incline press':'wZBTY7OEeWQ',
-  'aperturas':'O-ELrGHXcWQ','chest fly':'O-ELrGHXcWQ',
-  'press con mancuernas':'OD9GEFfEroo','dumbbell press':'OD9GEFfEroo',
-  'flexiones':'RZkWoB3BBJQ','push ups':'RZkWoB3BBJQ','push up':'RZkWoB3BBJQ',
-  'flexiones con rodillas':'RZkWoB3BBJQ','modified push up':'RZkWoB3BBJQ',
-  'peso muerto rumano':'FqKSGQ7bFO8','romanian deadlift':'FqKSGQ7bFO8',
-  'peso muerto':'FqKSGQ7bFO8','deadlift':'FqKSGQ7bFO8',
-  'remo con mancuerna':'KWPNGrJE_Kw','dumbbell row':'KWPNGrJE_Kw',
-  'remo con barra':'kBWAon7ItDw','barbell row':'kBWAon7ItDw',
-  'remo en polea':'Bsy7TLSK67Y','seated cable row':'Bsy7TLSK67Y',
-  'jalon al pecho':'XB-8JlBFsn8','lat pulldown':'XB-8JlBFsn8','jalon':'XB-8JlBFsn8',
-  'dominadas':'0wGjSWCOTr8','pull ups':'0wGjSWCOTr8','chin ups':'0wGjSWCOTr8',
-  'superman':'QyFBNAEiCtI','hiperextensiones':'QyFBNAEiCtI',
-  'press militar':'YBl40TL_eXQ','overhead press':'YBl40TL_eXQ',
-  'press hombros':'YBl40TL_eXQ','shoulder press':'YBl40TL_eXQ',
-  'elevaciones laterales':'PqEVvXImxWo','lateral raises':'PqEVvXImxWo',
-  'elevaciones frontales':'sOoBOHGSRiY','front raises':'sOoBOHGSRiY',
-  'pajaros':'8DxbIBAqBWI','rear delt':'8DxbIBAqBWI','face pull':'hsHTcMDhgxo',
-  'curl de biceps':'7D8wpRR_QyA','bicep curl':'7D8wpRR_QyA','curl mancuerna':'7D8wpRR_QyA',
-  'curl alternado':'sAq_ocpS3Ig','curl martillo':'TwD-YGVP4Bk','hammer curl':'TwD-YGVP4Bk',
-  'fondos en silla':'IeqCpQF5-EU','chair dips':'IeqCpQF5-EU','fondos':'IeqCpQF5-EU',
-  'extension de triceps':'kgRSF-r3Fqs','tricep extension':'kgRSF-r3Fqs',
-  'patada de triceps':'GVKIhFg_TW0','kickback':'GVKIhFg_TW0',
-  'sentadilla bulgara':'1Hm_Z7qNnEU','bulgarian split squat':'1Hm_Z7qNnEU',
-  'sentadilla sumo':'3IXaZHkWnZI','sumo squat':'3IXaZHkWnZI',
-  'sentadilla':'1sDVEJPfMo8','squat':'1sDVEJPfMo8',
-  'prensa de piernas':'IZxyjW7MPJQ','leg press':'IZxyjW7MPJQ',
-  'extension de cuadriceps':'YyvSfVjQeL0','leg extension':'YyvSfVjQeL0',
-  'curl de isquiotibiales':'RxRkWs1vMYU','leg curl':'RxRkWs1vMYU','curl femoral':'RxRkWs1vMYU',
-  'zancadas':'eFWCn5iEbTU','lunges':'eFWCn5iEbTU','estocadas':'eFWCn5iEbTU',
-  'hip thrust':'SEdqd6kQeA4','empuje de cadera':'SEdqd6kQeA4',
-  'puente de gluteos':'BNIkCF-kY6Y','glute bridge':'BNIkCF-kY6Y',
-  'abductores':'gCKNjNAkb2A','patada de gluteo':'jHiGKkW_OHY','donkey kick':'jHiGKkW_OHY',
-  'elevacion de pierna lateral':'LuVCTsNrCMo','fire hydrant':'LuVCTsNrCMo',
-  'pantorrillas':'gwLzBMcNkl4','calf raises':'gwLzBMcNkl4',
-  'sentadilla goblet':'1sDVEJPfMo8','goblet squat':'1sDVEJPfMo8',
-  'step up':'_2EtSCbHRxo','jump squat':'B5GZMokjGsQ','saltos de sentadilla':'B5GZMokjGsQ',
-  'plancha lateral':'K2VljzCC16g','side plank':'K2VljzCC16g',
-  'plancha':'kM_H8nJFfUs','plank':'kM_H8nJFfUs',
-  'crunch':'WflkZoZFSfA','abdominales':'WflkZoZFSfA',
-  'russian twist':'G_7x_3r_qXk',
-  'mountain climbers':'mYDKH3FtVGI','mountain climber':'mYDKH3FtVGI',
-  'burpees':'5fHgAorHNFM','burpee':'5fHgAorHNFM',
-  'jumping jacks':'iSSAk4XCsRA',
-  'elevacion de piernas':'TbFkXOLXSWU','leg raise':'TbFkXOLXSWU',
-  'bicycle crunch':'9FGilxCbdz8','bicicleta':'9FGilxCbdz8',
-  'superman':' QyFBNAEiCtI','buenos dias':'FqKSGQ7bFO8',
-  'farmers walk':'Fkzk_RqlYig',
-};
+// Cache to avoid duplicate API calls
+const ytVideoCache = {};
 
 function normalizeEx(s){
   return s.toLowerCase()
     .replace(/[áà]/g,'a').replace(/[éè]/g,'e').replace(/[íì]/g,'i')
     .replace(/[óò]/g,'o').replace(/[úù]/g,'u').replace(/[ñ]/g,'n')
-    .replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+    .replace(/[^a-z0-9 ]/g,' ').replace(/  +/g,' ').trim();
 }
 
-function getYouTubeVideoId(name){
-  const genero = state.perfil?.genero || '';
-  const lower = normalizeEx(name);
-
-  // Pick the right map based on gender
-  // For 'other' — randomly mix male and female
-  let primaryMap, fallbackMap;
-  if(genero === 'female'){
-    primaryMap = VIDEOS_FEMALE;
-    fallbackMap = VIDEOS_MALE;
-  } else if(genero === 'male'){
-    primaryMap = VIDEOS_MALE;
-    fallbackMap = VIDEOS_FEMALE;
-  } else {
-    // Mix: alternate randomly
-    primaryMap = Math.random() > 0.5 ? VIDEOS_MALE : VIDEOS_FEMALE;
-    fallbackMap = primaryMap === VIDEOS_MALE ? VIDEOS_FEMALE : VIDEOS_MALE;
+function getGenderTerm(nombre){
+  const g = state.perfil?.genero || '';
+  const lang = state.lang || 'es';
+  if(g === 'female'){
+    return lang === 'en' ? 'women female workout' : 'mujer femenino ejercicio';
+  } else if(g === 'male'){
+    return lang === 'en' ? 'men male workout' : 'hombre masculino ejercicio';
   }
-
-  function findInMap(map){
-    // Build normalized map
-    const nm = {};
-    for(const [k,v] of Object.entries(map)){
-      nm[normalizeEx(k)] = v;
-    }
-    // Exact
-    if(nm[lower]) return nm[lower];
-    // Partial — longer first
-    const keys = Object.keys(nm).sort((a,b)=>b.length-a.length);
-    for(const k of keys){
-      if(lower.includes(k)||k.includes(lower)) return nm[k];
-    }
-    // Word match
-    const nameWords = lower.split(' ').filter(w=>w.length>3);
-    let best=null,bestScore=0;
-    for(const [k,v] of Object.entries(nm)){
-      const kw=k.split(' ').filter(w=>w.length>3);
-      const shared=nameWords.filter(w=>kw.some(x=>x.includes(w)||w.includes(x)));
-      if(shared.length>bestScore){bestScore=shared.length;best=v;}
-    }
-    if(bestScore>=1) return best;
-    return null;
-  }
-
-  return findInMap(primaryMap) || findInMap(fallbackMap) || null;
+  // other: random mix
+  return Math.random() > 0.5
+    ? (lang === 'en' ? 'men workout tutorial' : 'hombre ejercicio tutorial')
+    : (lang === 'en' ? 'women workout tutorial' : 'mujer ejercicio tutorial');
 }
 
-function ytSearchEmbed(name){
-  const videoId = getYouTubeVideoId(name);
-  if(videoId){
-    return `https://www.youtube-nocookie.com/embed/${videoId.trim()}?rel=0&modestbranding=1&playsinline=1&fs=1`;
+async function searchYouTubeVideo(nombre){
+  const cacheKey = normalizeEx(nombre) + '_' + (state.perfil?.genero||'');
+  if(ytVideoCache[cacheKey]) return ytVideoCache[cacheKey];
+
+  try {
+    const lang = state.lang || 'es';
+    const genderTerm = getGenderTerm(nombre);
+    const tutorialTerm = lang === 'en' ? 'exercise tutorial how to' : 'ejercicio tutorial como hacer';
+    const q = `${nombre} ${tutorialTerm} ${genderTerm}`;
+
+    const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}`);
+    const data = await resp.json();
+
+    if(data.success && data.videos && data.videos.length > 0){
+      // Pick first available video
+      const video = data.videos[0];
+      const embedUrl = `https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
+      ytVideoCache[cacheKey] = embedUrl;
+      return embedUrl;
+    }
+  } catch(e){
+    console.error('YouTube search error:', e);
   }
+  return null;
+}
+
+async function ytSearchEmbed(nombre){
+  const url = await searchYouTubeVideo(nombre);
+  if(url) return url;
   // Fallback by gender
   const g = state.perfil?.genero || '';
-  const fallback = g==='female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
+  const fallback = g === 'female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
   return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
 }
 function ytSearchUrl(name){
@@ -1534,7 +1405,7 @@ function ytSearchUrl(name){
 }
 function getMiVideo(name){ const n=s=>s.toLowerCase().trim(); return state.misVideos.find(v=>n(v.ejercicio)===n(name)||n(name).includes(n(v.ejercicio))); }
 
-function toggleVideo(idx, nombre){
+async function toggleVideo(idx, nombre){
   const sec=document.getElementById('vs-'+idx);
   const chev=document.getElementById('chev-'+idx);
   if(sec.classList.contains('open')){ sec.classList.remove('open'); chev.classList.remove('open'); sec.innerHTML=''; return; }
@@ -1767,7 +1638,7 @@ function exCarouselGo(uid, total, offset, newIdx){
 function exCarouselNext(uid,total,offset){ exCarouselGo(uid,total,offset,Math.min((carouselIdx[uid]||0)+1,total-1)); }
 function exCarouselPrev(uid,total,offset){ exCarouselGo(uid,total,offset,Math.max((carouselIdx[uid]||0)-1,0)); }
 
-function loadVideoCard(idx, nombre){
+async function loadVideoCard(idx, nombre){
   const sec = document.getElementById('vs-'+idx);
   if(!sec) return;
   const mv = getMiVideo(nombre);
@@ -1780,12 +1651,21 @@ function loadVideoCard(idx, nombre){
     </div><div style="font-size:11px;color:var(--text3);padding:4px 0 8px">⭐ Tu video personalizado</div>`;
     return;
   }
-  const ytEmbed = ytSearchEmbed(nombre);
-  sec.innerHTML=`<div style="position:relative;padding-top:56.25%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px">
+  // Show loading spinner
+  const loadDiv = document.createElement('div');
+  loadDiv.id = 'vc-loading-'+idx;
+  loadDiv.style.cssText = 'height:160px;display:flex;align-items:center;justify-content:center';
+  loadDiv.innerHTML = '<div class="spinner"></div>';
+  sec.insertBefore(loadDiv, sec.firstChild);
+  const ytEmbed = await ytSearchEmbed(nombre);
+  const ld = document.getElementById('vc-loading-'+idx);
+  if(ld) ld.remove();
+  const iframe = `<div style="position:relative;padding-top:56.25%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px">
     <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
       src="${ytEmbed}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
       allowfullscreen playsinline></iframe>
-  </div><div style="font-size:11px;color:var(--text3);padding:4px 0 8px">📹 YouTube — dentro de la app</div>`;
+  </div><div style="font-size:11px;color:var(--text3);padding:4px 0 8px">📹 YouTube</div>`;
+  sec.insertAdjacentHTML('afterbegin', iframe);
 }
 
 async function generarRutina(){
@@ -2596,10 +2476,13 @@ const usedVideoIds = new Set();
 async function loadWmVideo(nombre, vidId){
   const ph = document.getElementById(vidId+'-ph');
   if(!ph) return;
+  ph.innerHTML = '<div style="height:160px;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
   const mv = getMiVideo(nombre);
-  const embed = mv ? ytUrlToEmbed(mv.url) : ytSearchEmbed(nombre);
+  const embed = mv ? ytUrlToEmbed(mv.url) : await ytSearchEmbed(nombre);
   const label = mv ? '⭐ Tu video personalizado' : '📹 YouTube';
-  ph.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
+  const ph2 = document.getElementById(vidId+'-ph');
+  if(!ph2) return;
+  ph2.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
     <div style="position:relative;padding-top:56.25%">
       <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
         src="${embed}"
