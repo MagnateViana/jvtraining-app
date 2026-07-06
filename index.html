@@ -1364,28 +1364,54 @@ function getGenderTerm(nombre){
     : (lang === 'en' ? 'women workout tutorial' : 'mujer ejercicio tutorial');
 }
 
+// Track used video IDs per session to avoid repeats
+const ytUsedIds = new Set();
+
 async function searchYouTubeVideo(nombre){
-  const cacheKey = normalizeEx(nombre) + '_' + (state.perfil?.genero||'');
-  if(ytVideoCache[cacheKey]) return ytVideoCache[cacheKey];
+  const lang = state.lang || 'es';
+  const g = state.perfil?.genero || '';
 
-  try {
-    const lang = state.lang || 'es';
-    const genderTerm = getGenderTerm(nombre);
-    const tutorialTerm = lang === 'en' ? 'exercise tutorial how to' : 'ejercicio tutorial como hacer';
-    const q = `${nombre} ${tutorialTerm} ${genderTerm}`;
+  // Build gender term
+  let genderTerm = '';
+  if(g === 'female'){
+    genderTerm = lang === 'en' ? 'women female' : 'mujer';
+  } else if(g === 'male'){
+    genderTerm = lang === 'en' ? 'men male' : 'hombre';
+  } else {
+    genderTerm = Math.random() > 0.5 ? (lang === 'en' ? 'men' : 'hombre') : (lang === 'en' ? 'women' : 'mujer');
+  }
 
-    const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}`);
-    const data = await resp.json();
+  // Language-specific search terms
+  const langTerms = {
+    es: `${nombre} ejercicio tutorial gym`,
+    en: `${nombre} exercise tutorial gym`,
+    pt: `${nombre} exercício tutorial academia`,
+    fr: `${nombre} exercice tutoriel salle`
+  };
+  const baseTerm = langTerms[lang] || langTerms.es;
 
-    if(data.success && data.videos && data.videos.length > 0){
-      // Pick first available video
-      const video = data.videos[0];
-      const embedUrl = `https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
-      ytVideoCache[cacheKey] = embedUrl;
-      return embedUrl;
+  // Try with gender first, then without
+  const queries = [
+    `${baseTerm} ${genderTerm}`,
+    baseTerm,
+  ];
+
+  for(const q of queries){
+    try {
+      // Add language region filter to backend call
+      const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${lang}`);
+      const data = await resp.json();
+
+      if(data.success && data.videos && data.videos.length > 0){
+        // Pick first video NOT already used this session
+        const fresh = data.videos.find(v => !ytUsedIds.has(v.id));
+        const video = fresh || data.videos[0];
+        ytUsedIds.add(video.id);
+        return `https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
+      }
+    } catch(e){
+      console.error('YouTube search error:', e);
     }
-  } catch(e){
-    console.error('YouTube search error:', e);
   }
   return null;
 }
@@ -1393,7 +1419,6 @@ async function searchYouTubeVideo(nombre){
 async function ytSearchEmbed(nombre){
   const url = await searchYouTubeVideo(nombre);
   if(url) return url;
-  // Fallback by gender
   const g = state.perfil?.genero || '';
   const fallback = g === 'female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
   return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
