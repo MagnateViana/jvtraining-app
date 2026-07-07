@@ -1373,45 +1373,46 @@ async function searchYouTubeVideo(nombre){
 
   // Build gender term
   let genderTerm = '';
-  if(g === 'female'){
-    genderTerm = lang === 'en' ? 'women female' : 'mujer';
-  } else if(g === 'male'){
-    genderTerm = lang === 'en' ? 'men male' : 'hombre';
-  } else {
-    genderTerm = Math.random() > 0.5 ? (lang === 'en' ? 'men' : 'hombre') : (lang === 'en' ? 'women' : 'mujer');
-  }
+  if(g === 'female') genderTerm = lang === 'en' ? 'women' : 'mujer';
+  else if(g === 'male') genderTerm = lang === 'en' ? 'men' : 'hombre';
+  else genderTerm = Math.random() > 0.5 ? (lang === 'en' ? 'men' : 'hombre') : (lang === 'en' ? 'women' : 'mujer');
 
-  // Language-specific search terms
+  // Use the EXACT full exercise name for specificity
   const langTerms = {
-    es: `${nombre} ejercicio tutorial gym`,
-    en: `${nombre} exercise tutorial gym`,
-    pt: `${nombre} exercício tutorial academia`,
-    fr: `${nombre} exercice tutoriel salle`
+    es: `"${nombre}" como hacer ejercicio`,
+    en: `"${nombre}" how to exercise tutorial`,
+    pt: `"${nombre}" como fazer exercício`,
+    fr: `"${nombre}" comment faire exercice`
   };
-  const baseTerm = langTerms[lang] || langTerms.es;
+  const exactTerm = langTerms[lang] || langTerms.es;
+  
+  // Also try without quotes if exact fails
+  const broadTerms = {
+    es: `${nombre} tutorial ejercicio correcto`,
+    en: `${nombre} exercise tutorial proper form`,
+    pt: `${nombre} tutorial exercício correto`,
+    fr: `${nombre} tutoriel exercice correct`
+  };
+  const broadTerm = broadTerms[lang] || broadTerms.es;
 
-  // Try with gender first, then without
   const queries = [
-    `${baseTerm} ${genderTerm}`,
-    baseTerm,
+    `${exactTerm} ${genderTerm}`,
+    `${broadTerm} ${genderTerm}`,
+    broadTerm,
   ];
 
   for(const q of queries){
     try {
-      // Add language region filter to backend call
       const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${lang}`);
       const data = await resp.json();
-
       if(data.success && data.videos && data.videos.length > 0){
-        // Pick first video NOT already used this session
+        // Pick first NOT used this session
         const fresh = data.videos.find(v => !ytUsedIds.has(v.id));
-        const video = fresh || data.videos[0];
+        const video = fresh || data.videos[Math.floor(Math.random()*data.videos.length)];
         ytUsedIds.add(video.id);
         return `https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
       }
-    } catch(e){
-      console.error('YouTube search error:', e);
-    }
+    } catch(e){ console.error('YT error:', e); }
   }
   return null;
 }
@@ -2409,6 +2410,7 @@ function startWorkout(forceDiaIdx){
   // Clear video cache and used IDs for new workout session
   window._wmVideoCache = {};
   usedVideoIds.clear();
+  ytUsedIds.clear();
   renderWorkoutStep();
 }
 
