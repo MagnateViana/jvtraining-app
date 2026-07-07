@@ -1368,7 +1368,8 @@ function getGenderTerm(nombre){
     : (lang === 'en' ? 'women workout tutorial' : 'mujer ejercicio tutorial');
 }
 
-async function searchYouTubeVideo(nombre){
+// Build YouTube search embed URL synchronously - no backend, no async issues
+function ytSearchEmbed(nombre){
   const lang = state.lang || 'es';
   const g = state.perfil?.genero || '';
 
@@ -1377,33 +1378,16 @@ async function searchYouTubeVideo(nombre){
   else if(g === 'male') genderTerm = lang === 'en' ? 'men' : 'hombre';
   else genderTerm = Math.random() > 0.5 ? (lang==='en'?'men':'hombre') : (lang==='en'?'women':'mujer');
 
-  const q = lang === 'en'
-    ? `${nombre} exercise tutorial ${genderTerm}`
-    : lang === 'pt'
-    ? `${nombre} exercício tutorial ${genderTerm}`
-    : lang === 'fr'
-    ? `${nombre} exercice tutoriel ${genderTerm}`
-    : `${nombre} ejercicio tutorial ${genderTerm}`;
-
-  try {
-    const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${lang}`);
-    const data = await resp.json();
-    if(data.success && data.videos && data.videos.length > 0){
-      // Pick a random video from results for variety
-      const idx = Math.floor(Math.random() * Math.min(data.videos.length, 5));
-      const video = data.videos[idx];
-      return `https://www.youtube-nocookie.com/embed/${video.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
-    }
-  } catch(e){ console.error('YT error:', e); }
-  return null;
-}
-
-async function ytSearchEmbed(nombre){
-  const url = await searchYouTubeVideo(nombre);
-  if(url) return url;
-  const g = state.perfil?.genero || '';
-  const fallback = g === 'female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
-  return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
+  const langTerms = {
+    es: `${nombre} como hacer ejercicio ${genderTerm}`,
+    en: `${nombre} how to exercise ${genderTerm}`,
+    pt: `${nombre} como fazer exercício ${genderTerm}`,
+    fr: `${nombre} comment faire exercice ${genderTerm}`
+  };
+  const q = encodeURIComponent(langTerms[lang] || langTerms.es);
+  // Use YouTube search list embed - works on desktop, may not work on all mobile
+  // But at least each exercise gets a DIFFERENT search query
+  return `https://www.youtube-nocookie.com/embed?listType=search&list=${q}&rel=0&modestbranding=1&playsinline=1`;
 }
 function ytSearchUrl(name){
   const g=state.perfil.genero;
@@ -1412,7 +1396,7 @@ function ytSearchUrl(name){
 }
 function getMiVideo(name){ const n=s=>s.toLowerCase().trim(); return state.misVideos.find(v=>n(v.ejercicio)===n(name)||n(name).includes(n(v.ejercicio))); }
 
-async function toggleVideo(idx, nombre){
+function toggleVideo(idx, nombre){
   const sec=document.getElementById('vs-'+idx);
   const chev=document.getElementById('chev-'+idx);
   if(sec.classList.contains('open')){ sec.classList.remove('open'); chev.classList.remove('open'); sec.innerHTML=''; return; }
@@ -1645,7 +1629,7 @@ function exCarouselGo(uid, total, offset, newIdx){
 function exCarouselNext(uid,total,offset){ exCarouselGo(uid,total,offset,Math.min((carouselIdx[uid]||0)+1,total-1)); }
 function exCarouselPrev(uid,total,offset){ exCarouselGo(uid,total,offset,Math.max((carouselIdx[uid]||0)-1,0)); }
 
-async function loadVideoCard(idx, nombre){
+function loadVideoCard(idx, nombre){
   const sec = document.getElementById('vs-'+idx);
   if(!sec) return;
   const mv = getMiVideo(nombre);
@@ -1664,7 +1648,7 @@ async function loadVideoCard(idx, nombre){
   loadDiv.style.cssText = 'height:160px;display:flex;align-items:center;justify-content:center';
   loadDiv.innerHTML = '<div class="spinner"></div>';
   sec.insertBefore(loadDiv, sec.firstChild);
-  const ytEmbed = await ytSearchEmbed(nombre);
+  const ytEmbed = ytSearchEmbed(nombre);
   const ld = document.getElementById('vc-loading-'+idx);
   if(ld) ld.remove();
   const iframe = `<div style="position:relative;padding-top:56.25%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:8px">
@@ -2479,36 +2463,19 @@ function renderWorkoutStep(){
 // Track used video IDs per workout session to avoid repeats
 const usedVideoIds = new Set();
 
-async function loadWmVideo(nombre, vidId){
-  // Get embed URL first (async), then update DOM
+function loadWmVideo(nombre, vidId){
   const mv = getMiVideo(nombre);
-  const embed = mv ? ytUrlToEmbed(mv.url) : await ytSearchEmbed(nombre);
+  const embed = mv ? ytUrlToEmbed(mv.url) : ytSearchEmbed(nombre);
   const label = mv ? '⭐ Tu video personalizado' : '📹 YouTube';
-
-  // After await, find the placeholder again (DOM may have changed)
-  const ph = document.getElementById(vidId+'-ph');
-  if(ph){
-    ph.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
-      <div style="position:relative;padding-top:56.25%">
-        <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
-          src="${embed}"
-          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-          allowfullscreen playsinline></iframe>
-      </div>
-      <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>
-    </div>`;
-  } else {
-    // Placeholder gone — inject into video section directly
-    const wrap = document.getElementById('wm-video-wrap');
-    if(wrap){
-      wrap.innerHTML = `<div style="position:relative;padding-top:56.25%">
-        <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
-          src="${embed}"
-          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-          allowfullscreen playsinline></iframe>
-      </div>
-      <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>`;
-    }
+  const wrap = document.getElementById('wm-video-wrap');
+  if(wrap){
+    wrap.innerHTML = `<div style="position:relative;padding-top:56.25%">
+      <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+        src="${embed}"
+        allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+        allowfullscreen playsinline></iframe>
+    </div>
+    <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>`;
   }
 }
 
