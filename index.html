@@ -2430,9 +2430,8 @@ function renderWorkoutStep(){
   document.getElementById('wm-content').innerHTML = `
     <!-- VIDEO -->
     <div class="wm-video-section" id="wm-video-wrap">
-      <div class="wm-video-placeholder" id="${vidId}-ph" onclick="loadWmVideo('${ex.nombre.replace(/'/g,"\'")}','${vidId}')">
-        <div class="wm-video-play-btn">▶</div>
-        <div style="font-size:12px;color:var(--text3)">Ver video del ejercicio</div>
+      <div id="${vidId}-ph" style="height:160px;display:flex;align-items:center;justify-content:center">
+        <div class="spinner"></div>
       </div>
     </div>
 
@@ -2481,23 +2480,36 @@ function renderWorkoutStep(){
 const usedVideoIds = new Set();
 
 async function loadWmVideo(nombre, vidId){
-  const ph = document.getElementById(vidId+'-ph');
-  if(!ph) return;
-  ph.innerHTML = '<div style="height:160px;display:flex;align-items:center;justify-content:center"><div class="spinner"></div></div>';
+  // Get embed URL first (async), then update DOM
   const mv = getMiVideo(nombre);
   const embed = mv ? ytUrlToEmbed(mv.url) : await ytSearchEmbed(nombre);
   const label = mv ? '⭐ Tu video personalizado' : '📹 YouTube';
-  const ph2 = document.getElementById(vidId+'-ph');
-  if(!ph2) return;
-  ph2.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
-    <div style="position:relative;padding-top:56.25%">
-      <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
-        src="${embed}"
-        allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
-        allowfullscreen playsinline></iframe>
-    </div>
-    <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>
-  </div>`;
+
+  // After await, find the placeholder again (DOM may have changed)
+  const ph = document.getElementById(vidId+'-ph');
+  if(ph){
+    ph.outerHTML = `<div style="border-radius:var(--radius) var(--radius) 0 0;overflow:hidden">
+      <div style="position:relative;padding-top:56.25%">
+        <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+          src="${embed}"
+          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+          allowfullscreen playsinline></iframe>
+      </div>
+      <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>
+    </div>`;
+  } else {
+    // Placeholder gone — inject into video section directly
+    const wrap = document.getElementById('wm-video-wrap');
+    if(wrap){
+      wrap.innerHTML = `<div style="position:relative;padding-top:56.25%">
+        <iframe style="position:absolute;inset:0;width:100%;height:100%;border:none"
+          src="${embed}"
+          allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"
+          allowfullscreen playsinline></iframe>
+      </div>
+      <div style="padding:4px 12px 6px;font-size:10px;color:var(--text3);background:var(--bg2)">${label}</div>`;
+    }
+  }
 }
 
 function changeReps(delta){
