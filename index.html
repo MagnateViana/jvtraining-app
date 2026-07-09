@@ -1385,26 +1385,41 @@ function buildSearchQuery(nombre){
 }
 
 async function prefetchWorkoutVideos(ejercicios){
-  // Fetch all videos in parallel before workout starts
+  console.log('[JV] prefetchWorkoutVideos started for', ejercicios.length, 'exercises');
   const promises = ejercicios.map(async (ex) => {
-    if(wmVideoMap[ex.nombre]) return; // already cached
+    if(wmVideoMap[ex.nombre]) { console.log('[JV] cached:', ex.nombre); return; }
     try {
       const q = buildSearchQuery(ex.nombre);
+      console.log('[JV] fetching video for:', ex.nombre, '→', q);
       const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${state.lang||'es'}`);
       const data = await resp.json();
+      console.log('[JV] response for', ex.nombre, ':', data.success, data.videos?.length, 'videos', data.error||'');
       if(data.success && data.videos && data.videos.length > 0){
         const pick = data.videos[Math.floor(Math.random()*Math.min(data.videos.length,5))];
         wmVideoMap[ex.nombre] = `https://www.youtube-nocookie.com/embed/${pick.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
+        console.log('[JV] mapped:', ex.nombre, '→', pick.id, pick.title?.slice(0,40));
       }
-    } catch(e){ console.error('prefetch error:', e); }
+    } catch(e){ console.error('[JV] prefetch error for', ex.nombre, ':', e.message); }
   });
   await Promise.all(promises);
+  console.log('[JV] prefetch done. wmVideoMap keys:', Object.keys(wmVideoMap));
 }
 
 function ytSearchEmbed(nombre){
-  // Return from pre-fetched map (synchronous)
-  if(wmVideoMap[nombre]) return wmVideoMap[nombre];
-  // Fallback if not pre-fetched
+  console.log('[JV] ytSearchEmbed called for:', nombre, '| map keys:', Object.keys(wmVideoMap));
+  if(wmVideoMap[nombre]) {
+    console.log('[JV] HIT:', nombre, '→', wmVideoMap[nombre]);
+    return wmVideoMap[nombre];
+  }
+  // Try case-insensitive match
+  const lowerNombre = nombre.toLowerCase().trim();
+  for(const [k,v] of Object.entries(wmVideoMap)){
+    if(k.toLowerCase().trim() === lowerNombre){ 
+      console.log('[JV] case-insensitive HIT:', nombre);
+      return v; 
+    }
+  }
+  console.warn('[JV] MISS - using fallback for:', nombre);
   const g = state.perfil?.genero || '';
   const fallback = g==='female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
   return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
