@@ -122,6 +122,12 @@ textarea{resize:vertical;min-height:72px}
 .chip-group{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
 .chip{padding:7px 14px;border:0.5px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);font-size:13px;cursor:pointer;transition:all .15s;font-family:inherit}
 .chip.sel{background:var(--red);border-color:var(--red-dark);color:#fff;font-weight:500}
+.muscle-chip{padding:8px 14px;border:0.5px solid var(--border2);border-radius:20px;background:var(--bg3);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.muscle-chip.sel{background:rgba(204,34,0,.15);border-color:var(--red);color:#fff;font-weight:600}
+.muscle-chip-icon{font-size:16px}
+.muscle-mode-toggle{display:flex;gap:0;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;margin-bottom:14px}
+.mode-btn{flex:1;padding:8px;border:none;background:transparent;color:var(--text3);font-size:13px;font-weight:600;cursor:pointer;border-radius:calc(var(--radius-sm) - 2px);font-family:inherit;transition:all .2s}
+.mode-btn.active{background:var(--red);color:#fff;box-shadow:0 2px 8px rgba(204,34,0,.4)}
 .equip-chip{padding:6px 12px;border:0.5px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);font-size:12px;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
 .equip-chip.sel{background:rgba(204,34,0,.15);border-color:var(--red);color:var(--red)}
 
@@ -672,6 +678,28 @@ textarea{resize:vertical;min-height:72px}
         <button class="equip-chip" onclick="toggleEquip(this)">Kettlebell</button>
         <button class="equip-chip" onclick="toggleEquip(this)">TRX</button>
         <button class="equip-chip" onclick="toggleEquip(this)">Banda elástica</button>
+      </div>
+      <!-- Muscle group selector -->
+      <div id="muscle-selector-section">
+        <div class="card-label">¿Qué quieres trabajar hoy?</div>
+        <div class="muscle-mode-toggle">
+          <button class="mode-btn active" id="mode-full" onclick="setWorkoutMode('full')">💪 Rutina completa PPL</button>
+          <button class="mode-btn" id="mode-muscle" onclick="setWorkoutMode('muscle')">🎯 Músculo específico</button>
+        </div>
+        <div id="muscle-chips-section" style="display:none">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+            <button class="muscle-chip sel" onclick="toggleMuscle(this)" data-muscle="Pecho">💪 Pecho</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Espalda">🔙 Espalda</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Hombros">🦾 Hombros</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Bíceps">💪 Bíceps</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Tríceps">🔱 Tríceps</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Piernas">🦵 Piernas</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Glúteos">🍑 Glúteos</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Core">⚡ Core</button>
+            <button class="muscle-chip" onclick="toggleMuscle(this)" data-muscle="Cuerpo completo">🔥 Cuerpo completo</button>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">💡 Puedes seleccionar varios</div>
+        </div>
       </div>
       <div class="form-row">
         <label data-i18n="nivel">Nivel</label>
@@ -1335,6 +1363,26 @@ function showScreen(id){
   window.scrollTo(0,0);
 }
 function pickChip(el,gid){ document.getElementById(gid).querySelectorAll('.chip').forEach(c=>c.classList.remove('sel')); el.classList.add('sel'); }
+
+// Workout mode: full PPL or specific muscle
+let workoutMode = 'full';
+function setWorkoutMode(mode){
+  workoutMode = mode;
+  document.getElementById('mode-full').classList.toggle('active', mode==='full');
+  document.getElementById('mode-muscle').classList.toggle('active', mode==='muscle');
+  document.getElementById('muscle-chips-section').style.display = mode==='muscle' ? 'block' : 'none';
+}
+
+function toggleMuscle(el){
+  el.classList.toggle('sel');
+  // Ensure at least one is selected
+  const selected = document.querySelectorAll('.muscle-chip.sel');
+  if(selected.length === 0) el.classList.add('sel');
+}
+
+function getSelectedMuscles(){
+  return [...document.querySelectorAll('.muscle-chip.sel')].map(c=>c.dataset.muscle).join(', ');
+}
 function toggleEquip(el){ el.classList.toggle('sel'); }
 function getEquip(){ return [...document.querySelectorAll('#chips-equipo .equip-chip.sel')].map(c=>c.textContent.trim()).join(', ')||'sin equipo'; }
 
@@ -1374,12 +1422,16 @@ const wmVideoMap = {};
 function buildSearchQuery(nombre){
   const lang = state.lang || 'es';
   const g = state.perfil?.genero || '';
-  let genderTerm = g==='female' ? (lang==='en'?'women':'mujer') : g==='male' ? (lang==='en'?'men':'hombre') : '';
+  let genderTerm = g==='female'
+    ? {es:'mujer', en:'women', pt:'mulher', fr:'femme'}[lang]||'mujer'
+    : g==='male'
+    ? {es:'hombre', en:'men', pt:'homem', fr:'homme'}[lang]||'hombre'
+    : '';
   const terms = {
-    es: `${nombre} ejercicio tutorial gym ${genderTerm}`,
-    en: `${nombre} exercise tutorial gym ${genderTerm}`,
-    pt: `${nombre} exercício tutorial academia ${genderTerm}`,
-    fr: `${nombre} exercice tutoriel salle ${genderTerm}`
+    es: `${nombre} ejercicio tutorial como hacer ${genderTerm}`,
+    en: `${nombre} exercise tutorial how to ${genderTerm}`,
+    pt: `${nombre} exercício tutorial como fazer ${genderTerm}`,
+    fr: `${nombre} exercice tutoriel comment faire ${genderTerm}`
   };
   return (terms[lang] || terms.es).trim();
 }
@@ -1697,6 +1749,7 @@ function loadVideoCard(idx, nombre){
 async function generarRutina(){
   const objetivo=document.querySelector('#chips-objetivo .chip.sel')?.textContent||'Ganar músculo';
   const equipo=getEquip();
+  const muscleTarget = workoutMode==='muscle' ? getSelectedMuscles() : '';
   const nivelKey=document.getElementById('nivel').value||'intermedio';
     const nivelLabels={principiante:t('principiante'),intermedio:t('intermedio'),avanzado:t('avanzado')};
     const nivel=nivelLabels[nivelKey]||nivelKey;
@@ -1709,6 +1762,7 @@ async function generarRutina(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         objetivo, equipo, nivel,
+        muscleTarget: muscleTarget || '',
         genero:state.perfil.genero||'',
         nombre:state.perfil.nombre||'',
         edad:state.perfil.edad||'',
