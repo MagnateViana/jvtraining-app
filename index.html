@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -1098,10 +1100,17 @@ textarea{resize:vertical;min-height:72px}
     <div class="peso-box-title" id="pm-ex-name">Ejercicio</div>
     <div class="peso-box-sub">¿Qué peso usaste? <span id="pm-unit-label" style="color:var(--gold-light);font-weight:700">kg</span></div>
     <div class="peso-box-last" id="pm-last-peso" style="display:none"></div>
-    <div class="peso-box-input">
+    <!-- Bodyweight button -->
+    <button id="pm-bodyweight-btn" onclick="selectBodyweight()" style="width:100%;padding:10px;margin-bottom:12px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;cursor:pointer;font-family:inherit;display:none">
+      🏃 Sin peso / Peso corporal
+    </button>
+    <div class="peso-box-input" id="pm-peso-section">
       <button onclick="changePesoModal(-2.5)">−</button>
       <input type="number" id="pm-peso-val" placeholder="0" min="0" step="0.5" inputmode="decimal">
       <button onclick="changePesoModal(2.5)">+</button>
+    </div>
+    <div id="pm-bodyweight-selected" style="display:none;text-align:center;padding:12px;background:rgba(0,200,100,.08);border:0.5px solid rgba(0,200,100,.3);border-radius:var(--radius-sm);margin-bottom:12px;font-size:14px;color:#4ade80">
+      ✓ Peso corporal seleccionado
     </div>
     <button class="btn btn-primary" onclick="confirmPeso()" style="width:100%">✓ Guardar y continuar</button>
     <br>
@@ -2149,7 +2158,8 @@ function getUnidad(){ return state.unidad || 'kg'; }
 
 // Convert weight for display
 function formatPeso(kg){
-  if(!kg) return '';
+  if(!kg && kg !== 0) return '';
+  if(kg === 'bodyweight') return '🏃 Peso corporal';
   if(getUnidad() === 'lb'){
     return (parseFloat(kg) * 2.20462).toFixed(1) + ' lb';
   }
@@ -2648,19 +2658,32 @@ function changePesoModal(delta){
 function confirmPeso(){
   const exName = document.getElementById('pm-ex-name').textContent;
   const val = document.getElementById('pm-peso-val').value;
-  if(val && exName){
-    const kgVal = inputToKg(val); // always store in kg
-    wmState.workoutPesos[exName] = kgVal;
-    state.pesos[exName] = kgVal;
-    if(!state.pesoLog[exName]) state.pesoLog[exName] = [];
-    state.pesoLog[exName].push({
-      ts: Date.now(),
-      kg: parseFloat(kgVal),
-      fecha: new Date().toLocaleDateString(),
-      displayVal: val,
-      unidad: getUnidad()
-    });
-    if(state.pesoLog[exName].length > 50) state.pesoLog[exName].shift();
+  const isBodyweightSelected = document.getElementById('pm-bodyweight-selected').style.display !== 'none';
+
+  if(exName && (val || isBodyweightSelected)){
+    if(isBodyweightSelected){
+      // Save as bodyweight
+      wmState.workoutPesos[exName] = 'bodyweight';
+      state.pesos[exName] = 'bodyweight';
+      if(!state.pesoLog[exName]) state.pesoLog[exName] = [];
+      state.pesoLog[exName].push({
+        ts: Date.now(), kg: 0, fecha: new Date().toLocaleDateString(),
+        displayVal: 'Peso corporal', unidad: 'bw'
+      });
+    } else if(val){
+      const kgVal = inputToKg(val);
+      wmState.workoutPesos[exName] = kgVal;
+      state.pesos[exName] = kgVal;
+      if(!state.pesoLog[exName]) state.pesoLog[exName] = [];
+      state.pesoLog[exName].push({
+        ts: Date.now(), kg: parseFloat(kgVal),
+        fecha: new Date().toLocaleDateString(),
+        displayVal: val, unidad: getUnidad()
+      });
+    }
+    if(state.pesoLog[exName]) {
+      if(state.pesoLog[exName].length > 50) state.pesoLog[exName].shift();
+    }
     saveState();
     renderProgreso();
   }
