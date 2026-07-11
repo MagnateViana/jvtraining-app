@@ -1354,8 +1354,11 @@ function loadState(){
   updatePointsDisplay();
   updateUnidadUI();
   setTimeout(()=>{
-    try{ showDailyMotivation(); }catch(e){ console.error('motivation error:',e); }
-    try{ checkPeriodization(); }catch(e){ console.error('periodization error:',e); }
+    // Only show motivation if onboarding is already done
+    if(state.onboardingDone){
+      try{ showDailyMotivation(); }catch(e){ console.error('motivation error:',e); }
+      try{ checkPeriodization(); }catch(e){ console.error('periodization error:',e); }
+    }
     try{ checkDailyReminder(); }catch(e){ console.error('reminder error:',e); }
     try{ requestNotificationPermission(); }catch(e){ console.error('notification error:',e); }
   }, 2000);
@@ -1437,10 +1440,10 @@ function buildSearchQuery(nombre){
     ? {es:'hombre', en:'men', pt:'homem', fr:'homme'}[lang]||'hombre'
     : '';
   const terms = {
-    es: `${nombre} ejercicio tutorial como hacer ${genderTerm}`,
-    en: `${nombre} exercise tutorial how to ${genderTerm}`,
-    pt: `${nombre} exercício tutorial como fazer ${genderTerm}`,
-    fr: `${nombre} exercice tutoriel comment faire ${genderTerm}`
+    es: `${nombre} tecnica correcta paso a paso postura ${genderTerm}`,
+    en: `${nombre} proper form technique step by step ${genderTerm}`,
+    pt: `${nombre} técnica correta passo a passo postura ${genderTerm}`,
+    fr: `${nombre} technique correcte étape par étape posture ${genderTerm}`
   };
   return (terms[lang] || terms.es).trim();
 }
@@ -2910,6 +2913,13 @@ function finishOnboarding(){
   // Greet user
   const greet={es:'¡Hola '+nombre+'! Todo listo 💪',en:'Hey '+nombre+'! All set 💪',pt:'Olá '+nombre+'! Tudo pronto 💪',fr:'Salut '+nombre+'! Tout est prêt 💪'};
   setTimeout(()=>toast(greet[state.lang]||greet.es),400);
+
+  // Show motivation AFTER onboarding
+  setTimeout(()=>{
+    try{ showDailyMotivation(); }catch(e){}
+    try{ checkPeriodization(); }catch(e){}
+    try{ requestNotificationPermission(); }catch(e){}
+  }, 500);
 }
 
 // Init
