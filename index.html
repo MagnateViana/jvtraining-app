@@ -529,6 +529,7 @@ textarea{resize:vertical;min-height:72px}
 .tos-scroll-hint{text-align:center;font-size:11px;color:var(--text3);margin-bottom:10px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes fadeOut{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .tos-accept-btn{width:100%;padding:14px;background:var(--red);border:none;border-radius:var(--radius);color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
 .tos-accept-btn:disabled{opacity:.4;cursor:not-allowed}
 .tos-checkbox-row{display:flex;align-items:center;gap:10px;padding:10px 0;margin-bottom:4px}
@@ -1125,7 +1126,7 @@ textarea{resize:vertical;min-height:72px}
     <div class="motiv-splash-quote" id="ms-quote"></div>
     <div class="motiv-splash-author" id="ms-author"></div>
     <div class="motiv-splash-line"></div>
-    <button class="motiv-splash-btn" onclick="closeMotivsplash()">
+    <button class="motiv-splash-btn" onclick="closeMotivsplash()" id="motiv-splash-btn">
       Entendido — ¡Vamos! 💪
     </button>
   </div>
@@ -1138,6 +1139,11 @@ textarea{resize:vertical;min-height:72px}
       <div class="wm-title" id="wm-day-title">Día 1</div>
       <div style="font-size:12px;color:var(--text2)" id="wm-day-grupo"></div>
       <div style="font-size:10px;color:var(--red);margin-top:2px">↕ Cambiar día</div>
+    </div>
+    <!-- Workout elapsed timer -->
+    <div style="text-align:center">
+      <div id="wm-elapsed" style="font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--gold-light);letter-spacing:1px">0:00</div>
+      <div style="font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">Tiempo</div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="points-badge" id="wm-pts-display">0 pts</div>
@@ -1385,6 +1391,79 @@ function setWorkoutMode(mode){
   document.getElementById('muscle-chips-section').style.display = mode==='muscle' ? 'block' : 'none';
 }
 
+// ── MUSCLE DIAGRAM SYSTEM ────────────────────────────────────────────────────
+function getMuscleData(nombre){
+  const lower = nombre.toLowerCase();
+  const map = [
+    [['press banca','bench press','press plano','press inclinado','press declinado','apertura','chest fly','cable fly','flexion','push up','pike push'],
+     {primary:['Pectoral'],secondary:['Tríceps','Deltoides anterior'],group:'chest'}],
+    [['remo','row','jalón','lat pull','dominada','pull up','peso muerto','deadlift','pull over','pullover'],
+     {primary:['Dorsal ancho'],secondary:['Bíceps','Romboides','Trapecio'],group:'back'}],
+    [['press militar','overhead press','press hombro','elevacion','lateral raise','front raise','pajaro','rear delt','face pull','arnold'],
+     {primary:['Deltoides'],secondary:['Trapecio','Tríceps'],group:'shoulders'}],
+    [['curl','bicep','bícep'],
+     {primary:['Bíceps'],secondary:['Braquial','Antebrazo'],group:'biceps'}],
+    [['tricep','fondos','dips','extensión','skull','press frances','kickback','pushdown'],
+     {primary:['Tríceps'],secondary:['Deltoides','Pectoral'],group:'triceps'}],
+    [['sentadilla','squat','zancada','lunge','prensa','leg press','extensión de cuád','leg extension'],
+     {primary:['Cuádriceps'],secondary:['Glúteos','Isquiotibiales'],group:'quads'}],
+    [['curl femoral','leg curl','isquiotibial','peso muerto rumano','romanian'],
+     {primary:['Isquiotibiales'],secondary:['Glúteos','Pantorrillas'],group:'hamstrings'}],
+    [['hip thrust','glute bridge','empuje de cadera','abductor','donkey','patada'],
+     {primary:['Glúteos'],secondary:['Isquiotibiales','Core'],group:'glutes'}],
+    [['pantorrilla','calf','gemelo'],
+     {primary:['Gastrocnemio'],secondary:['Sóleo'],group:'calves'}],
+    [['plancha','plank','crunch','abdominal','russian twist','mountain climber','leg raise','v-up','burpee','superman'],
+     {primary:['Abdominales'],secondary:['Oblicuos','Core'],group:'abs'}],
+  ];
+  const lower2 = lower;
+  for(const [keys, data] of map){
+    if(keys.some(k => lower2.includes(k))) return data;
+  }
+  return {primary:['Músculos varios'],secondary:[],group:'full'};
+}
+
+function getMusclesvg(group){
+  const body = `<g opacity="0.2" fill="#555">
+    <ellipse cx="27" cy="12" rx="8" ry="9"/>
+    <rect x="19" y="21" width="16" height="22" rx="3"/>
+    <rect x="10" y="21" width="8" height="18" rx="3"/>
+    <rect x="36" y="21" width="8" height="18" rx="3"/>
+    <rect x="19" y="44" width="7" height="22" rx="3"/>
+    <rect x="28" y="44" width="7" height="22" rx="3"/>
+    <rect x="19" y="67" width="7" height="14" rx="3"/>
+    <rect x="28" y="67" width="7" height="14" rx="3"/>
+  </g>`;
+  const highlights = {
+    chest:`<rect x="19" y="22" width="16" height="12" rx="3" fill="#CC2200" opacity=".85"/>`,
+    back:`<rect x="19" y="22" width="16" height="16" rx="3" fill="#CC2200" opacity=".85"/>`,
+    shoulders:`<rect x="10" y="21" width="8" height="8" rx="3" fill="#CC2200" opacity=".85"/><rect x="36" y="21" width="8" height="8" rx="3" fill="#CC2200" opacity=".85"/>`,
+    biceps:`<rect x="10" y="27" width="8" height="9" rx="3" fill="#CC2200" opacity=".85"/>`,
+    triceps:`<rect x="36" y="27" width="8" height="9" rx="3" fill="#CC2200" opacity=".85"/>`,
+    quads:`<rect x="19" y="44" width="7" height="14" rx="3" fill="#CC2200" opacity=".85"/><rect x="28" y="44" width="7" height="14" rx="3" fill="#CC2200" opacity=".85"/>`,
+    hamstrings:`<rect x="19" y="54" width="7" height="12" rx="3" fill="#CC2200" opacity=".7"/><rect x="28" y="54" width="7" height="12" rx="3" fill="#CC2200" opacity=".7"/>`,
+    glutes:`<rect x="19" y="43" width="16" height="10" rx="3" fill="#CC2200" opacity=".85"/>`,
+    calves:`<rect x="19" y="67" width="7" height="12" rx="3" fill="#CC2200" opacity=".85"/><rect x="28" y="67" width="7" height="12" rx="3" fill="#CC2200" opacity=".85"/>`,
+    abs:`<rect x="20" y="33" width="14" height="12" rx="2" fill="#CC2200" opacity=".85"/>`,
+    full:`<rect x="19" y="21" width="16" height="22" rx="3" fill="#CC2200" opacity=".6"/>`,
+  };
+  return `<svg viewBox="0 0 54 82" xmlns="http://www.w3.org/2000/svg">${body}${highlights[group]||highlights.full}</svg>`;
+}
+
+function buildMuscleDiagram(nombre){
+  const data = getMuscleData(nombre);
+  const svg = getMusclesvg(data.group);
+  const primaryPills = data.primary.map(m=>`<span class="muscle-pill mp-primary">${m}</span>`).join('');
+  const secondaryPills = data.secondary.map(m=>`<span class="muscle-pill mp-secondary">${m}</span>`).join('');
+  return `<div class="muscle-diagram">
+    <div class="muscle-figure">${svg}</div>
+    <div class="muscle-tag">
+      <div class="muscle-main">Músculos trabajados</div>
+      <div>${primaryPills}${secondaryPills}</div>
+    </div>
+  </div>`;
+}
+
 function toggleMuscle(el){
   el.classList.toggle('sel');
   // Ensure at least one is selected
@@ -1434,16 +1513,35 @@ const wmVideoMap = {};
 function buildSearchQuery(nombre){
   const lang = state.lang || 'es';
   const g = state.perfil?.genero || '';
-  let genderTerm = g==='female'
-    ? {es:'mujer', en:'women', pt:'mulher', fr:'femme'}[lang]||'mujer'
-    : g==='male'
-    ? {es:'hombre', en:'men', pt:'homem', fr:'homme'}[lang]||'hombre'
-    : '';
+
+  // Strong gender terms — placed FIRST in query so YouTube prioritizes them
+  const genderTerms = {
+    female: {
+      es: 'mujer gym rutina femenina',
+      en: 'women female gym workout',
+      pt: 'mulher academia treino feminino',
+      fr: 'femme salle sport exercice'
+    },
+    male: {
+      es: 'hombre gym rutina masculina',
+      en: 'men male gym workout',
+      pt: 'homem academia treino masculino',
+      fr: 'homme salle sport exercice'
+    },
+    other: {
+      es: '', en: '', pt: '', fr: ''
+    }
+  };
+
+  const gender = g === 'female' ? 'female' : g === 'male' ? 'male' : 'other';
+  const gTerm = genderTerms[gender][lang] || genderTerms[gender].es || '';
+
+  // Put gender FIRST, then exercise name, then technique keywords
   const terms = {
-    es: `${nombre} tecnica correcta paso a paso postura ${genderTerm}`,
-    en: `${nombre} proper form technique step by step ${genderTerm}`,
-    pt: `${nombre} técnica correta passo a passo postura ${genderTerm}`,
-    fr: `${nombre} technique correcte étape par étape posture ${genderTerm}`
+    es: `${gTerm} ${nombre} tecnica correcta como hacer`,
+    en: `${gTerm} ${nombre} proper form how to`,
+    pt: `${gTerm} ${nombre} técnica correta como fazer`,
+    fr: `${gTerm} ${nombre} technique correcte comment faire`
   };
   return (terms[lang] || terms.es).trim();
 }
@@ -2099,35 +2197,71 @@ function renderMisVideos(){
 
 
 // ── MOTIVATIONAL QUOTES ────────────────────────────────────────────────────
-const QUOTES = [
-  {q:"El dolor que sientes hoy será la fuerza que sentirás mañana.",a:"Arnold Schwarzenegger"},
-  {q:"No cuentes los días. Haz que los días cuenten.",a:"Muhammad Ali"},
-  {q:"El éxito no es dado. Se gana en la pista, en el gimnasio, con el sudor.",a:"Eminem"},
-  {q:"La disciplina es elegir entre lo que quieres ahora y lo que más quieres.",a:"Abraham Lincoln"},
-  {q:"Tu cuerpo puede aguantar casi cualquier cosa. Es tu mente la que debes convencer.",a:"Anónimo"},
-  {q:"Los campeones no se hacen en los gimnasios. Los campeones se hacen de algo que llevan dentro.",a:"Muhammad Ali"},
-  {q:"Si no te desafías a ti mismo, nunca sabrás tu potencial.",a:"Anónimo"},
-  {q:"El único mal entrenamiento es el que no hiciste.",a:"Anónimo"},
-  {q:"Trabaja duro en silencio. Deja que tu éxito haga el ruido.",a:"Frank Ocean"},
-  {q:"Cada repetición te acerca más a la versión que quieres ser.",a:"JV Training"},
-  {q:"La constancia es el secreto del progreso. No la perfección.",a:"Anónimo"},
-  {q:"Sé el bombero de tu propia vida. Apaga la flojera, enciende el fuego.",a:"JV Training"},
-];
+const QUOTES = {
+  es:[
+    {q:"El dolor que sientes hoy será la fuerza que sentirás mañana.",a:"Arnold Schwarzenegger"},
+    {q:"No cuentes los días. Haz que los días cuenten.",a:"Muhammad Ali"},
+    {q:"La disciplina es elegir entre lo que quieres ahora y lo que más quieres.",a:"Abraham Lincoln"},
+    {q:"Tu cuerpo puede aguantar casi cualquier cosa. Es tu mente la que debes convencer.",a:"Anónimo"},
+    {q:"El único mal entrenamiento es el que no hiciste.",a:"Anónimo"},
+    {q:"Trabaja duro en silencio. Deja que tu éxito haga el ruido.",a:"Frank Ocean"},
+    {q:"Cada repetición te acerca más a la versión que quieres ser.",a:"JV Training"},
+    {q:"La constancia es el secreto del progreso. No la perfección.",a:"Anónimo"},
+    {q:"Sé el bombero de tu propia vida. Apaga la flojera, enciende el fuego.",a:"JV Training"},
+  ],
+  en:[
+    {q:"The pain you feel today will be the strength you feel tomorrow.",a:"Arnold Schwarzenegger"},
+    {q:"Don't count the days. Make the days count.",a:"Muhammad Ali"},
+    {q:"Discipline is choosing between what you want now and what you want most.",a:"Abraham Lincoln"},
+    {q:"Your body can stand almost anything. It's your mind you have to convince.",a:"Unknown"},
+    {q:"The only bad workout is the one that didn't happen.",a:"Unknown"},
+    {q:"Work hard in silence. Let your success make the noise.",a:"Frank Ocean"},
+    {q:"Every rep brings you closer to the person you want to be.",a:"JV Training"},
+    {q:"Consistency is the secret to progress. Not perfection.",a:"Unknown"},
+    {q:"Be the firefighter of your own life. Kill the laziness, ignite the fire.",a:"JV Training"},
+  ],
+  pt:[
+    {q:"A dor que você sente hoje será a força que você sentirá amanhã.",a:"Arnold Schwarzenegger"},
+    {q:"Não conte os dias. Faça os dias contarem.",a:"Muhammad Ali"},
+    {q:"A disciplina é escolher entre o que você quer agora e o que mais quer.",a:"Abraham Lincoln"},
+    {q:"Seu corpo aguenta quase tudo. É sua mente que você precisa convencer.",a:"Anônimo"},
+    {q:"O único treino ruim é o que não aconteceu.",a:"Anônimo"},
+    {q:"Trabalhe duro em silêncio. Deixe seu sucesso fazer o barulho.",a:"Frank Ocean"},
+    {q:"Cada repetição te aproxima da versão que você quer ser.",a:"JV Training"},
+    {q:"A constância é o segredo do progresso. Não a perfeição.",a:"Anônimo"},
+    {q:"Seja o bombeiro da sua própria vida. Apague a preguiça, acenda o fogo.",a:"JV Training"},
+  ],
+  fr:[
+    {q:"La douleur que tu ressens aujourd'hui sera la force que tu ressentiras demain.",a:"Arnold Schwarzenegger"},
+    {q:"Ne comptez pas les jours. Faites que les jours comptent.",a:"Muhammad Ali"},
+    {q:"La discipline, c'est choisir entre ce que tu veux maintenant et ce que tu veux le plus.",a:"Abraham Lincoln"},
+    {q:"Ton corps peut supporter presque tout. C'est ton esprit que tu dois convaincre.",a:"Inconnu"},
+    {q:"Le seul mauvais entraînement est celui que tu n'as pas fait.",a:"Inconnu"},
+    {q:"Travaille dur en silence. Laisse ton succès faire le bruit.",a:"Frank Ocean"},
+    {q:"Chaque répétition te rapproche de la personne que tu veux être.",a:"JV Training"},
+    {q:"La constance est le secret du progrès. Pas la perfection.",a:"Inconnu"},
+    {q:"Sois le pompier de ta propre vie. Éteins la paresse, allume le feu.",a:"JV Training"},
+  ],
+};
 
 function showDailyMotivation(){
+  const lang = state.lang || 'es';
+  const quotes = QUOTES[lang] || QUOTES.es;
   const lastIdx = state.lastMotivationIdx ?? -1;
   let idx;
-  do { idx = Math.floor(Math.random()*QUOTES.length); } while(idx===lastIdx && QUOTES.length>1);
-  const q = QUOTES[idx];
+  do { idx = Math.floor(Math.random()*quotes.length); } while(idx===lastIdx && quotes.length>1);
+  const q = quotes[idx];
   state.lastMotivationIdx = idx;
   saveState();
 
-  // Show fullscreen splash
   document.getElementById('ms-quote').textContent = '"'+q.q+'"';
   document.getElementById('ms-author').textContent = '— '+q.a;
+  // Translate button
+  const btnLabels = {es:'Entendido — ¡Vamos! 💪', en:"Got it — Let's go! 💪", pt:'Entendido — Vamos! 💪', fr:"Compris — Allons-y! 💪"};
+  const btn = document.getElementById('motiv-splash-btn');
+  if(btn) btn.textContent = btnLabels[lang] || btnLabels.es;
   const splash = document.getElementById('motiv-splash');
   splash.classList.add('open');
-  // Animate in
   splash.style.opacity='0';
   splash.style.transition='opacity .4s ease';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ splash.style.opacity='1'; }));
@@ -2474,6 +2608,8 @@ function startWorkout(forceDiaIdx){
   if(dia) wmState.totalSets = (dia.ejercicios||[]).reduce((a,e)=>a+(e.series||3),0);
   // Clear video map for new session
   Object.keys(wmVideoMap).forEach(k => delete wmVideoMap[k]);
+  // Start elapsed timer
+  startElapsedTimer();
 
   // Show loading state while pre-fetching videos
   document.getElementById('workout-modal').classList.add('open');
@@ -2658,6 +2794,23 @@ function changePesoModal(delta){
   const val = parseFloat(input.value)||0;
   input.value = Math.max(0, val + delta * (step/1.25)).toFixed(1);
 }
+function selectBodyweight(){
+  const bwSelected = document.getElementById('pm-bodyweight-selected');
+  const pesoSection = document.getElementById('pm-peso-section');
+  const bwBtn = document.getElementById('pm-bodyweight-btn');
+  const isSelected = bwSelected.style.display !== 'none';
+  if(isSelected){
+    bwSelected.style.display = 'none';
+    pesoSection.style.display = 'flex';
+    if(bwBtn){ bwBtn.style.background='var(--bg3)'; bwBtn.style.borderColor='var(--border2)'; bwBtn.style.color='var(--text2)'; }
+  } else {
+    bwSelected.style.display = 'block';
+    pesoSection.style.display = 'none';
+    if(bwBtn){ bwBtn.style.background='rgba(0,200,100,.1)'; bwBtn.style.borderColor='rgba(0,200,100,.4)'; bwBtn.style.color='#4ade80'; }
+    document.getElementById('pm-peso-val').value = '';
+  }
+}
+
 function confirmPeso(){
   const exName = document.getElementById('pm-ex-name').textContent;
   const val = document.getElementById('pm-peso-val').value;
@@ -2800,9 +2953,39 @@ function clearWmTimer(){
   wmState.timerRunning=false; wmState.timerSeconds=0;
 }
 
+// ── ELAPSED WORKOUT TIMER ────────────────────────────────────────────────────
+let elapsedInterval = null;
+
+function startElapsedTimer(){
+  if(elapsedInterval) clearInterval(elapsedInterval);
+  const el = document.getElementById('wm-elapsed');
+  if(el) el.textContent = '0:00';
+  elapsedInterval = setInterval(()=>{
+    const secs = Math.floor((Date.now() - wmState.startTime) / 1000);
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    const el2 = document.getElementById('wm-elapsed');
+    if(el2) el2.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    // Color changes as time progresses
+    if(el2){
+      if(secs > 3600) el2.style.color = '#ff4444'; // over 1 hour - red
+      else if(secs > 1800) el2.style.color = '#FF8C00'; // over 30 min - orange
+      else el2.style.color = 'var(--gold-light)';
+    }
+  }, 1000);
+}
+
+function stopElapsedTimer(){
+  if(elapsedInterval){ clearInterval(elapsedInterval); elapsedInterval = null; }
+}
+
 function finishWorkout(){
   clearWmTimer();
-  const duration = Math.round((Date.now()-wmState.startTime)/60000);
+  stopElapsedTimer();
+  const durationMs = Date.now() - wmState.startTime;
+  const duration = Math.round(durationMs / 60000);
+  const durationSecs = Math.floor(durationMs / 1000);
+  const durationFormatted = Math.floor(durationSecs/60) + ':' + (durationSecs%60 < 10 ? '0' : '') + (durationSecs%60);
   const dia = wmState.dias[wmState.diaIdx];
 
   // Save progress
@@ -2811,7 +2994,8 @@ function finishWorkout(){
     id:Date.now(),
     nombre:`${dia?.dia||'Workout'} — ${dia?.grupo||''}`,
     tipo:dia?.tipo||'PPL',
-    duracion:duration+' min',
+    duracion:durationFormatted,
+    duracionMin:duration,
     fecha:hoy.toLocaleDateString(),
     ts:hoy.getTime(),
     pesos:{...wmState.workoutPesos},
@@ -2828,7 +3012,7 @@ function finishWorkout(){
   saveState();
   renderHistorial();
   document.getElementById('workout-modal').classList.remove('open');
-  toast('🏆 Workout completado! +'+pts+' puntos · '+duration+' min');
+  toast('🏆 Workout completado! +'+pts+' puntos · '+durationFormatted);
 
   // Check periodization
   checkPeriodization();
@@ -2837,6 +3021,7 @@ function finishWorkout(){
 function closeWorkout(){
   clearWmTimer();
   if(confirm('¿Seguro que quieres salir del workout?')){
+    stopElapsedTimer();
     document.getElementById('workout-modal').classList.remove('open');
   }
 }
@@ -2951,6 +3136,53 @@ function initApp(){
     });
   }
 })();
+
+// ── UPDATE NOTIFICATION ──────────────────────────────────────────────────────
+const APP_VERSION = '2.1.0';
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+    showUpdateBanner();
+  });
+}
+
+function showUpdateBanner(){
+  // Don't show if already visible
+  if(document.getElementById('update-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.style.cssText = `
+    position:fixed;bottom:80px;left:16px;right:16px;
+    background:linear-gradient(135deg,#1a1a2e,#16213e);
+    border:1px solid var(--gold);border-radius:var(--radius);
+    padding:14px 16px;z-index:9999;
+    box-shadow:0 8px 24px rgba(0,0,0,.6);
+    display:flex;align-items:center;gap:12px;
+    animation:slideUp .3s ease;
+  `;
+  banner.innerHTML = `
+    <div style="font-size:24px">🔄</div>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:700;color:var(--gold-light);margin-bottom:2px">¡Nueva versión disponible!</div>
+      <div style="font-size:12px;color:var(--text2)">Actualiza para ver las mejoras más recientes</div>
+    </div>
+    <button onclick="applyUpdate()" style="padding:8px 14px;background:var(--gold);border:none;border-radius:var(--radius-sm);color:#000;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">Actualizar</button>
+    <button onclick="this.parentElement.remove()" style="padding:6px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px">✕</button>
+  `;
+  document.body.appendChild(banner);
+}
+
+function applyUpdate(){
+  window.location.reload();
+}
+
+// Check for updates every 30 minutes
+setInterval(()=>{
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if(reg) reg.update();
+    });
+  }
+}, 30 * 60 * 1000);
 setTimeout(initApp, 1800);
 loadState();
 
