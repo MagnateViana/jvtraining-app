@@ -1514,34 +1514,20 @@ function buildSearchQuery(nombre){
   const lang = state.lang || 'es';
   const g = state.perfil?.genero || '';
 
-  // Strong gender terms — placed FIRST in query so YouTube prioritizes them
-  const genderTerms = {
-    female: {
-      es: 'mujer gym rutina femenina',
-      en: 'women female gym workout',
-      pt: 'mulher academia treino feminino',
-      fr: 'femme salle sport exercice'
-    },
-    male: {
-      es: 'hombre gym rutina masculina',
-      en: 'men male gym workout',
-      pt: 'homem academia treino masculino',
-      fr: 'homme salle sport exercice'
-    },
-    other: {
-      es: '', en: '', pt: '', fr: ''
-    }
+  // Simple gender suffix — after exercise name for better results
+  const gSuffix = {
+    female: {es:'para mujeres', en:'for women', pt:'para mulheres', fr:'pour femmes'},
+    male:   {es:'para hombres', en:'for men',   pt:'para homens',   fr:'pour hommes'},
+    other:  {es:'', en:'', pt:'', fr:''}
   };
-
   const gender = g === 'female' ? 'female' : g === 'male' ? 'male' : 'other';
-  const gTerm = genderTerms[gender][lang] || genderTerms[gender].es || '';
+  const gTerm = gSuffix[gender][lang] || gSuffix[gender].es || '';
 
-  // Put gender FIRST, then exercise name, then technique keywords
   const terms = {
-    es: `${gTerm} ${nombre} tecnica correcta como hacer`,
-    en: `${gTerm} ${nombre} proper form how to`,
-    pt: `${gTerm} ${nombre} técnica correta como fazer`,
-    fr: `${gTerm} ${nombre} technique correcte comment faire`
+    es: `${nombre} como hacer correctamente ${gTerm}`,
+    en: `${nombre} how to proper form ${gTerm}`,
+    pt: `${nombre} como fazer corretamente ${gTerm}`,
+    fr: `${nombre} comment faire correctement ${gTerm}`
   };
   return (terms[lang] || terms.es).trim();
 }
