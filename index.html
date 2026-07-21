@@ -56,12 +56,13 @@ body::after{
 /* LANG PICKER */
 #lang-picker{position:fixed;inset:0;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;z-index:1000;display:none}
 #lang-picker.show{display:flex}
-#onboarding{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1001;padding:24px}
+#onboarding{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:none;flex-direction:column;align-items:center;justify-content:flex-start;z-index:1001;padding:24px;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:calc(24px + env(safe-area-inset-bottom));overflow-y:auto;-webkit-overflow-scrolling:touch}
 #onboarding.show{display:flex}
 .ob-card{
   background:linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--bg2);
   border:0.5px solid var(--border2);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:360px;
   box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 24px 48px -16px rgba(0,0,0,.7);
+  margin:auto 0;flex-shrink:0;
 }
 .ob-step{display:none}.ob-step.active{display:block}
 .ob-title{font-size:22px;font-weight:700;margin-bottom:6px;text-align:center}
@@ -1569,7 +1570,7 @@ function ytSearchEmbed(nombre){
   }
   console.warn('[JV] MISS - using fallback for:', nombre);
   const g = state.perfil?.genero || '';
-  const fallback = g==='female' ? 'RZkWoB3BBJQ' : 'IODxDxX7oi4';
+  const fallback = g==='female' ? '4CvoT3983s4' : 'IODxDxX7oi4';
   return `https://www.youtube-nocookie.com/embed/${fallback}?rel=0&modestbranding=1&playsinline=1`;
 }
 function ytSearchUrl(name){
