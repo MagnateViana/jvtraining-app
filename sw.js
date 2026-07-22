@@ -1,5 +1,5 @@
-// JV Training Service Worker v2.1.0
-const CACHE_NAME = 'jvtraining-v2.1.0';
+// JV ELITE TRAINING Service Worker v2.2.0
+const CACHE_NAME = 'jvtraining-v2.2.0';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting(); // Activate immediately
