@@ -1510,7 +1510,7 @@ function getGenderTerm(nombre){
 // Pre-fetched video map: ejercicio -> embedUrl
 const wmVideoMap = {};
 
-function buildSearchQuery(nombre){
+function buildSearchQuery(nombre, strict){
   const lang = state.lang || 'es';
   const g = state.perfil?.genero || '';
 
@@ -1521,7 +1521,10 @@ function buildSearchQuery(nombre){
     other:  {es:'', en:'', pt:'', fr:''}
   };
   const gender = g === 'female' ? 'female' : g === 'male' ? 'male' : 'other';
-  const gTerm = gSuffix[gender][lang] || gSuffix[gender].es || '';
+  let gTerm = gSuffix[gender][lang] || gSuffix[gender].es || '';
+  // Strict mode: quote the gender phrase so YouTube only returns videos whose
+  // title/description/tags literally contain it, instead of treating it as a soft hint.
+  if(strict && gTerm) gTerm = `"${gTerm}"`;
 
   const terms = {
     es: `${nombre} ${gTerm} como hacer correctamente`,
@@ -1532,37 +1535,68 @@ function buildSearchQuery(nombre){
   return (terms[lang] || terms.es).replace(/ +/g,' ').trim();
 }
 
-// Keywords used to filter out videos whose title clearly signals the opposite gender
+// Keywords used to score videos by which gender they're likely aimed at
 const GENDER_WORDS = {
-  female: ['mujer','mujeres','femenino','femenina','women','woman','female','mulher','mulheres','femme','femmes','féminin','féminine'],
-  male: ['hombre','hombres','masculino','men','man','male','homem','homens','homme','hommes','masculin']
+  female: ['mujer','mujeres','femenino','femenina','women','woman','female','chica','chicas','mulher','mulheres','femme','femmes','féminin','féminine'],
+  male: ['hombre','hombres','masculino','men','man','male','chico','chicos','homem','homens','homme','hommes','masculin']
 };
-function filterVideosByGender(videos, genero){
-  if(genero!=='male' && genero!=='female') return videos;
-  const opposite = genero==='male' ? GENDER_WORDS.female : GENDER_WORDS.male;
-  const same = genero==='male' ? GENDER_WORDS.male : GENDER_WORDS.female;
-  const filtered = videos.filter(v=>{
-    const ti=(v.title||'').toLowerCase();
-    const hasOpposite = opposite.some(w=>ti.includes(w));
-    const hasSame = same.some(w=>ti.includes(w));
-    return !(hasOpposite && !hasSame); // drop only if it signals the opposite gender and not also this one
+// Whole-word match only — plain .includes() false-triggers on short words like "men"
+// hiding inside unrelated Spanish words ("correctaMENte", "MANcuerna", "moMENto").
+function hasGenderWord(text, words){
+  return words.some(w => new RegExp('\\b'+w+'\\b','i').test(text));
+}
+// Picks the best-matching video for the user's gender: prefers videos that explicitly
+// mention the same gender, then gender-neutral ones, and only as a last resort a video
+// that explicitly mentions the opposite gender.
+function pickVideoForGender(videos, genero){
+  if(genero!=='male' && genero!=='female'){
+    return videos[Math.floor(Math.random()*Math.min(videos.length,3))];
+  }
+  const sameWords = GENDER_WORDS[genero];
+  const oppWords = GENDER_WORDS[genero==='male'?'female':'male'];
+  const scored = videos.map(v=>{
+    const text = ((v.title||'')+' '+(v.channel||'')).toLowerCase();
+    const hasSame = hasGenderWord(text, sameWords);
+    const hasOpp = hasGenderWord(text, oppWords);
+    let score = 1; // neutral by default
+    if(hasSame && !hasOpp) score = 2;
+    else if(hasOpp && !hasSame) score = 0;
+    return {v, score};
   });
-  return filtered.length>0 ? filtered : videos; // never end up with zero options
+  const best = Math.max(...scored.map(x=>x.score));
+  const top = scored.filter(x=>x.score===best).map(x=>x.v);
+  return top[Math.floor(Math.random()*Math.min(top.length,3))];
+}
+
+async function fetchYoutubeVideos(q){
+  const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${state.lang||'es'}`);
+  return resp.json();
 }
 
 async function prefetchWorkoutVideos(ejercicios){
   console.log('[JV] prefetchWorkoutVideos started for', ejercicios.length, 'exercises');
+  const genero = state.perfil?.genero || '';
   const promises = ejercicios.map(async (ex) => {
     if(wmVideoMap[ex.nombre]) { console.log('[JV] cached:', ex.nombre); return; }
     try {
-      const q = buildSearchQuery(ex.nombre);
-      console.log('[JV] fetching video for:', ex.nombre, '→', q);
-      const resp = await fetch(`${BACKEND_URL}/youtube?q=${encodeURIComponent(q)}&lang=${state.lang||'es'}`);
-      const data = await resp.json();
+      let data;
+      if(genero==='male' || genero==='female'){
+        // First try a strict, gender-locked search…
+        const strictQ = buildSearchQuery(ex.nombre, true);
+        console.log('[JV] fetching (strict) for:', ex.nombre, '→', strictQ);
+        data = await fetchYoutubeVideos(strictQ);
+        // …and fall back to a looser search only if that came up empty.
+        if(!data.success || !data.videos || data.videos.length===0){
+          const looseQ = buildSearchQuery(ex.nombre, false);
+          console.log('[JV] strict miss, fetching (loose) for:', ex.nombre, '→', looseQ);
+          data = await fetchYoutubeVideos(looseQ);
+        }
+      } else {
+        data = await fetchYoutubeVideos(buildSearchQuery(ex.nombre, false));
+      }
       console.log('[JV] response for', ex.nombre, ':', data.success, data.videos?.length, 'videos', data.error||'');
       if(data.success && data.videos && data.videos.length > 0){
-        const candidates = filterVideosByGender(data.videos, state.perfil?.genero);
-        const pick = candidates[Math.floor(Math.random()*Math.min(candidates.length,3))];
+        const pick = pickVideoForGender(data.videos, genero);
         wmVideoMap[ex.nombre] = `https://www.youtube-nocookie.com/embed/${pick.id}?rel=0&modestbranding=1&playsinline=1&fs=1`;
         console.log('[JV] mapped:', ex.nombre, '→', pick.id, pick.title?.slice(0,40));
       }
